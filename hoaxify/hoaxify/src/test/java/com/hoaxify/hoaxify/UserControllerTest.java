@@ -195,7 +195,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void postUser_whenUserHasNullUsername_receiveMessageOfNullErrorForUsername(){
+    public void postUser_whenUserHasNullUsername_receiveMessageOfNullErrorForUsername() {
         User user = createValidUser();
         user.setUsername(null);
         ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
@@ -204,7 +204,16 @@ public class UserControllerTest {
     }
 
     @Test
-    public void postUser_whenUserHasInvalidLengthOfUsername_receiveMessageOfSizeErrorForUsername(){
+    public void postUser_whenUserHasNullPassword_receiveGenericMessageOfNullError() {
+        User user = createValidUser();
+        user.setPassword(null);
+        ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
+        Map<String, String> validationErrors = response.getBody().getValidationErrors();
+        assertThat(validationErrors.get("password")).isEqualTo("Password cannot be null");
+    }
+
+    @Test
+    public void postUser_whenUserHasInvalidLengthUsername_receiveGenericMessageOfSizeError() {
         User user = createValidUser();
         user.setUsername("abc");
         ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
@@ -221,7 +230,19 @@ public class UserControllerTest {
         assertThat(validationErrors.get("password")).isEqualTo("Password must have at least one uppercase, one lowercase letter and one number");
     }
 
-    
+    @Test
+    public void postUser_whenAnotherUserHasTheSameUsername_receiveMessageOfDuplicateUsername() {
+        userRepository.save(createValidUser());
+
+        User user = createValidUser();
+        ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
+        Map<String, String> validationErrors = response.getBody().getValidationErrors();
+        assertThat(validationErrors.get("username")).isEqualTo("This name is in use");
+    }
+
+
+
+
 
 
 

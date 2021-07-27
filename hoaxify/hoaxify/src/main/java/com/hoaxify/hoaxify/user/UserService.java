@@ -1,6 +1,7 @@
 package com.hoaxify.hoaxify.user;
 
 
+import com.hoaxify.hoaxify.error.DuplicateUsernameException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -18,6 +19,7 @@ public class UserService {
     }
 
     public User save(User user) {
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
