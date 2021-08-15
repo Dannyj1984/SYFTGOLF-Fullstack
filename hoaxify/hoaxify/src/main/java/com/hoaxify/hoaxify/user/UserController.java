@@ -7,29 +7,32 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.hoaxify.hoaxify.error.ApiError;
 import com.hoaxify.hoaxify.shared.GenericResponse;
 
 @RestController
+@RequestMapping("/api/1.0")
 public class UserController {
 
     @Autowired
     UserService userService;
 
-    @PostMapping("/api/1.0/users")
+    @PostMapping("/users")
     GenericResponse createUser(@Valid @RequestBody User user) {
         userService.save(user);
         return new GenericResponse("User saved");
+    }
+
+    @GetMapping("/users")
+    Page<?> getUsers() {
+        return userService.getUsers();
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
