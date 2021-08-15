@@ -1,6 +1,5 @@
 package com.hoaxify.hoaxify.user;
 
-
 import java.beans.Transient;
 import java.util.Collection;
 
@@ -11,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,27 +27,22 @@ public class User implements UserDetails{
 
     @Id
     @GeneratedValue
-    @JsonView(Views.Base.class)
     private long id;
 
     @NotNull(message = "{hoaxify.constraints.username.NotNull.message}")
     @Size(min = 4, max=255)
-    @UniqueUsername@JsonView(Views.Base.class)
-
+    @UniqueUsername
     private String username;
 
     @NotNull
     @Size(min = 4, max=255)
-    @JsonView(Views.Base.class)
     private String displayName;
 
     @NotNull
     @Size(min = 8, max=255)
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message="{hoaxify.constraints.password.Pattern.message}")
-
     private String password;
 
-    @JsonView(Views.Base.class)
     private String image;
 
     @Override
