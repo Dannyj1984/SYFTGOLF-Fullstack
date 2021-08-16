@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -49,6 +51,7 @@ public class UserControllerTest {
         ResponseEntity<Object> response = postSignup(user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
 
     @Test
     public void postUser_whenUserIsValid_userSavedToDatabase() {
@@ -124,7 +127,7 @@ public class UserControllerTest {
     @Test
     public void postUser_whenUserHasUsernameExceedsTheLengthLimit_receiveBadRequest() {
         User user = TestUtil.createValidUser();
-        String valueOf256Chars = IntStream.rangeClosed(1, 256).mapToObj(x -> "a").collect(Collectors.joining());
+        String valueOf256Chars = IntStream.rangeClosed(1,256).mapToObj(x -> "a").collect(Collectors.joining());
         user.setUsername(valueOf256Chars);
         ResponseEntity<Object> response = postSignup(user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -133,7 +136,7 @@ public class UserControllerTest {
     @Test
     public void postUser_whenUserHasDisplayNameExceedsTheLengthLimit_receiveBadRequest() {
         User user = TestUtil.createValidUser();
-        String valueOf256Chars = IntStream.rangeClosed(1, 256).mapToObj(x -> "a").collect(Collectors.joining());
+        String valueOf256Chars = IntStream.rangeClosed(1,256).mapToObj(x -> "a").collect(Collectors.joining());
         user.setDisplayName(valueOf256Chars);
         ResponseEntity<Object> response = postSignup(user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -142,7 +145,7 @@ public class UserControllerTest {
     @Test
     public void postUser_whenUserHasPasswordExceedsTheLengthLimit_receiveBadRequest() {
         User user = TestUtil.createValidUser();
-        String valueOf256Chars = IntStream.rangeClosed(1, 256).mapToObj(x -> "a").collect(Collectors.joining());
+        String valueOf256Chars = IntStream.rangeClosed(1,256).mapToObj(x -> "a").collect(Collectors.joining());
         user.setPassword(valueOf256Chars + "A1");
         ResponseEntity<Object> response = postSignup(user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -219,8 +222,7 @@ public class UserControllerTest {
         user.setPassword("alllowercase");
         ResponseEntity<ApiError> response = postSignup(user, ApiError.class);
         Map<String, String> validationErrors = response.getBody().getValidationErrors();
-        assertThat(validationErrors.get("password"))
-                .isEqualTo("Password must have at least one uppercase, one lowercase letter and one number");
+        assertThat(validationErrors.get("password")).isEqualTo("Password must have at least one uppercase, one lowercase letter and one number");
     }
 
     @Test
@@ -242,45 +244,39 @@ public class UserControllerTest {
         assertThat(validationErrors.get("username")).isEqualTo("This name is in use");
     }
 
-<<<<<<< HEAD
     @Test
-    public void getUser_whenThereAreUsersInDB_receiveOK() {
-        ResponseEntity<Object> response = getUsers(new ParameterizedTypeReference<Object>() {
-        });
+    public void getUsers_whenThereAreNoUsersInDB_receiveOK() {
+        ResponseEntity<Object> response = getUsers(new ParameterizedTypeReference<Object>() {});
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void getUsers_whenThereAreNoUsersInDB_receivePageWithZeroItems() {
-        ResponseEntity<TestPage<Object>> response = getUsers(new ParameterizedTypeReference<TestPage<Object>>() {
-        });
+        ResponseEntity<TestPage<Object>> response = getUsers(new ParameterizedTypeReference<TestPage<Object>>() {});
         assertThat(response.getBody().getTotalElements()).isEqualTo(0);
     }
 
     @Test
     public void getUsers_whenThereIsAUserInDB_receivePageWithUser() {
-        userRepository.save((TestUtil.createValidUser()));
-        ResponseEntity<TestPage<Object>> response = getUsers(new ParameterizedTypeReference<TestPage<Object>>() {
-        });
+        userRepository.save(TestUtil.createValidUser());
+        ResponseEntity<TestPage<Object>> response = getUsers(new ParameterizedTypeReference<TestPage<Object>>() {});
         assertThat(response.getBody().getNumberOfElements()).isEqualTo(1);
     }
 
-<<<<<<< HEAD
     @Test
     public void getUsers_whenThereIsAUserInDB_receiveUserWithoutPassword() {
-        userRepository.save((TestUtil.createValidUser()));
-        ResponseEntity<TestPage<Map<String, Object>>> response = getUsers(new ParameterizedTypeReference<TestPage<Map<String,Object>>>() {
-        });
+        userRepository.save(TestUtil.createValidUser());
+        ResponseEntity<TestPage<Map<String, Object>>> response = getUsers(new ParameterizedTypeReference<TestPage<Map<String, Object>>>() {});
         Map<String, Object> entity = response.getBody().getContent().get(0);
         assertThat(entity.containsKey("password")).isFalse();
     }
 
-=======
->>>>>>> parent of ad2ce56 (get Users)
-=======
->>>>>>> parent of 0c742d6 (User modelling UserVM)
-    public <T> ResponseEntity<T> postSignup(Object request, Class<T> response) {
+    public <T> ResponseEntity<T> postSignup(Object request, Class<T> response){
         return testRestTemplate.postForEntity(API_1_0_USERS, request, response);
+    }
+
+    public <T> ResponseEntity<T> getUsers(ParameterizedTypeReference<T> responseType){
+        return testRestTemplate.exchange(API_1_0_USERS, HttpMethod.GET, null, responseType);
     }
 
 }

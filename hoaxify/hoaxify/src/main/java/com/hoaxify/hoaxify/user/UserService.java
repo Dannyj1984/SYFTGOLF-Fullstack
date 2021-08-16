@@ -24,11 +24,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Page<?> getUsers() {
-        //each page can have 10 items
+    public Page<User> getUsers() {
         Pageable pageable = PageRequest.of(0, 10);
         return userRepository.findAll(pageable);
-
     }
 
 }
