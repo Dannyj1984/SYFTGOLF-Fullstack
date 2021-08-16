@@ -265,6 +265,7 @@ public class UserControllerTest {
         assertThat(response.getBody().getNumberOfElements()).isEqualTo(1);
     }
 
+<<<<<<< HEAD
     @Test
     public void getUsers_whenThereIsAUserInDB_receiveUserWithoutPassword() {
         userRepository.save((TestUtil.createValidUser()));
@@ -276,6 +277,8 @@ public class UserControllerTest {
 
 =======
 >>>>>>> parent of ad2ce56 (get Users)
+=======
+>>>>>>> parent of 0c742d6 (User modelling UserVM)
     public <T> ResponseEntity<T> postSignup(Object request, Class<T> response) {
         return testRestTemplate.postForEntity(API_1_0_USERS, request, response);
     }
