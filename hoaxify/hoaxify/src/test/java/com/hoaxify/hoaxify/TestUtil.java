@@ -12,4 +12,11 @@ public class TestUtil {
         user.setImage("https://www.bootdey.com/img/Content/avatar/avatar5.png");
         return user;
     }
+
+    public static User createValidUser(String username) {
+        User user = createValidUser();
+        user.setUsername(username);
+
+        return user;
+    }
 }
