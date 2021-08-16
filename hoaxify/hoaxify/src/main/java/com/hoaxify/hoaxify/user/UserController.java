@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.hoaxify.hoaxify.shared.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +34,8 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    Page<UserVM> getUsers(Pageable page) {
-        return userService.getUsers(page).map(UserVM::new);
+    Page<UserVM> getUsers(@CurrentUser User loggedInUser, Pageable page) {
+        return userService.getUsers(loggedInUser, page).map(UserVM::new);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
