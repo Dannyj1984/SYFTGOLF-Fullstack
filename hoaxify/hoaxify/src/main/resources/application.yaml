@@ -1,18 +1,50 @@
 spring:
+  profiles:
+    active:
+      - dev
   h2:
     console:
       enabled: true
       path: /h2-console
-
   jpa:
     properties:
       javax:
         persistence:
           validation:
             mode: none
-
   data:
     web:
       pageable:
         default-page-size: 10
         max-page-size: 100
+---
+spring:
+  datasource:
+    url: jdbc:h2:./hoaxify-prod
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: false
+  config:
+    activate:
+      on-profile:
+hoaxify:
+  upload-path: uploads-prod
+---
+spring:
+  datasource:
+    url: jdbc:h2:mem:hoaxify-dev
+  config:
+    activate:
+      on-profile:
+hoaxify:
+  upload-path: uploads-dev
+---
+hoaxify:
+  upload-path: uploads-test
+spring:
+  config:
+    activate:
+      on-profile:
