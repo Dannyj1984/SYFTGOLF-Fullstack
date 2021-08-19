@@ -35,8 +35,6 @@ public class User implements UserDetails{
     @UniqueUsername
     private String username;
 
-
-
     @NotNull
     @Size(min = 4, max=255)
     private String displayName;
