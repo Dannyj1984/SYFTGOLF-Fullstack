@@ -18,7 +18,7 @@ public class HoaxifyApplication {
 	}
 
 	@Bean
-	@Profile("dev")
+	@Profile("!test")
 	CommandLineRunner run(UserService userService) {
 		return (args) -> {
 			IntStream.rangeClosed(1, 15)
@@ -30,7 +30,7 @@ public class HoaxifyApplication {
 						return user;
 					})
 					.forEach(userService::save);
-
+		
 		};
 	}
 

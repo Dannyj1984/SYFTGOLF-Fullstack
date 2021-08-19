@@ -15,15 +15,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PutMapping;
-
 
 import com.hoaxify.hoaxify.error.ApiError;
 import com.hoaxify.hoaxify.shared.GenericResponse;
 import com.hoaxify.hoaxify.user.vm.UserVM;
-import com.hoaxify.hoaxify.user.vm.UserUpdateVM;
 
 @RestController
 @RequestMapping("/api/1.0")
@@ -41,20 +36,6 @@ public class UserController {
     @GetMapping("/users")
     Page<UserVM> getUsers(@CurrentUser User loggedInUser, Pageable page) {
         return userService.getUsers(loggedInUser, page).map(UserVM::new);
-    }
-
-    @GetMapping("/users/{username}")
-    UserVM getUserByName(@PathVariable String username) {
-        User user = userService.getByUsername(username);
-        return new UserVM(user);
-    }
-
-    @PutMapping("/users/{id:[0-9]+}")
-    @PreAuthorize("#id == principal.id")
-    UserVM updateUser(@PathVariable long id, @Valid @RequestBody(required = false) UserUpdateVM userUpdate) {
-        User updated = userService.update(id, userUpdate);
-        return new UserVM(updated);
-
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
