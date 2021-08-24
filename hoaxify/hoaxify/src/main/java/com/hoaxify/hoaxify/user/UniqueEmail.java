@@ -7,12 +7,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = UniqueUsernameValidator.class)
+@Constraint(validatedBy = UniqueEmailValidator.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UniqueUsername {
+public @interface UniqueEmail {
 
-    String message() default "{hoaxify.constraints.username.UniqueUsername.message}";
+    String message() default "{hoaxify.constraints.username.UniqueEmail.message}";
 
     Class<?>[] groups() default { };
 

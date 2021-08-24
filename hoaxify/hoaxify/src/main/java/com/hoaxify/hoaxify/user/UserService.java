@@ -1,43 +1,28 @@
 package com.hoaxify.hoaxify.user;
 
-import com.hoaxify.hoaxify.error.NotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
+    //Business logic
+
+    @Autowired
     UserRepository userRepository;
 
-    PasswordEncoder passwordEncoder;
+    BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        super();
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public User save(User user) {
+        //Check if there is already a user with this username
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
-
-    public Page<User> getUsers(User loggedInUser, Pageable pageable) {
-        if(loggedInUser != null) {
-            return userRepository.findByUsernameNot(loggedInUser.getUsername(), pageable);
-        }
-        return userRepository.findAll(pageable);
-    }
-
-    public User getByUsername(String username) {
-        User inDB = userRepository.findByUsername(username);
-        if(inDB == null) {
-            throw new NotFoundException(username + " not found");
-        }
-        return inDB;
-    }
-
 }

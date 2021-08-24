@@ -1,5 +1,4 @@
 package com.hoaxify.hoaxify.shared;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

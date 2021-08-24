@@ -2,6 +2,8 @@ package com.hoaxify.hoaxify;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.hoaxify.hoaxify.user.User;
+import com.hoaxify.hoaxify.user.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.hoaxify.hoaxify.user.User;
-import com.hoaxify.hoaxify.user.UserRepository;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -25,18 +24,54 @@ public class UserRepositoryTest {
     UserRepository userRepository;
 
     @Test
-    public void findByUsername_whenUserExists_returnsUser() {
-        testEntityManager.persist(TestUtil.createValidUser());
+    public void findByUsername_whenUserExists_returnUsers() {
+        User user = new User();
+        user.setPassword("P4ssword");
+        user.setUsername("test-user");
+        user.setEmail("test@email.com");
+        user.setFirstname("test");
+        user.setSurname("user");
+        user.setHandicap("10.0");
+        user.setMobile("07956356879");
+        user.setCdh("1013530000");
+        user.setSociety_hcp_reduction("1");
+        user.setSocietyHandicap("5.2");
+
+        testEntityManager.persist(user);
 
         User inDB = userRepository.findByUsername("test-user");
         assertThat(inDB).isNotNull();
-
     }
 
     @Test
-    public void findByUsername_whenUserDoesNotExist_returnsNull() {
-        User inDB = userRepository.findByUsername("nonexistinguser");
+    public void findByEmail_whenEmailExists_returnUsers() {
+        User user = new User();
+        user.setPassword("P4ssword");
+        user.setUsername("test-user");
+        user.setEmail("test@email.com");
+        user.setFirstname("test");
+        user.setSurname("user");
+        user.setHandicap("10.0");
+        user.setMobile("07956356879");
+        user.setCdh("1013530000");
+        user.setSociety_hcp_reduction("1");
+        user.setSocietyHandicap("5.2");
+
+        testEntityManager.persist(user);
+
+        User inDB = userRepository.findUserByEmail("test@email.com");
+        assertThat(inDB).isNotNull();
+    }
+
+    @Test
+    public void findByUsername_whenUsernameDoesNotExist_returnsNull() {
+        User inDB = userRepository.findByUsername("nonExistingUser");
         assertThat(inDB).isNull();
     }
 
+    @Test
+    public void findByEmail_whenEmailDoesNotExist_returnsNull() {
+        User inDB = userRepository.findUserByEmail("non@gmail.com");
+        assertThat(inDB).isNull();
+    }
 }
