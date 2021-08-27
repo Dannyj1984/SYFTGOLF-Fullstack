@@ -25,19 +25,8 @@ public class UserRepositoryTest {
 
     @Test
     public void findByUsername_whenUserExists_returnUsers() {
-        User user = new User();
-        user.setPassword("P4ssword");
-        user.setUsername("test-user");
-        user.setEmail("test@email.com");
-        user.setFirstname("test");
-        user.setSurname("user");
-        user.setHandicap("10.0");
-        user.setMobile("07956356879");
-        user.setCdh("1013530000");
-        user.setSociety_hcp_reduction("1");
-        user.setSocietyHandicap("5.2");
 
-        testEntityManager.persist(user);
+        testEntityManager.persist(TestUtil.createValidUser());
 
         User inDB = userRepository.findByUsername("test-user");
         assertThat(inDB).isNotNull();
@@ -45,19 +34,7 @@ public class UserRepositoryTest {
 
     @Test
     public void findByEmail_whenEmailExists_returnUsers() {
-        User user = new User();
-        user.setPassword("P4ssword");
-        user.setUsername("test-user");
-        user.setEmail("test@email.com");
-        user.setFirstname("test");
-        user.setSurname("user");
-        user.setHandicap("10.0");
-        user.setMobile("07956356879");
-        user.setCdh("1013530000");
-        user.setSociety_hcp_reduction("1");
-        user.setSocietyHandicap("5.2");
-
-        testEntityManager.persist(user);
+        testEntityManager.persist(TestUtil.createValidUser());
 
         User inDB = userRepository.findUserByEmail("test@email.com");
         assertThat(inDB).isNotNull();
@@ -75,3 +52,4 @@ public class UserRepositoryTest {
         assertThat(inDB).isNull();
     }
 }
+

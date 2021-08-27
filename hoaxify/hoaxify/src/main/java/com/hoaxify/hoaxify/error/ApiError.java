@@ -1,5 +1,6 @@
 package com.hoaxify.hoaxify.error;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import java.util.Map;
 
 @Data
 @NoArgsConstructor
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class ApiError {
 
 
@@ -22,6 +24,7 @@ public class ApiError {
     private Map<String, String> validationErrors;
 
     public ApiError(int status, String message, String url) {
+        super();
         this.status = status;
         this.message = message;
         this.url = url;
