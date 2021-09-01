@@ -18,4 +18,10 @@ public class TestUtil {
         user.setSocietyHandicap("5.2");
         return user;
     }
+
+    public static User createValidUser(String username) {
+        User user = createValidUser();
+        user.setUsername(username);
+        return user;
+    }
 }
