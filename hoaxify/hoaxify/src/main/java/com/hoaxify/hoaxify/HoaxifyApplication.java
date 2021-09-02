@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
-import java.util.Random;
+import java.text.DecimalFormat;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
@@ -23,6 +23,7 @@ public class HoaxifyApplication {
 	@Bean
 	@Profile("!test")
 	CommandLineRunner run(UserService userService) {
+
 		return (args) -> {
 			IntStream.rangeClosed(1,15)
 					.mapToObj(i -> {
@@ -31,7 +32,10 @@ public class HoaxifyApplication {
 						User user = new User();
 						user.setUsername("user"+i);
 						double random = ThreadLocalRandom.current().nextDouble(min, max);
-						user.setHandicap(Double.toString(random));
+						DecimalFormat df = new DecimalFormat();
+						df.setMaximumFractionDigits(1);
+						String hcp = df.format(random);
+						user.setHandicap(hcp);
 						user.setPassword("P4ssword");
 						System.out.println(user.getUsername() +" " + user.getHandicap());
 						return user;
