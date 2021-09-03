@@ -2,6 +2,7 @@ package com.hoaxify.hoaxify.user;
 
 
 import com.hoaxify.hoaxify.error.NotFoundException;
+import com.hoaxify.hoaxify.user.vm.UserUpdateVM;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,12 @@ public class UserService {
             throw new NotFoundException(username + " not found");
         }
         return inDB;
+    }
+
+    public User update(long id, UserUpdateVM userUpdate) {
+        User inDB = userRepository.getOne(id);
+        inDB.setUsername(userUpdate.getUsername());
+        return userRepository.save(inDB);
     }
 
 }

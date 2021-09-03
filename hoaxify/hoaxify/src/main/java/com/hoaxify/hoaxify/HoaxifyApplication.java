@@ -31,13 +31,14 @@ public class HoaxifyApplication {
 						double max = 34.0;
 						User user = new User();
 						user.setUsername("user"+i);
+						user.setEmail("user"+ i + "@gmail.com");
 						double random = ThreadLocalRandom.current().nextDouble(min, max);
 						DecimalFormat df = new DecimalFormat();
 						df.setMaximumFractionDigits(1);
 						String hcp = df.format(random);
 						user.setHandicap(hcp);
 						user.setPassword("P4ssword");
-						System.out.println(user.getUsername() +" " + user.getHandicap());
+						System.out.println(user.getUsername() +" " + user.getEmail());
 						return user;
 
 					})
