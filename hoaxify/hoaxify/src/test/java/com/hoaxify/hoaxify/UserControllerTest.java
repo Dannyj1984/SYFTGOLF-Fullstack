@@ -493,8 +493,8 @@ public class UserControllerTest {
         HttpEntity<UserUpdateVM> requestEntity = new HttpEntity<>(updatedUser);
         putUser(user.getId(), requestEntity, Object.class);
 
-        User userInDB = userRepository.findByUsername("user1");
-        assertThat(userInDB.getUsername()).isEqualTo(updatedUser.getUsername());
+        User userInDB = userRepository.findByUsername("newUsername");
+        assertThat(userInDB).isNotNull();
     }
 
     @Test
