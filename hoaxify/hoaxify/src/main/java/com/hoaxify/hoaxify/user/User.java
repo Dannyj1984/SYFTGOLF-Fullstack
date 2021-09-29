@@ -4,29 +4,32 @@ package com.hoaxify.hoaxify.user;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.beans.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.Collection;
+import java.util.*;
 
 @Data
 //Entity maps object to database
 @Entity
 @NoArgsConstructor
+@Table(name = "member")
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 4074374728582967483L;
 
     @Id
     @GeneratedValue
+    @Column(
+            name = "userid",
+            updatable = false
+    )
     private long id;
 
     @NotNull(message = "{hoaxify.constraints.username.NotNull.message}")
@@ -41,11 +44,11 @@ public class User implements UserDetails {
     private String email;
 
     @NotNull(message = "{hoaxify.constraints.name.NotNull.message}")
-    @Size(min = 4, max=255)
+    @Size(min = 2, max=255)
     private String firstname;
 
     @NotNull(message = "{hoaxify.constraints.name.NotNull.message}")
-    @Size(min = 4, max=255, message = "{javax.validation.constraints.Size.message}")
+    @Size(min = 2, max=255, message = "{javax.validation.constraints.Size.message}")
     private String surname;
 
     @NotNull(message = "Please enter a handicap for this member")
@@ -61,10 +64,28 @@ public class User implements UserDetails {
     private String cdh;
 
     @NotNull
-    private String society_hcp_reduction = "0.0";
+    @Column(name = "sochcpred")
+    private String socHcpRed = "0";
+
+    @Column(name = "homeclub")
+    private String homeClub;
 
     @NotNull
-    private String societyHandicap = "0";
+    @Column(name = "sochcp")
+    private String sochcp = "0";
+
+    private String image;
+
+    @NotNull
+    @Column(name = "authority")
+    private String authority = "USER";
+
+    @NotNull
+    @Column(
+            name = "wins",
+            columnDefinition = "INTEGER"
+    )
+    private int wins = 0;
 
     @NotNull
     @Size(min = 8, max=255)
@@ -74,7 +95,14 @@ public class User implements UserDetails {
     @Override
     @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return AuthorityUtils.createAuthorityList("Role_USER");
+        Set<Role> roles = this.getRoles();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getUsername()));
+        }
+
+        return authorities;
     }
 
     @Override
@@ -100,6 +128,18 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
+
+
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "userid"),
+            inverseJoinColumns = @JoinColumn(name = "roleid")
+    )
+    private Set<Role> roles = new HashSet<>();
 
 
 }

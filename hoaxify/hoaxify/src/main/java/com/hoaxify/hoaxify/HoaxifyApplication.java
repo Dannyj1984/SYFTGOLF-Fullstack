@@ -20,31 +20,4 @@ public class HoaxifyApplication {
 		SpringApplication.run(HoaxifyApplication.class, args);
 	}
 
-	@Bean
-	@Profile("!test")
-	CommandLineRunner run(UserService userService) {
-
-		return (args) -> {
-			IntStream.rangeClosed(1,15)
-					.mapToObj(i -> {
-						double min = 0.0;
-						double max = 34.0;
-						User user = new User();
-						user.setUsername("user"+i);
-						user.setEmail("user"+ i + "@gmail.com");
-						double random = ThreadLocalRandom.current().nextDouble(min, max);
-						DecimalFormat df = new DecimalFormat();
-						df.setMaximumFractionDigits(1);
-						String hcp = df.format(random);
-						user.setHandicap(hcp);
-						user.setPassword("P4ssword");
-						System.out.println(user.getUsername() +" " + user.getEmail());
-						return user;
-
-					})
-					.forEach(userService::save);
-
-		};
-	}
-
 }

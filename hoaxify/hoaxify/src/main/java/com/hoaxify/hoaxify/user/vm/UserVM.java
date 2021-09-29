@@ -25,9 +25,15 @@ public class UserVM {
 
     private String cdh;
 
-    private String society_hcp_reduction;
+    private String socHcpRed;
 
-    private String societyHandicap;
+    private String socHcp;
+
+    private String homeClub;
+
+    private String authority;
+
+    private String image;
 
 
     public UserVM(User user) {
@@ -38,9 +44,12 @@ public class UserVM {
         this.setSurname(user.getSurname());
         this.setHandicap(user.getHandicap());
         this.setMobile(user.getMobile());
+        this.setHomeClub((user.getHomeClub()));
         this.setCdh(user.getCdh());
-        this.setSociety_hcp_reduction(user.getSociety_hcp_reduction());
-        this.setSocietyHandicap(user.getSocietyHandicap());
+        this.setSocHcpRed(user.getSocHcpRed());
+        this.setAuthority(user.getAuthority());
+        this.setSocHcp(user.getSochcp());
+        this.setImage(user.getImage());
     }
 
 }

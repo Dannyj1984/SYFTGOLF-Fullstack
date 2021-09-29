@@ -9,6 +9,7 @@ import com.hoaxify.hoaxify.user.UserRepository;
 import com.hoaxify.hoaxify.user.UserService;
 import com.hoaxify.hoaxify.user.vm.UserUpdateVM;
 import com.hoaxify.hoaxify.user.vm.UserVM;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.hoaxify.hoaxify.user.User;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -507,6 +511,62 @@ public class UserControllerTest {
         ResponseEntity<UserVM> response = putUser(user.getId(), requestEntity, UserVM.class);
 
         assertThat(response.getBody().getUsername()).isEqualTo(updatedUser.getUsername());
+    }
+
+    @Test
+    public void putUser_withInvalidRequestBodyWithNullUserNameFromAuthorizedUser_receiveBadRequest() throws IOException {
+        User user = userService.save(TestUtil.createValidUser("user1"));
+        authenticate(user.getUsername());
+        UserUpdateVM updatedUser = new UserUpdateVM();
+
+        HttpEntity<UserUpdateVM> requestEntity = new HttpEntity<>(updatedUser);
+        ResponseEntity<Object> response = putUser(user.getId(), requestEntity, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void putUser_withInvalidRequestBodyWithLessThanMinSizeUserNameFromAuthorizedUser_receiveBadRequest() throws IOException {
+        User user = userService.save(TestUtil.createValidUser("user1"));
+        authenticate(user.getUsername());
+        UserUpdateVM updatedUser = new UserUpdateVM();
+        updatedUser.setUsername("abc");
+
+        HttpEntity<UserUpdateVM> requestEntity = new HttpEntity<>(updatedUser);
+        ResponseEntity<Object> response = putUser(user.getId(), requestEntity, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void putUser_withInvalidRequestBodyWithMoreThanMaxSizeDisplayNameFromAuthorizedUser_receiveBadRequest() throws IOException {
+        User user = userService.save(TestUtil.createValidUser("user1"));
+        authenticate(user.getUsername());
+        UserUpdateVM updatedUser = new UserUpdateVM();
+
+        String valueOf256Chars = IntStream.rangeClosed(1,256).mapToObj(x -> "a").collect(Collectors.joining());
+        updatedUser.setUsername(valueOf256Chars);
+
+        HttpEntity<UserUpdateVM> requestEntity = new HttpEntity<>(updatedUser);
+        ResponseEntity<Object> response = putUser(user.getId(), requestEntity, Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void putUser_withValidRequestBodyWithSupportedImageFromAuthorizedUser_receiveUserVMWithRandomImageName() throws IOException {
+        User user = userService.save(TestUtil.createValidUser("user1"));
+        authenticate(user.getUsername());
+
+        ClassPathResource imageResource = new ClassPathResource("profile.png");
+
+        UserUpdateVM updatedUser = createValidUserUpdateVM();
+
+        byte[] imageArr = FileUtils.readFileToByteArray(imageResource.getFile());
+        String imageString = Base64.getEncoder().encodeToString(imageArr);
+        updatedUser.setImage(imageString);
+
+        HttpEntity<UserUpdateVM> requestEntity = new HttpEntity<>(updatedUser);
+        ResponseEntity<UserVM> response = putUser(user.getId(), requestEntity, UserVM.class);
+
+        assertThat(response.getBody().getImage()).isNotEqualTo("profile-image.png");
     }
 
     private UserUpdateVM createValidUserUpdateVM() {

@@ -4,13 +4,16 @@ package com.hoaxify.hoaxify.user;
 import com.hoaxify.hoaxify.error.NotFoundException;
 import com.hoaxify.hoaxify.user.vm.UserUpdateVM;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
+
 @Service
 public class UserService {
+
 
     UserRepository userRepository;
 
@@ -29,6 +32,7 @@ public class UserService {
 
     public Page<User> getUsers(User loggedInUser, Pageable pageable) {
         if(loggedInUser != null) {
+            //Get all users except for logged in user
             return userRepository.findByUsernameNot(loggedInUser.getUsername(), pageable);
         }
         return userRepository.findAll(pageable);
@@ -45,7 +49,16 @@ public class UserService {
     public User update(long id, UserUpdateVM userUpdate) {
         User inDB = userRepository.getOne(id);
         inDB.setUsername(userUpdate.getUsername());
+        String savedImageName = inDB.getUsername() + UUID.randomUUID().toString().replaceAll("-", "");
+        inDB.setImage(savedImageName);
         return userRepository.save(inDB);
     }
+
+    public void deleteMember(long id) {
+        User user = userRepository.getOne(id);
+        userRepository.deleteById(id);
+
+    }
+
 
 }
