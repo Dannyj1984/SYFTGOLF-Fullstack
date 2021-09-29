@@ -1,6 +1,8 @@
 package com.hoaxify.hoaxify.user;
 
+import java.lang.reflect.Member;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +39,6 @@ public class UserController {
 
     @GetMapping("/users")
     Page<UserVM> getUsers(@CurrentUser User loggedInUser, Pageable page) {
-
         return userService.getUsers(loggedInUser, page).map(UserVM::new);
     }
 
@@ -49,10 +50,15 @@ public class UserController {
 
     @PutMapping("/users/{id:[0-9]+}")
     @PreAuthorize("#id == principal.id")
-    UserVM updateUser(@PathVariable long id, @RequestBody(required = false) UserUpdateVM userUpdate) {
+    UserVM updateUser(@PathVariable long id, @Valid @RequestBody(required = false) UserUpdateVM userUpdate) {
         User updated = userService.update(id, userUpdate);
         return new UserVM(updated);
 
+    }
+    @DeleteMapping("management/members/delete/{id:[0-9]+}")
+    GenericResponse deleteMember(@PathVariable long id) {
+        userService.deleteMember(id);
+        return new GenericResponse("Member has been removed");
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

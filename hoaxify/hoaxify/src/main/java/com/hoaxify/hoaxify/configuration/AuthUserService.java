@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.hoaxify.hoaxify.user.User;
 import com.hoaxify.hoaxify.user.UserRepository;
 
+
 @Service
 public class AuthUserService implements UserDetailsService {
 
@@ -22,6 +23,7 @@ public class AuthUserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
         return user;
+
     }
 
 }
