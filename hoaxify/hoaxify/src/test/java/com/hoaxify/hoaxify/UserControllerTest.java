@@ -537,7 +537,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void putUser_withInvalidRequestBodyWithMoreThanMaxSizeDisplayNameFromAuthorizedUser_receiveBadRequest() throws IOException {
+    public void putUser_withInvalidRequestBodyWithMoreThanMaxSizeUsernameNameFromAuthorizedUser_receiveBadRequest() throws IOException {
         User user = userService.save(TestUtil.createValidUser("user1"));
         authenticate(user.getUsername());
         UserUpdateVM updatedUser = new UserUpdateVM();

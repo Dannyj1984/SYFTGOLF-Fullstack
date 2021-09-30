@@ -16,8 +16,33 @@ import java.util.stream.IntStream;
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class HoaxifyApplication {
 
+
 	public static void main(String[] args) {
 		SpringApplication.run(HoaxifyApplication.class, args);
 	}
+//	@Bean
+//	@Profile("dev")
+//	CommandLineRunner run(UserService userService) {
+//		return (args) -> {
+//			IntStream.rangeClosed(1,15)
+//					.mapToObj(i -> {
+//						User user = new User();
+//						user.setUsername("User " + i);
+//						user.setFirstname("Guest");
+//						user.setSurname("User " + i);
+//						user.setCdh("1010101010");
+//						user.setEmail("user" + i + "@gmail.com");
+//						user.setMobile("07777777777");
+//						user.setHandicap("3.0");
+//						user.setHomeClub("Stamford");
+//						user.setPassword("P4ssword");
+//						return user;
+//					})
+//					.forEach(userService::save);
+//				 };
+//		}
+	}
 
-}
+
+
+
