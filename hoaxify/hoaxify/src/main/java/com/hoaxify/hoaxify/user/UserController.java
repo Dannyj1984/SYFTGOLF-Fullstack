@@ -55,7 +55,7 @@ public class UserController {
         return new UserVM(updated);
 
     }
-    @DeleteMapping("management/members/delete/{id:[0-9]+}")
+    @DeleteMapping("management/users/delete/{id:[0-9]+}")
     GenericResponse deleteMember(@PathVariable long id) {
         userService.deleteMember(id);
         return new GenericResponse("Member has been removed");
