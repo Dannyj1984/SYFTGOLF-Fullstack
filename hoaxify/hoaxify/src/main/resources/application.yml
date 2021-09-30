@@ -75,32 +75,38 @@ spring:
       pageable:
         default-page-size: 10
         max-page-size: 100
+
 ---
 spring:
   profiles: prod
   datasource:
     url: jdbc:postgresql://localhost:5432/syftgolf
-    username: sa
+    username: postgres
+    password: admin
   jpa:
     hibernate:
       ddl-auto: update
-  h2:
-    console:
-      enabled: false
 hoaxify:
   upload-path: uploads-prod
 ---
 spring:
   profiles: dev
-  datasource:
-    url: jdbc:postgresql://localhost:5432/testdb
 hoaxify:
   upload-path: uploads-dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: postgres
+    password: admin
+    jpa:
+      hibernate:
+        ddl-auto: update
 ---
 spring:
   profiles: test
+
 hoaxify:
   upload-path: uploads-test
+
 
 
 
