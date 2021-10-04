@@ -1,7 +1,9 @@
 package com.hoaxify.hoaxify;
 
 import com.hoaxify.hoaxify.user.User;
+import com.hoaxify.hoaxify.user.UserRepository;
 import com.hoaxify.hoaxify.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,30 +19,32 @@ import java.util.stream.IntStream;
 public class HoaxifyApplication {
 
 
+	@Autowired
+	UserRepository userRepository;
 	public static void main(String[] args) {
 		SpringApplication.run(HoaxifyApplication.class, args);
 	}
-//	@Bean
-//	@Profile("dev")
-//	CommandLineRunner run(UserService userService) {
-//		return (args) -> {
-//			IntStream.rangeClosed(1,15)
-//					.mapToObj(i -> {
-//						User user = new User();
-//						user.setUsername("User " + i);
-//						user.setFirstname("Guest");
-//						user.setSurname("User " + i);
-//						user.setCdh("1010101010");
-//						user.setEmail("user" + i + "@gmail.com");
-//						user.setMobile("07777777777");
-//						user.setHandicap("3.0");
-//						user.setHomeClub("Stamford");
-//						user.setPassword("P4ssword");
-//						return user;
-//					})
-//					.forEach(userService::save);
-//				 };
-//		}
+	@Bean
+	@Profile("dev")
+	CommandLineRunner run(UserService userService) {
+		return (args) -> {
+			User inDB = userRepository.findByUsername("dannyjebb");
+			if(inDB == null) {
+				User user = new User();
+				user.setUsername("dannyjebb");
+				user.setFirstname("Danny");
+				user.setSurname("Jebb");
+				user.setCdh("10103530000");
+				user.setEmail("dannyjebb@gmail.com");
+				user.setMobile("07956356879");
+				user.setHandicap("4.3");
+				user.setHomeClub("Stamford");
+				user.setPassword("P4ssword");
+				user.setAuthority("ADMIN");
+				userService.save(user);
+			}
+			};
+		}
 	}
 
 

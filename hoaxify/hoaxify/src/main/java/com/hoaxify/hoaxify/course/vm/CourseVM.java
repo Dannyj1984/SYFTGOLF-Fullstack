@@ -14,6 +14,8 @@ public class CourseVM {
 
     private String postcode;
 
+    private int par;
+
     private double courseRating;
 
     private int slopeRating;

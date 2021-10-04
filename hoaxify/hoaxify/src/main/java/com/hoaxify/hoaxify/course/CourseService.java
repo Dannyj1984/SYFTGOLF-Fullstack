@@ -4,6 +4,7 @@ import com.hoaxify.hoaxify.course.vm.CourseUpdateVM;
 import com.hoaxify.hoaxify.error.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -21,7 +22,7 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    public Page<Course> getCourses(Pageable pageable) {
+    public Page<Course> getCourses(Pageable pageable ) {
 
         return courseRepository.findAll(pageable);
     }
@@ -47,4 +48,6 @@ public class CourseService {
         courseRepository.deleteById(id);
 
     }
+
+
 }

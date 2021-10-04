@@ -33,6 +33,8 @@ public class UserVM {
 
     private String authority;
 
+    private int wins;
+
     private String image;
 
 
@@ -50,6 +52,7 @@ public class UserVM {
         this.setAuthority(user.getAuthority());
         this.setSocHcp(user.getSochcp());
         this.setImage(user.getImage());
+        this.setWins(user.getWins());
     }
 
 }

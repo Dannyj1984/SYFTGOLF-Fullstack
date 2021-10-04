@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,14 +27,14 @@ public class CourseController {
     @Autowired
     CourseService courseService;
 
-    @PostMapping("/courses")
-    GenericResponse createUser(@Valid @RequestBody Course course) {
+    @PostMapping("management/courses")
+    GenericResponse createCourse(@Valid @RequestBody Course course) {
         courseService.save(course);
         return new GenericResponse("Course saved");
     }
 
     @GetMapping("/courses")
-    Page<CourseVM> getUsers(Pageable page) {
+    Page<CourseVM> getCourses(Pageable page) {
         return courseService.getCourses(page).map(CourseVM::new);
     }
 
@@ -43,7 +44,7 @@ public class CourseController {
         return new CourseVM(course);
     }
 
-    @PutMapping("/courses/{id:[0-9]+}")
+    @PutMapping("/management/courses/{id:[0-9]+}")
     CourseVM updateCourse(@PathVariable long id, @Valid @RequestBody(required = false) CourseUpdateVM courseUpdate) {
         Course updated = courseService.updateCourse(id, courseUpdate);
         return new CourseVM(updated);

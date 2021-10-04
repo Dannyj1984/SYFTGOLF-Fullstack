@@ -4,6 +4,7 @@ import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -31,7 +32,8 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/users")
+
+    @PostMapping("/management/users")
     GenericResponse createUser(@Valid @RequestBody User user) {
         userService.save(user);
         return new GenericResponse("User saved");
@@ -48,13 +50,13 @@ public class UserController {
         return new UserVM(user);
     }
 
-    @PutMapping("/users/{id:[0-9]+}")
+    @PutMapping("/management/users/{id:[0-9]+}")
     @PreAuthorize("#id == principal.id")
     UserVM updateUser(@PathVariable long id, @Valid @RequestBody(required = false) UserUpdateVM userUpdate) {
         User updated = userService.update(id, userUpdate);
         return new UserVM(updated);
-
     }
+
     @DeleteMapping("management/users/delete/{id:[0-9]+}")
     GenericResponse deleteMember(@PathVariable long id) {
         userService.deleteMember(id);

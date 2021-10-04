@@ -5,6 +5,8 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.hoaxify.hoaxify.shared.ProfileImage;
+
 @Data
 public class UserUpdateVM {
 
@@ -12,6 +14,7 @@ public class UserUpdateVM {
     @Size(min=4, max=255)
     private String username;
 
+    @ProfileImage
     private String image;
 
 }

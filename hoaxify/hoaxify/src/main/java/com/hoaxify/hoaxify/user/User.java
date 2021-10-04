@@ -33,7 +33,7 @@ public class User implements UserDetails {
     private long id;
 
     @NotNull(message = "{hoaxify.constraints.username.NotNull.message}")
-    @Size(min = 4, max=255)
+    @Size(min = 4, max=255, message = "{javax.validation.constraints.Size.message}")
     @UniqueUsername
     private String username;
 
@@ -44,7 +44,7 @@ public class User implements UserDetails {
     private String email;
 
     @NotNull(message = "{hoaxify.constraints.name.NotNull.message}")
-    @Size(min = 2, max=255)
+    @Size(min = 2, max=255, message = "{javax.validation.constraints.Size.message}")
     private String firstname;
 
     @NotNull(message = "{hoaxify.constraints.name.NotNull.message}")
@@ -88,7 +88,7 @@ public class User implements UserDetails {
     private int wins = 0;
 
     @NotNull
-    @Size(min = 8, max=255)
+    @Size(min = 8, max=255 , message = "{javax.validation.constraints.Size.message}")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message="{hoaxify.constraints.password.Pattern.message}")
     private String password;
 
@@ -140,6 +140,7 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "roleid")
     )
     private Set<Role> roles = new HashSet<>();
+
 
 
 }

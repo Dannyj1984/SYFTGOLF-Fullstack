@@ -32,8 +32,7 @@ public class Course {
     @NotNull
     @Size(min = 4, max = 9)
     @Column(
-            name = "postcode",
-            columnDefinition = "TEXT"
+            name = "postcode"
     )
     private String postCode;
 
@@ -42,7 +41,7 @@ public class Course {
             name = "par",
             columnDefinition = "INTEGER"
     )
-    private int Par;
+    private int par;
 
     @NotNull
     @Column(

@@ -13,9 +13,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ProfileImage {
 
-	String message() default "{hoaxify.constraints.image.ProfileImage.message}";
-
-	Class<?>[] groups() default { };
-
-	Class<? extends Payload>[] payload() default { };
+    String message() default "{hoaxify.constraints.image.ProfileImage.message}";
+    Class<?>[] groups() default { };
+    Class<? extends Payload>[] payload() default { };
 }
