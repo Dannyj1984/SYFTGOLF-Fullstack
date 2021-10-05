@@ -12,5 +12,14 @@ public class CourseUpdateVM {
     @Size(min=4, max=255)
     private String courseName;
 
+    @NotNull
+    private int par;
+
+    @NotNull
+    private double courseRating;
+
+    @NotNull
+    private int slopeRating;
+
     private String image;
 }

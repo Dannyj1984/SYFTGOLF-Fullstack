@@ -11,6 +11,7 @@ import com.hoaxify.hoaxify.user.UserService;
 import com.hoaxify.hoaxify.user.vm.UserUpdateVM;
 import com.hoaxify.hoaxify.user.vm.UserVM;
 import org.apache.commons.io.FileUtils;
+import org.apiguardian.api.API;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -587,6 +588,16 @@ public class UserControllerTest {
 
         File storedImage = new File(profilePicturePath);
         assertThat(storedImage.exists()).isTrue();
+    }
+
+    @Test
+    public void deleteUser_whenUserIsUnauthorised_receiveUnauthorised() {
+        ResponseEntity<Object> response = deleteUser(555,Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    private <T> ResponseEntity<T> deleteUser(long userId, Class<T> responseType){
+        return testRestTemplate.exchange(API_1_0_USERS + "/" + userId, HttpMethod.DELETE, null, responseType);
     }
 
     private String readFileToBase64(String filename) throws IOException{

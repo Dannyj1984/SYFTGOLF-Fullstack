@@ -29,5 +29,6 @@ public class CourseVM {
         this.setPostcode(course.getPostCode());
         this.setSlopeRating(course.getSlopeRating());
         this.setCourseRating(course.getCourseRating());
+        this.setPar(course.getPar());
     }
 }

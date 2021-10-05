@@ -32,14 +32,15 @@ public class UserService {
 
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setSochcp(user.getHandicap());
         return userRepository.save(user);
     }
 
     public Page<User> getUsers(User loggedInUser, Pageable pageable) {
-        if(loggedInUser != null) {
-            //Get all users except for logged in user
-            return userRepository.findByUsernameNot(loggedInUser.getUsername(), pageable);
-        }
+//        if(loggedInUser != null) {
+//            //Get all users except for logged in user
+//            return userRepository.findByUsernameNot(loggedInUser.getUsername(), pageable);
+//        }
         return userRepository.findAll(pageable);
     }
 
@@ -54,6 +55,15 @@ public class UserService {
     public User update(long id, UserUpdateVM userUpdate) {
         User inDB = userRepository.getOne(id);
         inDB.setUsername(userUpdate.getUsername());
+        inDB.setHandicap(userUpdate.getHandicap());
+        double handicapDouble = Double.parseDouble(userUpdate.getHandicap());
+        int socRedInt = Integer.parseInt(inDB.getSocHcpRed());
+        double newSocHcp = handicapDouble - socRedInt;
+        String newSocHcpString = Double.toString(newSocHcp);
+        inDB.setSochcp(newSocHcpString);
+        inDB.setEmail(userUpdate.getEmail());
+        inDB.setHomeClub(userUpdate.getHomeClub());
+        inDB.setMobile(userUpdate.getMobile());
         if(userUpdate.getImage() != null) {
             String savedImageName;
             try {
