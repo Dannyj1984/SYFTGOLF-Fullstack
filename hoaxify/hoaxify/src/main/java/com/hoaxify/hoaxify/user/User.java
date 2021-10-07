@@ -52,7 +52,7 @@ public class User implements UserDetails {
     private String surname;
 
     @NotNull(message = "Please enter a handicap for this member")
-    @Size(min = 1, max=4, message = "Please enter a handicap for this member")
+    @Size(min = 1, max=6, message = "Please enter a handicap for this member")
     private String handicap;
 
     @NotNull

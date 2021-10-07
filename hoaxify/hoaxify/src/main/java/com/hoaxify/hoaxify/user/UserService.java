@@ -55,11 +55,17 @@ public class UserService {
     public User update(long id, UserUpdateVM userUpdate) {
         User inDB = userRepository.getOne(id);
         inDB.setUsername(userUpdate.getUsername());
-        inDB.setHandicap(userUpdate.getHandicap());
-        double handicapDouble = Double.parseDouble(userUpdate.getHandicap());
-        int socRedInt = Integer.parseInt(inDB.getSochcp());
+        inDB.setHandicap(userUpdate.getHandicap()); // User, getHandicap = String, userupdate getHandicap = String
+        System.out.println(inDB.getHandicap());
+        double handicapDouble = Double.parseDouble(userUpdate.getHandicap()); //String to double
+        System.out.println("soc hcp = " + inDB.getSochcpred());
+        System.out.println(handicapDouble);
+        int socRedInt = Integer.parseInt(inDB.getSochcpred()); //String to Integer
+        System.out.println(socRedInt);
         double newSocHcp = handicapDouble - socRedInt;
+        System.out.println(newSocHcp);
         String newSocHcpString = Double.toString(newSocHcp);
+        System.out.println(newSocHcpString);
         inDB.setSochcp(newSocHcpString);
         inDB.setEmail(userUpdate.getEmail());
         inDB.setHomeclub(userUpdate.getHomeClub());
