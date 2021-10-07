@@ -14,7 +14,7 @@ public class TestUtil {
         user.setHandicap("10.0");
         user.setMobile("07956356879");
         user.setCdh("1013530000");
-        user.setSocHcpRed("1");
+        user.setSochcpred("1");
         user.setSochcp("5.2");
         return user;
     }

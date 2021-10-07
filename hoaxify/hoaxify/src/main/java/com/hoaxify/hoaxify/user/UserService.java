@@ -57,12 +57,12 @@ public class UserService {
         inDB.setUsername(userUpdate.getUsername());
         inDB.setHandicap(userUpdate.getHandicap());
         double handicapDouble = Double.parseDouble(userUpdate.getHandicap());
-        int socRedInt = Integer.parseInt(inDB.getSocHcpRed());
+        int socRedInt = Integer.parseInt(inDB.getSochcp());
         double newSocHcp = handicapDouble - socRedInt;
         String newSocHcpString = Double.toString(newSocHcp);
         inDB.setSochcp(newSocHcpString);
         inDB.setEmail(userUpdate.getEmail());
-        inDB.setHomeClub(userUpdate.getHomeClub());
+        inDB.setHomeclub(userUpdate.getHomeClub());
         inDB.setMobile(userUpdate.getMobile());
         if(userUpdate.getImage() != null) {
             String savedImageName;

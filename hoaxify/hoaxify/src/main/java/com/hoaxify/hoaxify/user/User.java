@@ -65,10 +65,10 @@ public class User implements UserDetails {
 
     @NotNull
     @Column(name = "sochcpred")
-    private String socHcpRed = "0";
+    private String sochcpred = "0";
 
     @Column(name = "homeclub")
-    private String homeClub;
+    private String homeclub;
 
     @NotNull
     @Column(name = "sochcp")

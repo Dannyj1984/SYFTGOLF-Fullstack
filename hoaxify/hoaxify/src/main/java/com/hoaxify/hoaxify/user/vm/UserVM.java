@@ -25,11 +25,11 @@ public class UserVM {
 
     private String cdh;
 
-    private String socHcpRed;
+    private String sochcpred;
 
     private String socHcp;
 
-    private String homeClub;
+    private String homeclub;
 
     private String authority;
 
@@ -46,9 +46,9 @@ public class UserVM {
         this.setSurname(user.getSurname());
         this.setHandicap(user.getHandicap());
         this.setMobile(user.getMobile());
-        this.setHomeClub((user.getHomeClub()));
+        this.setHomeclub((user.getHomeclub()));
         this.setCdh(user.getCdh());
-        this.setSocHcpRed(user.getSocHcpRed());
+        this.setSochcpred(user.getSochcpred());
         this.setAuthority(user.getAuthority());
         this.setSocHcp(user.getSochcp());
         this.setImage(user.getImage());

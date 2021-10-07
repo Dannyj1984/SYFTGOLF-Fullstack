@@ -20,6 +20,7 @@ public class FileService {
     public FileService(AppConfiguration appConfiguration){
         super();
         this.appConfiguration = appConfiguration;
+        this.tika = new Tika();
     }
 
     public String saveProfileImage(String base64Image) throws IOException {

@@ -38,7 +38,7 @@ public class HoaxifyApplication {
 				user.setEmail("dannyjebb@gmail.com");
 				user.setMobile("07956356879");
 				user.setHandicap("4.3");
-				user.setHomeClub("Stamford");
+				user.setHomeclub("Stamford");
 				user.setPassword("P4ssword");
 				user.setAuthority("ADMIN");
 				userService.save(user);
