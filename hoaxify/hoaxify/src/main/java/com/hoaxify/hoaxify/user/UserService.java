@@ -68,7 +68,7 @@ public class UserService {
         System.out.println(newSocHcpString);
         inDB.setSochcp(newSocHcpString);
         inDB.setEmail(userUpdate.getEmail());
-        inDB.setHomeclub(userUpdate.getHomeClub());
+        inDB.setHomeclub(userUpdate.getHomeclub());
         inDB.setMobile(userUpdate.getMobile());
         if(userUpdate.getImage() != null) {
             String savedImageName;

@@ -95,7 +95,7 @@ public class User implements UserDetails {
     @Override
     @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<Role> roles = this.getRoles();
+        Set<Role> roles = this.getNewroles();
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
         for (Role role : roles) {
@@ -129,17 +129,13 @@ public class User implements UserDetails {
         return true;
     }
 
-
-
-
-
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "userid"),
             inverseJoinColumns = @JoinColumn(name = "roleid")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> newroles = new HashSet<>();
 
 
 

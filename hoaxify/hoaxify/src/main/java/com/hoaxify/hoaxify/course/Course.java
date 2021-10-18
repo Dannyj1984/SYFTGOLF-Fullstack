@@ -1,9 +1,7 @@
 package com.hoaxify.hoaxify.course;
 
-import com.hoaxify.hoaxify.user.UniqueUsername;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -60,5 +58,5 @@ public class Course {
     private String image;
 
 
-
 }
+

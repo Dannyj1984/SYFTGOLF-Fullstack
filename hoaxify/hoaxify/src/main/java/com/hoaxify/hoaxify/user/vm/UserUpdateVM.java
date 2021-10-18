@@ -28,7 +28,7 @@ public class UserUpdateVM {
     private String mobile;
 
 
-    private String homeClub;
+    private String homeclub;
 
     @ProfileImage
     private String image;

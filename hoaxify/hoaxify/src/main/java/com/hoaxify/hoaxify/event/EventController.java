@@ -1,9 +1,8 @@
-package com.hoaxify.hoaxify.course;
+package com.hoaxify.hoaxify.event;
 
-import com.hoaxify.hoaxify.course.vm.CourseUpdateVM;
-import com.hoaxify.hoaxify.course.vm.CourseVM;
 import com.hoaxify.hoaxify.error.ApiError;
-import com.hoaxify.hoaxify.event.Event;
+import com.hoaxify.hoaxify.event.vm.EventUpdateVM;
+import com.hoaxify.hoaxify.event.vm.EventVM;
 import com.hoaxify.hoaxify.shared.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,47 +22,47 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/1.0")
-public class CourseController {
+public class EventController {
 
     @Autowired
-    CourseService courseService;
+    EventService eventService;
 
     @Autowired
-    CourseRepository courseRepository;
+    EventRepository eventRepository;
 
-    @PostMapping("management/courses")
-    GenericResponse createCourse(@Valid @RequestBody Course course) {
-        courseService.save(course);
-        return new GenericResponse("Course saved");
+    @GetMapping("management/events")
+    List<Event> getEvents() {
+
+        return eventRepository.findAll();
     }
 
-    @GetMapping("management/courses")
-    List<Course> getCourses() {
-
-        return courseRepository.findAll();
+    @PostMapping("management/events")
+    GenericResponse createEvent(@Valid @RequestBody Event event) {
+        eventService.save(event);
+        return new GenericResponse("Event saved");
     }
 
-    @GetMapping("/courses")
-    Page<CourseVM> getCourses(Pageable page) {
-        return courseService.getCourses(page).map(CourseVM::new);
+    @GetMapping("/events")
+    Page<EventVM> getEvents(Pageable page) {
+        return eventService.getEvents(page).map(EventVM::new);
     }
 
-    @GetMapping("/courses/{courseName}")
-    CourseVM getCourseByName(@PathVariable String courseName) {
-        Course course = courseService.getByCourseName(courseName);
-        return new CourseVM(course);
+    @GetMapping("/events/{eventName}")
+    EventVM getEventByName(@PathVariable String eventName) {
+        Event event = eventService.getByEventName(eventName);
+        return new EventVM(event);
     }
 
-    @PutMapping("/management/courses/{id:[0-9]+}")
-    CourseVM updateCourse(@PathVariable long id, @Valid @RequestBody(required = false) CourseUpdateVM courseUpdate) {
-        Course updated = courseService.updateCourse(id, courseUpdate);
-        return new CourseVM(updated);
+    @PutMapping("/management/events/{id:[0-9]+}")
+    EventVM updateEvent(@PathVariable long id, @Valid @RequestBody(required = false) EventUpdateVM eventUpdate) {
+        Event updated = eventService.updateEvent(id, eventUpdate);
+        return new EventVM(updated);
 
     }
-    @DeleteMapping("management/courses/delete/{id:[0-9]+}")
-    GenericResponse deleteCourse(@PathVariable long id) {
-        courseService.deleteCourse(id);
-        return new GenericResponse("Course has been removed");
+    @DeleteMapping("management/events/delete/{id:[0-9]+}")
+    GenericResponse deleteEvent(@PathVariable long id) {
+        eventService.deleteEvent(id);
+        return new GenericResponse("Event has been removed");
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
