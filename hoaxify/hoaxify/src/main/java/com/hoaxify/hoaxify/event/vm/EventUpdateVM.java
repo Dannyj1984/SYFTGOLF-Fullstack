@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 public class EventUpdateVM {
@@ -16,7 +18,7 @@ public class EventUpdateVM {
     private long courseid;
 
     @NotNull
-    private String date;
+    private LocalDate date;
 
     @NotNull
     private int maxentrants;

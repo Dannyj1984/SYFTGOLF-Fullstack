@@ -17,7 +17,7 @@ public class Course {
     @Id
     @GeneratedValue
     @Column(name = "courseid")
-    private long courseId;
+    private long courseid;
 
     @NotNull(message = "{hoaxify.constraints.coursename.NotNull.message}")
     @Size(min = 4, max=255)

@@ -23,7 +23,7 @@ public class CourseVM {
     private String image;
 
     public CourseVM(Course course){
-        this.setId(course.getCourseId());
+        this.setId(course.getCourseid());
         this.setImage(course.getImage());
         this.setCourseName(course.getCourseName());
         this.setPostcode(course.getPostCode());

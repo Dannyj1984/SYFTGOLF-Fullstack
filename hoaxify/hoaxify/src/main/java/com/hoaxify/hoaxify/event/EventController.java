@@ -45,6 +45,7 @@ public class EventController {
     @GetMapping("/events")
     Page<EventVM> getEvents(Pageable page) {
         return eventService.getEvents(page).map(EventVM::new);
+
     }
 
     @GetMapping("/events/{eventName}")

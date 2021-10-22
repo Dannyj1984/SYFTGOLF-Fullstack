@@ -1,8 +1,5 @@
 package com.hoaxify.hoaxify.event;
 
-
-
-import com.hoaxify.hoaxify.course.Course;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 //Entity maps object to database
@@ -34,9 +32,9 @@ public class Event {
     @NotNull
     @Column(
             name = "date",
-            columnDefinition = "TEXT"
+            columnDefinition = "DATE"
     )
-    private String date;
+    private LocalDate date;
 
     @NotNull
     @Column(
@@ -61,20 +59,17 @@ public class Event {
 
     private String eventtype;
 
-    private String image;
-
     @Column(
             name = "qualifier"
     )
     private Boolean qualifier;
 
-    private int courseid;
+    @Column(
+            name = "courseid"
+    )
+    private long courseid;
 
     private String winner;
 
     private String info;
-
-
-
-
 }

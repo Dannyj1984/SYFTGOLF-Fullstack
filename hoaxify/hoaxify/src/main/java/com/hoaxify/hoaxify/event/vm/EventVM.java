@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -14,9 +16,9 @@ public class EventVM {
 
     private String eventname;
 
-    private int courseid;
+    private long courseid;
 
-    private String date;
+    private LocalDate date;
 
     private int maxentrants;
 
@@ -32,6 +34,7 @@ public class EventVM {
 
     public EventVM(Event event) {
         this.setId(event.getEventid());
+        this.setCourseid(event.getCourseid());
         this.setEventname(event.getEventname());
         this.setEventtype(event.getEventtype());
         this.setDate(event.getDate());
