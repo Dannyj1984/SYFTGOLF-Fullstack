@@ -1,18 +1,23 @@
 package com.hoaxify.hoaxify.course;
 
 import com.hoaxify.hoaxify.event.Event;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 //Entity maps object to database
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Table(name = "course")
 public class Course {
 
@@ -58,6 +63,10 @@ public class Course {
     private int slopeRating;
 
     private String image;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private List<Event> events = new ArrayList<>();
 
 
 }
