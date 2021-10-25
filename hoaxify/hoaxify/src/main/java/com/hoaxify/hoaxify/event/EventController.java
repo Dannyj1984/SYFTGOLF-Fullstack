@@ -39,6 +39,7 @@ public class EventController {
     @PostMapping("management/events")
     GenericResponse createEvent(@Valid @RequestBody Event event) {
         eventService.save(event);
+        System.out.println("this event is : " +event);
         return new GenericResponse("Event saved");
     }
 

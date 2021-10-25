@@ -22,6 +22,9 @@ import java.util.*;
 @Table(name = "member")
 public class User implements UserDetails {
 
+    @javax.persistence.Transient
+    String ROLE_PREFIX = "ROLE_";
+
     private static final long serialVersionUID = 4074374728582967483L;
 
     @Id
@@ -76,9 +79,9 @@ public class User implements UserDetails {
 
     private String image;
 
-    @NotNull
-    @Column(name = "authority")
-    private String authority = "USER";
+//    @NotNull
+//    @Column(name = "authority")
+//    private String authority = "USER";
 
     @NotNull
     @Column(
@@ -92,17 +95,23 @@ public class User implements UserDetails {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message="{hoaxify.constraints.password.Pattern.message}")
     private String password;
 
+    @NotNull
+    @Column(
+            name = "role"
+    )
+    private String role;
+
     @Override
     @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<Role> roles = this.getNewroles();
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getUsername()));
-        }
+        List<GrantedAuthority> list = new ArrayList<>();
 
-        return authorities;
+
+            list.add(new SimpleGrantedAuthority(ROLE_PREFIX + role));
+
+
+        return list;
     }
 
     @Override

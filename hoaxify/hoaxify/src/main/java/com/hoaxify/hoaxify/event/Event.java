@@ -1,5 +1,5 @@
 package com.hoaxify.hoaxify.event;
-
+import com.hoaxify.hoaxify.course.Course;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -46,10 +46,10 @@ public class Event {
     @NotNull
     @Column(
             name = "cost",
-            columnDefinition = "MONEY"
+            columnDefinition = "NUMERIC"
     )
 
-    private BigDecimal cost;
+    private double cost;
 
     @NotNull
     @Column(
@@ -64,12 +64,11 @@ public class Event {
     )
     private Boolean qualifier;
 
-    @Column(
-            name = "courseid"
-    )
-    private long courseid;
-
     private String winner;
 
     private String info;
+
+
 }
+
+

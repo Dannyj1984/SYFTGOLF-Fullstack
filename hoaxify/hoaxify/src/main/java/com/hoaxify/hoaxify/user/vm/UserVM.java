@@ -31,7 +31,7 @@ public class UserVM {
 
     private String homeclub;
 
-    private String authority;
+    private String role;
 
     private int wins;
 
@@ -48,8 +48,8 @@ public class UserVM {
         this.setMobile(user.getMobile());
         this.setHomeclub((user.getHomeclub()));
         this.setCdh(user.getCdh());
+        this.setRole(user.getRole());
         this.setSochcpred(user.getSochcpred());
-        this.setAuthority(user.getAuthority());
         this.setSocHcp(user.getSochcp());
         this.setImage(user.getImage());
         this.setWins(user.getWins());

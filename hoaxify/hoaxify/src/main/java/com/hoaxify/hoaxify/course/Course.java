@@ -1,11 +1,13 @@
 package com.hoaxify.hoaxify.course;
 
+import com.hoaxify.hoaxify.event.Event;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Data
 //Entity maps object to database

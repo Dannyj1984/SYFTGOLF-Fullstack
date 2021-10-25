@@ -22,7 +22,7 @@ public class EventVM {
 
     private int maxentrants;
 
-    private BigDecimal cost;
+    private double cost;
 
     private String eventtype;
 
@@ -34,7 +34,6 @@ public class EventVM {
 
     public EventVM(Event event) {
         this.setId(event.getEventid());
-        this.setCourseid(event.getCourseid());
         this.setEventname(event.getEventname());
         this.setEventtype(event.getEventtype());
         this.setDate(event.getDate());

@@ -25,10 +25,12 @@ public class HoaxifyApplication {
 		SpringApplication.run(HoaxifyApplication.class, args);
 	}
 	@Bean
-	@Profile("dev")
+	@Profile("prod")
 	CommandLineRunner run(UserService userService) {
 		return (args) -> {
+
 			User inDB = userRepository.findByUsername("dannyjebb");
+
 			if(inDB == null) {
 				User user = new User();
 				user.setUsername("dannyjebb");
@@ -39,9 +41,11 @@ public class HoaxifyApplication {
 				user.setMobile("07956356879");
 				user.setHandicap("4.3");
 				user.setHomeclub("Stamford");
+				user.setSochcpred(user.getHandicap());
 				user.setPassword("P4ssword");
-				user.setAuthority("ADMIN");
+				user.setRole("ADMIN");
 				userService.save(user);
+				System.out.println("auth: " +user.getAuthorities());
 			}
 			};
 		}
