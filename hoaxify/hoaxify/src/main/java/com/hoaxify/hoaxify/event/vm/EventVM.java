@@ -16,7 +16,7 @@ public class EventVM {
 
     private String eventname;
 
-    private long courseid;
+    private long course_id;
 
     private LocalDate date;
 
@@ -42,5 +42,6 @@ public class EventVM {
         this.setQualifier(event.getQualifier());
         this.setMaxentrants(event.getMaxentrants());
         this.setWinner(event.getWinner());
+//        this.setCourse_id(event.getCourse_id());
     }
 }

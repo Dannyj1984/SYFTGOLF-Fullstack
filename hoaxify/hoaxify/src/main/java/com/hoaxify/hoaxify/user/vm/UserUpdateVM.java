@@ -21,6 +21,7 @@ public class UserUpdateVM {
     @NotNull(message = "{hoaxify.constraints.email.NotNull.message}")
     @Size(min = 6, max=255, message = "{javax.validation.constraints.Size.message}")
     @Email(message = "{hoaxify.constraints.email.invalid.message}")
+    @UniqueEmail
     private String email;
 
     @NotNull

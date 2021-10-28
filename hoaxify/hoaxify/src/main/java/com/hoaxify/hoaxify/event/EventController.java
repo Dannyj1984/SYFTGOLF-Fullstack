@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -30,14 +31,15 @@ public class EventController {
     @Autowired
     EventRepository eventRepository;
 
-    @GetMapping("management/events")
+    @GetMapping("/management/events")
     List<Event> getEvents() {
 
         return eventRepository.findAll();
     }
 
-    @PostMapping("management/events")
+    @PostMapping("/management/events")
     GenericResponse createEvent(@Valid @RequestBody Event event) {
+        System.out.println(event);
         eventService.save(event);
         return new GenericResponse("Event saved");
     }
@@ -54,12 +56,31 @@ public class EventController {
         return new EventVM(event);
     }
 
+    @GetMapping("/management/events/courseDetails/{id:[0-9]+}")
+    public Map<String, ? extends Object> index(@PathVariable("id") final long id) {
+
+        // find by eventid
+        final Optional<Event> res = eventRepository.findById(id);
+
+        //Store values from course for the current event in a map
+        return res.map(e -> Map.of("id", e.getEventid(),
+                "course", e.getCourse().getCourseName(),
+                "course par", e.getCourse().getPar(),
+                "course rating", e.getCourse().getCourseRating(),
+                "course slope", e.getCourse().getSlopeRating(),
+                "course postcode", e.getCourse().getPostCode()
+                ))
+                .orElse(Map.of());
+
+    }
+
     @PutMapping("/management/events/{id:[0-9]+}")
     EventVM updateEvent(@PathVariable long id, @Valid @RequestBody(required = false) EventUpdateVM eventUpdate) {
         Event updated = eventService.updateEvent(id, eventUpdate);
         return new EventVM(updated);
 
     }
+
     @DeleteMapping("management/events/delete/{id:[0-9]+}")
     GenericResponse deleteEvent(@PathVariable long id) {
         eventService.deleteEvent(id);

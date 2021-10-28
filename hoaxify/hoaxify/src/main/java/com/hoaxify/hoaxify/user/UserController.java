@@ -2,7 +2,6 @@ package com.hoaxify.hoaxify.user;
 
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +46,30 @@ public class UserController {
     UserVM getUserByName(@PathVariable String username) {
         User user = userService.getByUsername(username);
         return new UserVM(user);
+    }
+
+    @PutMapping("/management/users/admin/{id:[0-9]+}")
+    UserVM makeAdmin(@PathVariable long id) {
+        User userUpdated = userService.updateAdmin(id);
+        return new UserVM(userUpdated);
+    }
+
+    @PutMapping("/management/users/HcpAdmin/{id:[0-9]+}")
+    UserVM makeHcpAdmin(@PathVariable long id) {
+        User userUpdated = userService.updateHcpAdmin(id);
+        return new UserVM(userUpdated);
+    }
+
+    @PutMapping("/management/users/EventAdmin/{id:[0-9]+}")
+    UserVM makeEventAdmin(@PathVariable long id) {
+        User userUpdated = userService.updateEventAdmin(id);
+        return new UserVM(userUpdated);
+    }
+
+    @PutMapping("/management/users/User/{id:[0-9]+}")
+    UserVM makeUser(@PathVariable long id) {
+        User userUpdated = userService.updateUser(id);
+        return new UserVM(userUpdated);
     }
 
     @PutMapping("/management/users/{id:[0-9]+}")

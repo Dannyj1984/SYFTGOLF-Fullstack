@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,16 +32,18 @@ public class CourseController {
     @Autowired
     CourseRepository courseRepository;
 
-    @PostMapping("management/courses")
+    @PostMapping("/management/courses")
     GenericResponse createCourse(@Valid @RequestBody Course course) {
         courseService.save(course);
         return new GenericResponse("Course saved");
     }
 
-    @GetMapping("management/courses")
+    @GetMapping("/management/courses")
     List<Course> getCourses() {
 
-        return courseRepository.findAll();
+        List<Course> courses;
+        courses = courseRepository.findAll();
+        return courses;
     }
 
     @GetMapping("/courses")
@@ -60,7 +63,7 @@ public class CourseController {
         return new CourseVM(updated);
 
     }
-    @DeleteMapping("management/courses/delete/{id:[0-9]+}")
+    @DeleteMapping("/management/courses/delete/{id:[0-9]+}")
     GenericResponse deleteCourse(@PathVariable long id) {
         courseService.deleteCourse(id);
         return new GenericResponse("Course has been removed");

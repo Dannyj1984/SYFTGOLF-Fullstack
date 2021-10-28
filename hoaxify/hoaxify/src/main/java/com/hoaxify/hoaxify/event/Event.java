@@ -28,14 +28,14 @@ public class Event {
             columnDefinition = "TEXT")
     private String eventname;
 
-    @NotNull
+    @NotNull(message = "{hoaxify.constraints.eventdate.NotNull.message}")
     @Column(
             name = "date",
             columnDefinition = "DATE"
     )
     private LocalDate date;
 
-    @NotNull
+    @NotNull(message = "{hoaxify.constraints.eventname.NotNull.message}")
     @Column(
             name = "maxentrants",
             columnDefinition = "INTEGER"
@@ -50,14 +50,14 @@ public class Event {
 
     private double cost;
 
-    @NotNull
+    @NotNull(message = "{hoaxify.constraints.eventtype.NotNull.message}")
     @Column(
             name = "eventtype",
             columnDefinition = "TEXT"
     )
-
     private String eventtype;
 
+    @NotNull(message = "{hoaxify.constraints.qualifier.NotNull.message}")
     @Column(
             name = "qualifier"
     )
@@ -67,8 +67,10 @@ public class Event {
 
     private String info;
 
-    @NotNull
-    private int course_id;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 }
 
 

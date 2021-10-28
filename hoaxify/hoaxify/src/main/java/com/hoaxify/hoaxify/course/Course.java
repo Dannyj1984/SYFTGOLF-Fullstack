@@ -1,5 +1,6 @@
 package com.hoaxify.hoaxify.course;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hoaxify.hoaxify.event.Event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +10,6 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -37,7 +37,8 @@ public class Course {
     @NotNull
     @Size(min = 4, max = 9)
     @Column(
-            name = "postcode"
+            name = "postcode",
+            columnDefinition = "TEXT"
     )
     private String postCode;
 
@@ -64,9 +65,9 @@ public class Course {
 
     private String image;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id")
-    private List<Event> events = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "course")
+    private List<Event> events;
 
 
 }

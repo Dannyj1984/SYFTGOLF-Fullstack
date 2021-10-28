@@ -51,6 +51,33 @@ public class UserService {
         }
         return inDB;
     }
+    public User updateAdmin(long id){
+        User inDB = userRepository.getById(id);
+        inDB.setRole("ADMIN");
+
+        return userRepository.save(inDB);
+    }
+
+    public User updateUser(long id){
+        User inDB = userRepository.getById(id);
+        inDB.setRole("USER");
+
+        return userRepository.save(inDB);
+    }
+
+    public User updateHcpAdmin(long id){
+        User inDB = userRepository.getById(id);
+        inDB.setRole("HANDICAPADMIN");
+
+        return userRepository.save(inDB);
+    }
+
+    public User updateEventAdmin(long id){
+        User inDB = userRepository.getById(id);
+        inDB.setRole("EVENTADMIN");
+
+        return userRepository.save(inDB);
+    }
 
     public User update(long id, UserUpdateVM userUpdate) {
         User inDB = userRepository.getOne(id);
