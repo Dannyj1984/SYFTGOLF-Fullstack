@@ -65,9 +65,16 @@ public class Course {
 
     private String image;
 
+    //Relationship for events
     @JsonIgnore
     @OneToMany(mappedBy = "course")
     private List<Event> events;
+
+
+    //Relationship for holes
+    @JsonIgnore
+    @OneToMany(mappedBy = "course")
+    private List<Hole> holes;
 
 
 }

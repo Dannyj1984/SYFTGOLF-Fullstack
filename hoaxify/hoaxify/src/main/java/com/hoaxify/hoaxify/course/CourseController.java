@@ -3,7 +3,6 @@ package com.hoaxify.hoaxify.course;
 import com.hoaxify.hoaxify.course.vm.CourseUpdateVM;
 import com.hoaxify.hoaxify.course.vm.CourseVM;
 import com.hoaxify.hoaxify.error.ApiError;
-import com.hoaxify.hoaxify.event.Event;
 import com.hoaxify.hoaxify.shared.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
