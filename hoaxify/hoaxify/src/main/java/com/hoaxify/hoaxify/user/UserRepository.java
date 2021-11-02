@@ -2,8 +2,13 @@ package com.hoaxify.hoaxify.user;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
+import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
@@ -15,5 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
     User findUserByEmail(String email);
 
     Page<User> findByUsernameNot(String username, Pageable page);
+
+    @Query(value = "select u from User u")
+    List<User> findAllUsers(Sort sort);
 
 }

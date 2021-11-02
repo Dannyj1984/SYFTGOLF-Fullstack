@@ -11,27 +11,27 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@IdClass(HoleId.class)
 public class Hole {
-
-    @Id
-    @GeneratedValue
-    @Column(name = "holeid")
-    private long holeid;
 
     @NotNull
     private int par;
 
     @NotNull
-    private int number;
+    @Id
+    private int hole;
 
     @NotNull
+    @Id
     private int stroke;
 
     @NotNull
+    @Id
     private int yards;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
+
     private Course course;
 
 

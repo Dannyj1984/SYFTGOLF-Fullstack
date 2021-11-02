@@ -1,11 +1,10 @@
 package com.hoaxify.hoaxify.course;
 
 import com.hoaxify.hoaxify.shared.GenericResponse;
+import com.hoaxify.hoaxify.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -28,5 +27,10 @@ public class HoleController {
             System.out.println(holes.get(i));
         }
         return new GenericResponse("Hole saved");
+    }
+
+    @GetMapping("/getListOfHoles")
+    List<Hole> holes(){
+        return holeRepository.findAllHoles(Sort.by("hole"));
     }
 }
