@@ -144,7 +144,7 @@ public class UserControllerTest {
     @Test
     public void postUser_whenUserHasNullHandicap_receiveBadRequest() {
         User user = TestUtil.createValidUser();
-        user.setHandicap(null);
+        user.setHandicap(0.0);
         ResponseEntity<Object> response = postSignup(user, Object.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }

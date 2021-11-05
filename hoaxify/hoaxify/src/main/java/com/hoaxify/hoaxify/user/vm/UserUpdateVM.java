@@ -16,12 +16,12 @@ public class UserUpdateVM {
     private String username;
 
     @NotNull
-    private String handicap;
+    private double handicap;
 
     @NotNull(message = "{hoaxify.constraints.email.NotNull.message}")
     @Size(min = 6, max=255, message = "{javax.validation.constraints.Size.message}")
-    @Email(message = "{hoaxify.constraints.email.invalid.message}")
-    @UniqueEmail
+//    @Email(message = "{hoaxify.constraints.email.invalid.message}")
+//    @UniqueEmail
     private String email;
 
     @NotNull

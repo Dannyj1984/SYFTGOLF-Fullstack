@@ -19,15 +19,15 @@ public class UserVM {
 
     private String email;
 
-    private String handicap;
+    private double handicap;
 
     private String mobile;
 
     private String cdh;
 
-    private String sochcpred;
+    private int sochcpred;
 
-    private String socHcp;
+    private double socHcp;
 
     private String homeclub;
 

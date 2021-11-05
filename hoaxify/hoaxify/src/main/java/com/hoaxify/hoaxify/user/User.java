@@ -1,6 +1,8 @@
 package com.hoaxify.hoaxify.user;
 
 
+import com.hoaxify.hoaxify.event.Entrants;
+import com.hoaxify.hoaxify.event.Event;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +15,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.*;
 
 @Data
@@ -20,7 +23,7 @@ import java.util.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "member")
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
 
     @javax.persistence.Transient
     String ROLE_PREFIX = "ROLE_";
@@ -28,7 +31,7 @@ public class User implements UserDetails {
     private static final long serialVersionUID = 4074374728582967483L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(
             name = "userid",
             updatable = false
@@ -55,8 +58,7 @@ public class User implements UserDetails {
     private String surname;
 
     @NotNull(message = "Please enter a handicap for this member")
-    @Size(min = 1, max=6, message = "Please enter a handicap for this member")
-    private String handicap;
+    private double handicap;
 
     @NotNull
     @Size(min = 11, max=11, message = "Please enter a valid mobile number which should be 11 digits long")
@@ -68,20 +70,16 @@ public class User implements UserDetails {
 
     @NotNull
     @Column(name = "sochcpred")
-    private String sochcpred = "0";
+    private int sochcpred = 0;
 
     @Column(name = "homeclub")
     private String homeclub;
 
     @NotNull
     @Column(name = "sochcp")
-    private String sochcp = "0";
+    private double sochcp = 0.0;
 
     private String image;
-
-//    @NotNull
-//    @Column(name = "authority")
-//    private String authority = "USER";
 
     @NotNull
     @Column(
@@ -100,6 +98,10 @@ public class User implements UserDetails {
             name = "role"
     )
     private String role = "USER";
+
+    @OneToMany(mappedBy = "user")
+    Set<Entrants> entrants;
+
 
     @Override
     @Transient

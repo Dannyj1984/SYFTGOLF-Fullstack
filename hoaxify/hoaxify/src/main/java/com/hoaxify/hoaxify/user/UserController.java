@@ -83,8 +83,9 @@ public class UserController {
     }
 
     @PutMapping("/management/users/{id:[0-9]+}")
-    @PreAuthorize("#id == principal.id")
+    //@PreAuthorize("#id == principal.id")
     UserVM updateUser(@PathVariable long id, @Valid @RequestBody(required = false) UserUpdateVM userUpdate) {
+        System.out.println(userUpdate);
         User updated = userService.update(id, userUpdate);
         return new UserVM(updated);
     }

@@ -31,6 +31,9 @@ public class EventController {
     @Autowired
     EventRepository eventRepository;
 
+    @Autowired
+    EntrantRepository entrantRepository;
+
     @GetMapping("/management/events")
     List<Event> getEvents() {
 
@@ -72,6 +75,24 @@ public class EventController {
                 .orElse(Map.of());
 
     }
+//    @GetMapping("/management/events/entrants/{id:[0-9]+}")
+//    public Map<String, ? extends Object> getEntrants(@PathVariable("id") final long id) {
+//
+//        // find by eventid
+//        final Optional<Entrants> res = entrantRepository.findById((int) id);
+//
+//        //Store values from course for the current event in a map
+//        return res.map(e -> Map.of("id", e.getEventid(),
+//                "firstname", e.getEvents().get(),
+//                "course par", e.getCourse().getPar(),
+//                "course rating", e.getCourse().getCourseRating(),
+//                "course slope", e.getCourse().getSlopeRating(),
+//                "course postcode", e.getCourse().getPostCode()
+//        ))
+//                .orElse(Map.of());
+//
+//    }
+
 
     @PutMapping("/management/events/{id:[0-9]+}")
     EventVM updateEvent(@PathVariable long id, @Valid @RequestBody(required = false) EventUpdateVM eventUpdate) {

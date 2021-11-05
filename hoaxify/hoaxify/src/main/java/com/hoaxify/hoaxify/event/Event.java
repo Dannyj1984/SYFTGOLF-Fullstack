@@ -1,12 +1,13 @@
 package com.hoaxify.hoaxify.event;
 import com.hoaxify.hoaxify.course.Course;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.Set;
 
 @Data
 //Entity maps object to database
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 public class Event {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "eventid")
     private long eventid;
 
@@ -67,10 +68,17 @@ public class Event {
 
     private String info;
 
-
+    //relationship with event and course
     @ManyToOne
     @JoinColumn(name = "course_id")
+    @ToString.Exclude
     private Course course;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "event")
+    Set<Entrants> entrants;
+
+
 }
 
 

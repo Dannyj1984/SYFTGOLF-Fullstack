@@ -1,30 +1,34 @@
 package com.hoaxify.hoaxify.event;
 
-import com.hoaxify.hoaxify.course.EntrantId;
-import com.hoaxify.hoaxify.course.HoleId;
+import com.hoaxify.hoaxify.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import javax.persistence.*;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(EntrantId.class)
-public class Entrants implements Serializable {
+@Table(name = "entrants")
+public class Entrants {
 
-    @NotNull
     @Id
-    private int userid;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "entrantid")
+    long entrantid;
 
-    @NotNull
-    @Id
-    private int eventid;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    Event event;
+
+    public Entrants(User user, Event event) {
+        this.user = user;
+        this.event = event;
+    }
 }

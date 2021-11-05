@@ -4,6 +4,7 @@ import com.hoaxify.hoaxify.shared.GenericResponse;
 import com.hoaxify.hoaxify.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,8 +30,8 @@ public class HoleController {
         return new GenericResponse("Hole saved");
     }
 
-    @GetMapping("/getListOfHoles")
-    List<Hole> holes(){
-        return holeRepository.findAllHoles(Sort.by("hole"));
+    @GetMapping("/getListOfHoles/{courseid}")
+    List<Hole> holes(@PathVariable long courseid){
+        return holeRepository.findAllHoles(courseid);
     }
 }

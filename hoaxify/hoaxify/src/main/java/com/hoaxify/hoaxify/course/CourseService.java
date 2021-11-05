@@ -2,11 +2,13 @@ package com.hoaxify.hoaxify.course;
 
 import com.hoaxify.hoaxify.course.vm.CourseUpdateVM;
 import com.hoaxify.hoaxify.error.NotFoundException;
+import com.hoaxify.hoaxify.file.FileService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -14,8 +16,11 @@ public class CourseService {
 
     CourseRepository courseRepository;
 
-    public CourseService(CourseRepository courseRepository) {
+    FileService fileService;
+
+    public CourseService(CourseRepository courseRepository, FileService fileService) {
         this.courseRepository = courseRepository;
+        this.fileService = fileService;
     }
 
     public Course save(Course course) {
@@ -23,7 +28,7 @@ public class CourseService {
     }
 
     public Page<Course> getCourses(Pageable pageable ) {
-
+        System.out.println(courseRepository.findAll(pageable));
         return courseRepository.findAll(pageable);
     }
 
@@ -38,8 +43,15 @@ public class CourseService {
     public Course updateCourse(long id, CourseUpdateVM courseUpdate) {
         Course inDB = courseRepository.getOne(id);
         inDB.setCourseName(courseUpdate.getCourseName());
-        String savedImageName = inDB.getCourseName() + UUID.randomUUID().toString().replaceAll("-", "");
-        inDB.setImage(savedImageName);
+        if(courseUpdate.getImage() != null) {
+            String savedImageName;
+            try {
+                savedImageName = fileService.saveProfileImage(courseUpdate.getImage());
+                inDB.setImage(savedImageName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return courseRepository.save(inDB);
     }
 
