@@ -3,7 +3,7 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/syftgolf/syftgolf/pom.xml" />
+        <option value="$PROJECT_DIR$/syftgolf-spring/syftgolf/pom.xml" />
       </list>
     </option>
   </component>
