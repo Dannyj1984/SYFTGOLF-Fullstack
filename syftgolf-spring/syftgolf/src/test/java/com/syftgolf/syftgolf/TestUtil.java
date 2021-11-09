@@ -15,7 +15,10 @@ public class TestUtil {
         user.setMobile("07956356879");
         user.setCdh("1013530000");
         user.setSochcpred(1);
+        user.setHomeclub("Augusta");
         user.setSochcp(5.2);
+        user.setWins(0);
+        user.setRole("USER");
         return user;
     }
 
