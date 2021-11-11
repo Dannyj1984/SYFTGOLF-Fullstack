@@ -6,6 +6,8 @@ import com.syftgolf.syftgolf.course.CourseService;
 import com.syftgolf.syftgolf.event.Event;
 import com.syftgolf.syftgolf.event.EventRepository;
 import com.syftgolf.syftgolf.event.EventService;
+import com.syftgolf.syftgolf.society.Society;
+import com.syftgolf.syftgolf.society.SocietyRepository;
 import com.syftgolf.syftgolf.user.User;
 import com.syftgolf.syftgolf.user.UserRepository;
 import com.syftgolf.syftgolf.user.UserService;
@@ -32,20 +34,30 @@ public class SyftgolfApplication {
 	@Autowired
 	CourseRepository courseRepository;
 
+	@Autowired
+	SocietyRepository societyRepository;
+
+
 	public static void main(String[] args) {
 		SpringApplication.run(SyftgolfApplication.class, args);
 	}
 	@Bean
-	@Profile("prod")
+	@Profile("dev")
 	CommandLineRunner run(UserService userService, CourseService courseService, EventService eventService) {
 		return (args) -> {
 
 			User inDB = userRepository.findByUsername("dannyjebb");
 			User inDB2 = userRepository.findByUsername("mikedobson");
+			User inDB3 = userRepository.findByUsername("guest");
 
 			Course courseDB = courseRepository.findByCourseName("fleetwood");
 
 			Event inDBEvent = eventRepository.findByEventname("test event");
+
+			Society soc = new Society("test");
+			Society soc2 = new Society("test2");
+			societyRepository.save(soc);
+			societyRepository.save(soc2);
 
 			if(inDB2 == null) {
 				User user = new User();
@@ -55,15 +67,16 @@ public class SyftgolfApplication {
 				user.setCdh("10103530000");
 				user.setEmail("dannyjebb@gmail.com");
 				user.setMobile("07956356879");
-				user.setHandicap(4.3);
+				user.setHandicap(17.8);
 				user.setHomeclub("Stamford");
 				user.setSochcpred(0);
 				user.setPassword("P4ssword");
 				user.setRole("ADMIN");
+				user.setSociety(soc);
 				userService.save(user);
 			}
 
-			if(inDB == null) {
+			if(inDB2 == null) {
 				User user = new User();
 				user.setUsername("dannyjebb");
 				user.setFirstname("Danny");
@@ -71,11 +84,29 @@ public class SyftgolfApplication {
 				user.setCdh("10103530000");
 				user.setEmail("dannyjebb@gmail.com");
 				user.setMobile("07956356879");
-				user.setHandicap(4.3);
+				user.setHandicap(3.9);
 				user.setHomeclub("Stamford");
 				user.setSochcpred(0);
 				user.setPassword("P4ssword");
 				user.setRole("ADMIN");
+				user.setSociety(soc);
+				userService.save(user);
+			}
+
+			if(inDB3 == null) {
+				User user = new User();
+				user.setUsername("guest");
+				user.setFirstname("Guest");
+				user.setSurname("User");
+				user.setCdh("1010101010");
+				user.setEmail("guest@gmail.com");
+				user.setMobile("07777777777");
+				user.setHandicap(3.9);
+				user.setHomeclub("Augusta");
+				user.setSochcpred(0);
+				user.setPassword("P4ssword");
+				user.setRole("ADMIN");
+				user.setSociety(soc2);
 				userService.save(user);
 			}
 

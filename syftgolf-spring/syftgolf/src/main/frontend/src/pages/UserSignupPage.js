@@ -44,7 +44,7 @@ const [form, setForm] = useState({
 const onClickSignup = () => {
 
   const user = {
-      username: form.username,
+      username: form.username.toLowerCase(),
       firstname: form.firstname,
       surname: form.surname,
       handicap: form.handicap,

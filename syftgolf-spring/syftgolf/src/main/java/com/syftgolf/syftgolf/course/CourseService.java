@@ -43,6 +43,9 @@ public class CourseService {
     public Course updateCourse(long id, CourseUpdateVM courseUpdate) {
         Course inDB = courseRepository.getOne(id);
         inDB.setCourseName(courseUpdate.getCourseName());
+        inDB.setCourseRating(courseUpdate.getCourseRating());
+        inDB.setSlopeRating(courseUpdate.getSlopeRating());
+        inDB.setPar(courseUpdate.getPar());
         if(courseUpdate.getImage() != null) {
             String savedImageName;
             try {

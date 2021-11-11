@@ -36,7 +36,15 @@ public class EventService {
 
     public Event updateEvent(long id, EventUpdateVM eventUpdate) {
         Event inDB = eventRepository.getOne(id);
+        System.out.println(inDB);
         inDB.setEventname(eventUpdate.getEventname());
+        inDB.setDate(eventUpdate.getDate());
+        inDB.setCost(eventUpdate.getCost());
+        inDB.setMaxentrants(eventUpdate.getMaxentrants());
+        inDB.setEventtype(eventUpdate.getEventtype());
+        inDB.setQualifier(eventUpdate.getQualifier());
+        inDB.setInfo(eventUpdate.getInfo());
+        inDB.setWinner(eventUpdate.getWinner());
         return eventRepository.save(inDB);
     }
 

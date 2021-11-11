@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import MemberPage from '../pages/MemberPage';
 import LoginPage from '../pages/LoginPage';
 import UserSignupPage from '../pages/UserSignupPage';
@@ -26,8 +26,10 @@ function App() {
       <TopBar />
       <div className="container">
       {/* When using switch need it will try each route in order. If two routes match it will show the first one. */}
-        <Switch> 
-          <Route  path="/" exact component={HomePage} /><Route path="/about" exact component={AboutPage} />
+        <Switch>
+          <Redirect exact from="/" to="/login" />
+          <Route  path="/" exact component={HomePage} />
+          <Route path="/about" exact component={AboutPage} />
           <Route  path="/login" exact component={LoginPage} />
           <Route  path="/test" exact component={MultipleSignUp} />
           <Route  path="/terms" exact component={Terms} />

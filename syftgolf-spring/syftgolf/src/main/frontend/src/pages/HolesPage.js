@@ -73,14 +73,14 @@ const MultipleSignUp = (props) => {
 
         <div className="text-center col-6">
         <button className="btn btn-primary" onClick={addNew}>
-          Add New
+          Add Extra hole
         </button>
           
           </div>
           <div className="col-6">
           <ButtonWithProgress
             onClick={onClickSignup}
-            text="Sign Up"
+            text="Add Holes"
           />
         </div>
         </div>

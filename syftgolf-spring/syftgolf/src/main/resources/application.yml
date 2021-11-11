@@ -1,25 +1,23 @@
 spring:
   profiles:
     active:
-      - prod
+      - dev
   datasource:
-    url: jdbc:postgresql://localhost:5432/test
-    username: postgres
-    password: admin
+    url: jdbc:postgresql://ec2-35-168-65-132.compute-1.amazonaws.com:5432/d45i08ccifd54q
+    username: uzpbujjwbunmfe
+    password: 7515dd7af5a7b798d554c4f74b7895eb58e8f55d02da16a86a792b16cf67b7fd
     jpa:
       properties:
         hibernate:
           dialect: org.hibernate.dialect.PostgreSQLDialect
-          format_sql: true
-      show-sql: true
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-        show-sql: true
+#        format_sql: true
+#        show-sql: true
       javax:
         persistence:
           validation:
@@ -33,32 +31,38 @@ spring:
 
 ---
 spring:
-  profiles: prod
+  config:
+    activate:
+      on-profile: prod
   datasource:
-    url: jdbc:postgresql://localhost:5432/test
+    url: jdbc:postgresql://ec2-35-168-65-132.compute-1.amazonaws.com:5432/d45i08ccifd54q
+    username: uzpbujjwbunmfe
+    password: 7515dd7af5a7b798d554c4f74b7895eb58e8f55d02da16a86a792b16cf67b7fd
+  jpa:
+    hibernate:
+      ddl-auto: update
+syftgolf:
+  upload-path: uploads-prod
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
     username: postgres
     password: admin
   jpa:
     hibernate:
       ddl-auto: create-drop
 syftgolf:
-  upload-path: uploads-prod
----
-spring:
-  profiles: dev
-  datasource:
-    url: jdbc:postgresql://localhost:5432/testdb
-    username: postgres
-    password: admin
-    jpa:
-      hibernate:
-        ddl-auto: update
-syftgolf:
-  upload-path: uploads-prod
+  upload-path: uploads-dev
 
 ---
 spring:
-  profiles: test
+  config:
+    activate:
+      on-profile: test
   datasource:
     url: jdbc:postgresql://localhost:5432/syftgolf
     username: postgres

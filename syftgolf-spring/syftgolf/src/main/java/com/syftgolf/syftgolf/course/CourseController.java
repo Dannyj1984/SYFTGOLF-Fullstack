@@ -58,6 +58,7 @@ public class CourseController {
 
     @PutMapping("/management/courses/{id:[0-9]+}")
     CourseVM updateCourse(@PathVariable long id, @Valid @RequestBody(required = false) CourseUpdateVM courseUpdate) {
+        System.out.println(courseUpdate);
         Course updated = courseService.updateCourse(id, courseUpdate);
         return new CourseVM(updated);
 

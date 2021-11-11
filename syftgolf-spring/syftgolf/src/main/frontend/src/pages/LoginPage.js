@@ -33,7 +33,7 @@ export class LoginPage extends React.Component {
 
   onClickLogin = () => {
     const body = {
-      username: this.state.username,
+      username: this.state.username.toLowerCase(),
       password: this.state.password
     };
     this.setState({ pendingApiCall: true });

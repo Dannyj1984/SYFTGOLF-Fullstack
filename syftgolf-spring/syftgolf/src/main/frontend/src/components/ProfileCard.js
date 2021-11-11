@@ -81,7 +81,7 @@ const ProfileCard = (props) => {
           className="btn btn-outline-success"
           onClick={props.onClickEdit}
         >
-            <i className="fas fa-user-edit" /> Edit Users
+            <i className="fas fa-user-edit" /> Edit Details
           </button>
         )}
         {props.inEditMode && (

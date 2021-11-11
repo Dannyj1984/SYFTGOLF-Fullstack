@@ -79,8 +79,8 @@ class CourseInfoPage extends React.Component{
       const courseUpdate = {
         courseName: course.courseName,
         par: course.par,
-        slope: course.slopeRating,
-        rating: course.courseRating,
+        slopeRating: course.slopeRating,
+        courseRating: course.courseRating,
         image: this.state.image && this.state.image.split(',')[1]
       };
       console.log(courseUpdate);

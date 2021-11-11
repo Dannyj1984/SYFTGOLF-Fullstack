@@ -167,7 +167,9 @@ class TopBar extends React.Component {
               >
                 <i className="fas fa-file-alt text-info"></i> Add course
               </Link>
-              <span
+
+              <Link
+                  to={"login"}
                 className="dropdown-item"
                 onClick={this.onClickLogout}
                 style={{
@@ -175,7 +177,7 @@ class TopBar extends React.Component {
                 }}
               >
                 <i className="fas fa-sign-out-alt text-danger"></i> Logout
-              </span>
+              </Link>
             </div>
         </li>
       </ul>
@@ -227,15 +229,16 @@ class TopBar extends React.Component {
               >
                 <i className="fas fa-globe-europe text-info"></i> Courses
               </Link>
-              <span
-                className="dropdown-item"
-                onClick={this.onClickLogout}
-                style={{
-                  cursor: 'pointer'
-                }}
-              >
-                <i className="fas fa-sign-out-alt text-danger"></i> Logout
-              </span>
+                <Link
+                    to={"login"}
+                    className="dropdown-item"
+                    onClick={this.onClickLogout}
+                    style={{
+                        cursor: 'pointer'
+                    }}
+                >
+                    <i className="fas fa-sign-out-alt text-danger"></i> Logout
+                </Link>
             </div>
         </li>
       </ul>
@@ -308,15 +311,16 @@ class TopBar extends React.Component {
               >
                 <i className="fas fa-file-alt text-info"></i> Add course
               </Link>
-              <span
-                className="dropdown-item"
-                onClick={this.onClickLogout}
-                style={{
-                  cursor: 'pointer'
-                }}
-              >
-                <i className="fas fa-sign-out-alt text-danger"></i> Logout
-              </span>
+                <Link
+                    to={"login"}
+                    className="dropdown-item"
+                    onClick={this.onClickLogout}
+                    style={{
+                        cursor: 'pointer'
+                    }}
+                >
+                    <i className="fas fa-sign-out-alt text-danger"></i> Logout
+                </Link>
             </div>
         </li>
       </ul>
@@ -375,15 +379,16 @@ class TopBar extends React.Component {
               >
                 <i className="fas fa-calendar text-info"></i> Events
               </Link>
-              <span
-                className="dropdown-item"
-                onClick={this.onClickLogout}
-                style={{
-                  cursor: 'pointer'
-                }}
-              >
-                <i className="fas fa-sign-out-alt text-danger"></i> Logout
-              </span>
+                <Link
+                    to={"login"}
+                    className="dropdown-item"
+                    onClick={this.onClickLogout}
+                    style={{
+                        cursor: 'pointer'
+                    }}
+                >
+                    <i className="fas fa-sign-out-alt text-danger"></i> Logout
+                </Link>
             </div>
         </li>
       </ul>

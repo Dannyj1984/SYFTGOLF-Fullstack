@@ -1,8 +1,10 @@
 package com.syftgolf.syftgolf.user;
 
 
+import com.syftgolf.syftgolf.course.Course;
 import com.syftgolf.syftgolf.event.Entrants;
 import com.syftgolf.syftgolf.event.Event;
+import com.syftgolf.syftgolf.society.Society;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -147,6 +149,10 @@ public class User implements UserDetails, Serializable {
             inverseJoinColumns = @JoinColumn(name = "roleid")
     )
     private Set<Role> newroles = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "society_id")
+    private Society society;
 
 
 

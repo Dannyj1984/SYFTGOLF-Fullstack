@@ -96,7 +96,9 @@ public class EventController {
 
     @PutMapping("/management/events/{id:[0-9]+}")
     EventVM updateEvent(@PathVariable long id, @Valid @RequestBody(required = false) EventUpdateVM eventUpdate) {
+        System.out.println("id" + id);
         Event updated = eventService.updateEvent(id, eventUpdate);
+        System.out.println(updated);
         return new EventVM(updated);
 
     }
