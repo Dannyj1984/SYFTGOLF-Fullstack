@@ -2,18 +2,18 @@ import React, {useState, useEffect} from 'react';
 import * as apiCalls from '../api/apiCalls';
 import EventListItem from './EventListItem';
 
-export const EventList = () => {
+export const EventList = (props) => {
 
+    const [event, setEvent] = useState();
+    const [events, setEvents] = useState();
 
-  const [myDataObject, setmyDataObject] = useState({
-    event: undefined,
-    events: undefined,
-    page: {
-      content: [],
-      number: 0,
-      size: 9
-    },
-  });
+    const [page, setPage] = useState({
+        content: [],
+        number: 0,
+        size: 9
+    });
+
+    const [loadError, setLoadError] = useState();
 
   useEffect(() => {
     loadData();
@@ -21,46 +21,48 @@ export const EventList = () => {
 
   const loadData = (requestedPage = 0) => {
     apiCalls
-      .listEvents({ page: requestedPage, size: myDataObject.page.size })
+      .listEvents({ page: requestedPage, size: 9 })
       .then((response) => {
-        setmyDataObject({ ...myDataObject, page: response.data, loadError: undefined});
+        setPage(response.data);
       })
       .catch((error) => {
-        setmyDataObject({ ...myDataObject, loadError: "User load failed" });
+        setLoadError("Event load failed" );
       });
   };
 
-  const onClickNext = () => {
-    setmyDataObject({ ...myDataObject, page: { ...myDataObject.page, number: myDataObject.page.number + 1 } });
-  };
+    const onClickNext = () => {
+        loadData(page.number + 1);
+    };
 
-  const onClickPrevious = () => {
-    setmyDataObject({ ...myDataObject, page: { ...myDataObject.page, number: myDataObject.page.number - 1 } });
-  };
+    const onClickPrevious = () => {
+        loadData(page.number - 1);
+    };
+
+    const { content, first, last } = page;
 
   return (
           <div >
             <h3 className="card-title m-auto text-center">Events</h3>
-            <hr></hr>
+            <hr/>
             <div className="list-group list-group-flush" data-testid="eventgroup">
               <div className="row">
-              {myDataObject.page.content.map((event) => (
+              {content.map((event) => (
                   <div key={event.id} className="col-xl-4 col-m-12 mb-4">
                  
-                  <EventListItem  event={event} events={myDataObject.events} />
+                  <EventListItem  event={event} events={events} />
                   </div>
                 ))}
               </div>
             </div>
             <div className="clearfix">
-              {!myDataObject.page.first && (
+              {!first && (
                 <span
                   className="badge badge-light float-left"
                   style={{ cursor: 'pointer' }}
                   onClick={onClickPrevious}
                 ><button className="btn btn-primary">Previous</button></span>
               )}
-              {!myDataObject.page.last && (
+              {!last && (
                 <span
                   className="badge badge-light float-right"
                   style={{ cursor: 'pointer' }}
@@ -70,9 +72,9 @@ export const EventList = () => {
                 </span>
               )}
             </div>
-            {myDataObject.loadError && (
+            {loadError && (
               <span className="text-center text-danger">
-                {myDataObject.loadError}
+                {loadError}
               </span>
             )}
           </div>

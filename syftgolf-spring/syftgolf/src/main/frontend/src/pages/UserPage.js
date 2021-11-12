@@ -32,7 +32,7 @@ class UserPage extends React.Component{
         }
 
         
-
+        //Load data for this user
         loadUser = () => {
           const username = this.props.match.params.username;
           if (!username) {
@@ -156,8 +156,6 @@ class UserPage extends React.Component{
       errors.handicap = undefined;
       this.setState({ user, originalHandicap, errors });
     };
-
-    
 
     onChangeEmail = (event) => {
       const user = { ...this.state.user };

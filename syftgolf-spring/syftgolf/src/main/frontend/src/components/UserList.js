@@ -2,18 +2,14 @@ import React, { useState, useEffect } from "react";
 import * as apiCalls from '../api/apiCalls';
 import UserListItem from './UserListItem';
 
-export const UserList = () => {
-  const [myDataObject, setmyDataObject] = useState({
-    user: undefined,
-    loggedInUser: undefined,
-    userNotFound: true,
-    loadError: undefined,
-    page: {
-      content: [],
-      number: 0,
-      size: 9,
-    },
+export const UserList = (props) => {
+  const [page, setPage] = useState({
+    content: [],
+    number: 0,
+    size: 9
   });
+
+  const [loadError, setLoadError] = useState();
 
   useEffect(() => {
     loadData();
@@ -21,22 +17,25 @@ export const UserList = () => {
 
   const loadData = (requestedPage = 0) => {
     apiCalls
-      .listUsers({ page: requestedPage, size: myDataObject.page.size })
+      .listUsers({ page: requestedPage, size: 9 })
       .then((response) => {
-        setmyDataObject({ ...myDataObject, page: response.data, loadError: undefined });
+        setPage(response.data);
+        setLoadError();
       })
       .catch((error) => {
-        setmyDataObject({ ...myDataObject, loadError: "User load failed" });
+        setLoadError("User load failed" );
       });
   };
 
   const onClickNext = () => {
-    setmyDataObject({ ...myDataObject, page: { ...myDataObject.page, number: myDataObject.page.number + 1 } });
+    loadData(page.number + 1);
   };
 
   const onClickPrevious = () => {
-    setmyDataObject({ ...myDataObject, page: { ...myDataObject.page, number: myDataObject.page.number - 1 } });
+    loadData(page.number - 1);
   };
+
+  const { content, first, last } = page;
 
   return (
     <div>
@@ -44,7 +43,7 @@ export const UserList = () => {
       <hr></hr>
       <div className="list-group list-group-flush" data-testid="usergroup">
         <div className="row">
-          {myDataObject.page.content.map((user) => (
+          {content.map((user) => (
             <div key={user.id} className="col-xl-4 col-m-12 mb-4">
               <UserListItem
                 user={user}
@@ -57,18 +56,18 @@ export const UserList = () => {
         </div>
       </div>
       <div className="clearfix">
-        {!myDataObject.page.first && (
+        {!first && (
           <span className="badge badge-light float-left" style={{ cursor: "pointer" }} onClick={onClickPrevious}>
             <button className="btn btn-primary">Previous</button>
           </span>
         )}
-        {!myDataObject.page.last && (
+        {!last && (
           <span className="badge badge-light float-right" style={{ cursor: "pointer" }} onClick={onClickNext}>
             <button className="btn btn-primary">Next</button>
           </span>
         )}
       </div>
-      {myDataObject.loadError && <span className="text-center text-danger">{myDataObject.loadError}</span>}
+      {loadError && <span className="text-center text-danger">{loadError}</span>}
     </div>
   );
 };

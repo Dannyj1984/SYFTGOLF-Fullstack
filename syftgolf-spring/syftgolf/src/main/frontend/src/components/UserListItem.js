@@ -6,14 +6,10 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import * as apiCalls from '../api/apiCalls';
 import { Modal, Button } from 'react-bootstrap';
 import Input from './Input';
+import ButtonWithProgress from "./ButtonWithProgress";
 
 
 const UserListItem = (props) => {
-
-    //Chekcing I can access these values from props
-    console.log(props.user.id);
-    console.log(props.user.handicap);
-    console.log(props.user.sochcpred);
 
     //
     const [userHcpDetails, setUserHcpDetails] = useState({
@@ -23,7 +19,7 @@ const UserListItem = (props) => {
     });
 
     //Store temp user details incase of cancellation of handicap updates
-    const [tempUser, setTempUser] = useState({
+    const [tempUser] = useState({
         handicap: props.user.handicap,
         sochcpred: props.user.sochcpred
     });
@@ -57,6 +53,7 @@ const UserListItem = (props) => {
             })
     };
 
+    //If cancelling after making a change to the data, then return back to previous state
     const onClickCancel = () => {
         //Set value of the data object back to the original values stored in the tempuser
         setUserHcpDetails({
@@ -69,6 +66,7 @@ const UserListItem = (props) => {
         handleClose();
     };
 
+    //When handicap field is changed
     const onChangeHandicap = (event) => {
         let originalHandicap = event.target.value;
         const originalSocHcpRed = userHcpDetails.originalSochcpred
@@ -77,6 +75,7 @@ const UserListItem = (props) => {
         setUserHcpDetails({originalHandicap: originalHandicap, originalSochcpred: originalSocHcpRed, errors: errors })
     };
 
+    //when handicap reduction field is changed.
     const onChangeHandicapReduction = (event) => {
         let originalSocHcpRed = event.target.value;
         const originalHandicap = userHcpDetails.originalHandicap;
@@ -292,7 +291,17 @@ const UserListItem = (props) => {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" className="btn-danger" onClick={onClickCancel}>Cancel</Button>
-                        <Button variant="secondary" className="btn-success" onClick={onClickSaveHandicap} disabled={pendingUpdateCall}>Save</Button>
+                        <ButtonWithProgress
+                            className="btn btn-primary"
+                            onClick={onClickSaveHandicap}
+                            text={
+                                <span>
+                                    <i className="fas fa-save"/> Save
+                                </span>
+                            }
+                            pendingApiCall={pendingUpdateCall}
+                            disabled={pendingUpdateCall}
+                        />
                         
                     </Modal.Footer>
                 </Modal>
@@ -355,7 +364,7 @@ const UserListItem = (props) => {
                         }
                     </div>
 
-                    {/*Edit handicap*/}
+                    {/*Edit handicap, only for handicap admin*/}
                     <div className="float-right btn-group btn-group-m">
                     {(roleJSON.role === 'HANDICAPADMIN' || roleJSON.role === 'SUPERUSER')  &&
                             <button  
