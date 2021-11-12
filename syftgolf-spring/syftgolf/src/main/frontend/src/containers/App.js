@@ -17,6 +17,7 @@ import Events from '../pages/Events';
 import Terms from '../pages/Terms';
 import HolesPage from '../pages/HolesPage';
 import MultipleSignUp from '../components/multiHolePage';
+import SocietySignupPage from "../pages/SocietySignupPage";
 
 
 
@@ -35,6 +36,7 @@ function App() {
           <Route  path="/terms" exact component={Terms} />
           <Route  path="/holes" exact component={HolesPage} />
           <Route  path="/signup" exact component={UserSignupPage} />
+          <Route  path="/createSociety" exact component={SocietySignupPage} />
           <Route  path="/coursesignup" exact component={CourseRegisterPage} />
           <Route  path="/eventSignup" exact component={EventSignupPage} />
           <Route  path="/members" exact component={MemberPage} />

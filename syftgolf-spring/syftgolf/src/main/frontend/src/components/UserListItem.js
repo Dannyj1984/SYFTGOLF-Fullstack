@@ -10,6 +10,27 @@ import Input from './Input';
 
 const UserListItem = (props) => {
 
+    //Chekcing I can access these values from props
+    console.log(props.user.id);
+    console.log(props.user.handicap);
+    console.log(props.user.sochcpred);
+
+    //
+    const [userHcpDetails, setUserHcpDetails] = useState({
+        originalHandicap: props.user.handicap,
+        originalSochcpred: props.user.sochcpred,
+        errors: {}
+    });
+
+    //Store temp user details incase of cancellation of handicap updates
+    const [tempUser, setTempUser] = useState({
+        handicap: props.user.handicap,
+        sochcpred: props.user.sochcpred
+    });
+
+    const [pendingUpdateCall, setPendingUpdateCall] = useState(false);
+
+    //Get details of current logged in user
     const userObj = localStorage.getItem('syft-auth');
     const roleJSON = JSON.parse(userObj);
 
@@ -18,6 +39,56 @@ const UserListItem = (props) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    //Update handicap when save button pressed
+    const onClickSaveHandicap = () => {
+
+        const id = props.user.id;
+
+        const handicapUpdate = ({
+            handicap: userHcpDetails.originalHandicap,
+            sochcpred: userHcpDetails.originalSochcpred
+        });
+        setPendingUpdateCall(true);
+        apiCalls
+            .updateHandicap(id, handicapUpdate)
+            .then((response) => {
+                setPendingUpdateCall(false);
+                window.location.reload();
+            })
+    };
+
+    const onClickCancel = () => {
+        //Set value of the data object back to the original values stored in the tempuser
+        setUserHcpDetails({
+            errors: {},
+            originalHandicap: tempUser.handicap,
+            originalSochcpred: tempUser.sochcpred
+        });
+
+        //Close modal
+        handleClose();
+    };
+
+    const onChangeHandicap = (event) => {
+        let originalHandicap = event.target.value;
+        const originalSocHcpRed = userHcpDetails.originalSochcpred
+        const errors =  userHcpDetails.errors ;
+
+        setUserHcpDetails({originalHandicap: originalHandicap, originalSochcpred: originalSocHcpRed, errors: errors })
+    };
+
+    const onChangeHandicapReduction = (event) => {
+        let originalSocHcpRed = event.target.value;
+        const originalHandicap = userHcpDetails.originalHandicap;
+        const errors = userHcpDetails.errors;
+
+        setUserHcpDetails({originalSochcpred: originalSocHcpRed, originalHandicap: originalHandicap, errors: errors});
+
+
+
+    }
+
+    //Delete current member
     const submitDelete = () => {
 
         confirmAlert({
@@ -37,9 +108,10 @@ const UserListItem = (props) => {
             }
           ]
         });
-      }
+      };
 
-      const submitAdmin = () => {
+    //Change current member to Admin
+    const submitAdmin = () => {
 
         confirmAlert({
           title: 'Are you sure?',
@@ -58,9 +130,10 @@ const UserListItem = (props) => {
             }
           ]
         });
-      }
+      };
 
-      const submitHcpAdmin = () => {
+    //Change current member to Handicap Admin
+    const submitHcpAdmin = () => {
 
         confirmAlert({
           title: 'Are you sure?',
@@ -79,9 +152,10 @@ const UserListItem = (props) => {
             }
           ]
         });
-      }
+      };
 
-      const submitEventAdmin = () => {
+    //Change current member to Event Admin
+    const submitEventAdmin = () => {
 
         confirmAlert({
           title: 'Are you sure?',
@@ -100,9 +174,9 @@ const UserListItem = (props) => {
             }
           ]
         });
-      }
-
-      const submitUser = () => {
+      };
+      //Change current member to a user
+    const submitUser = () => {
 
         confirmAlert({
           title: 'Are you sure?',
@@ -121,7 +195,8 @@ const UserListItem = (props) => {
             }
           ]
         });
-      }
+      };
+
 
    return (
             <div className="card col-12">
@@ -137,7 +212,7 @@ const UserListItem = (props) => {
                     </div>
                     <div className="col-12 card-title align-self-center mb-0">
                         <h5>{props.user.firstname} {props.user.surname}</h5>
-                        <p className="m-0">Society Handicap : {props.user.socHcp}</p>
+                        <p className="m-0">Society Handicap : {Number(props.user.handicap - props.user.sochcpred).toFixed(1)}</p> {/*Show society handicap to 1dp*/}
                         <p className="m-0">Wins : {props.user.wins}</p>
                         <p className="m-0">Home club : {props.user.homeclub}</p>
                         <p className="m-0">Role : {props.user.role}</p>
@@ -145,30 +220,38 @@ const UserListItem = (props) => {
                 </div>
                 <div>
                     <ul className="list-group list-group-flush">
-                        <li className="list-group-item"><i className="fa fa-envelope float-right"></i>Email : {props.user.email}</li>
-                        <li className="list-group-item"><i className="fa fa-phone float-right"></i>Mobile : {props.user.mobile}</li>
+                        <li className="list-group-item"><i className="fa fa-envelope float-right"/>Email : {props.user.email}</li>
+                        <li className="list-group-item"><i className="fa fa-phone float-right"/>Mobile : {props.user.mobile}</li>
                     </ul>
                 </div>
                 <div className="card-body">
                     <div className="float-left btn-group btn-group-sm">
                     <Link
+                        /*Link to profile page*/
                         to={`/member/${props.user.username}`}>
-                            <button  className="btn btn-warning tooltips float-left" data-placement="left" data-toggle="tooltip" data-original-title="view"><i className="fa fa-eye"></i> </button>
+                            <button  className="btn btn-warning tooltips float-left"
+                                     data-placement="left"
+                                     data-toggle="tooltip"
+                                     data-original-title="view">
+                                <i
+                                    className="fa fa-eye"/>
+                            </button>
                     </Link>
                     </div>
                     <div className="float-right btn-group btn-group-m">
-                    {roleJSON.role === 'ADMIN'  && 
+                        {/*Button to delete member*/}
+                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-danger tooltips"  
                                 onClick={submitDelete}
                                 data-placement="top" 
                                 data-toggle="tooltip" 
                                 data-original-title="Delete">
-                                <i className="fa fa-times"></i>
+                                <i className="fa fa-times"/>
                             </button>
                         }
                     </div>
-
+                    {/*Button to view edit handicap modal*/}
                     <div className="float-right btn-group btn-group-m">
                     {roleJSON.role === 'HANDICAPADMIN'  && 
                             <button  
@@ -176,12 +259,14 @@ const UserListItem = (props) => {
                                 onClick={handleShow}
                                 data-placement="top" 
                                 data-toggle="tooltip" 
-                                data-original-title="Delete">
-                                <i className="fa fa-edit"></i>
+                                data-original-title="Edit">
+                                <i className="fa fa-edit"/>
                             </button>
                         }
                     </div>
                 </div>
+
+                {/*Modal for changing handicap*/}
                 <Modal show={showModal} onHide={handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>handicaps</Modal.Title>
@@ -190,32 +275,32 @@ const UserListItem = (props) => {
                         <p>Edit handicap for {props.user.firstname} {props.user.surname} </p>
                         <div className="mb-2">
                             <Input
-                            value={props.user.handicap}
+                            value={userHcpDetails.originalHandicap}
                             label={`Change handicap for ${props.user.firstname}`}
-                            onChange={props.onChangeHandicap}
-                            // hasError={props.errors.handicap && true}
-                            // error={props.errors.handicap}
+                            onChange={onChangeHandicap}
+                            //hasError={props.errors.handicap && true}
+                            //error={props.errors.handicap}
                             />
                             <Input
-                            value={props.user.sochcpred}
+                            value={userHcpDetails.originalSochcpred}
                             label={`Change handicap reduction for ${props.user.firstname}`}
-                            onChange={props.onChangeSocHcpRed}
-                            // hasError={props.errors.sochcpred && true}
-                            // error={props.errors.sochcpred}
+                            onChange={onChangeHandicapReduction}
+                            //hasError={props.errors.sochcpred && true}
+                            //error={props.errors.sochcpred}
                             />
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" className="btn-danger" onClick={handleClose}>Cancel</Button>
-                        <Button variant="secondary" className="btn-success" onClick={handleClose}>Save</Button>
+                        <Button variant="secondary" className="btn-danger" onClick={onClickCancel}>Cancel</Button>
+                        <Button variant="secondary" className="btn-success" onClick={onClickSaveHandicap} disabled={pendingUpdateCall}>Save</Button>
                         
                     </Modal.Footer>
                 </Modal>
 
                 <div className="card-body">
-                    
+                    {/*Change member to admin*/}
                     <div className="float-left btn-group btn-group-m">
-                    {roleJSON.role === 'ADMIN'  && 
+                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips m-2"  
                                 onClick={submitAdmin}
@@ -227,9 +312,9 @@ const UserListItem = (props) => {
                             
                         }
                     </div>
-
+                    {/*Change member to handicap admin*/}
                     <div className="float-left btn-group btn-group-m">
-                    {roleJSON.role === 'ADMIN'  && 
+                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips m-2"  
                                 onClick={submitHcpAdmin}
@@ -241,9 +326,9 @@ const UserListItem = (props) => {
                             
                         }
                     </div>
-
+                    {/*Change member to event admin*/}
                     <div className="float-left btn-group btn-group-m m-2">
-                    {roleJSON.role === 'ADMIN'  && 
+                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips"  
                                 onClick={submitEventAdmin}
@@ -255,9 +340,9 @@ const UserListItem = (props) => {
                             
                         }
                     </div>
-
+                    {/*Change member to user*/}
                     <div className="float-left btn-group btn-group-m m-2">
-                    {roleJSON.role === 'ADMIN'  && 
+                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips"  
                                 onClick={submitUser}
@@ -270,15 +355,16 @@ const UserListItem = (props) => {
                         }
                     </div>
 
+                    {/*Edit handicap*/}
                     <div className="float-right btn-group btn-group-m">
-                    {roleJSON.role === 'HANDICAPADMIN'  && 
+                    {(roleJSON.role === 'HANDICAPADMIN' || roleJSON.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips"  
                                 onClick={handleShow}
                                 data-placement="top" 
                                 data-toggle="tooltip" 
                                 data-original-title="Delete">
-                                <i className="fa fa-edit"></i>
+                                <i className="fa fa-edit"/>
                             </button>
                         }
                     </div>

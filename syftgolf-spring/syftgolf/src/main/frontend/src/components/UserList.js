@@ -24,7 +24,6 @@ export const UserList = () => {
       .listUsers({ page: requestedPage, size: myDataObject.page.size })
       .then((response) => {
         setmyDataObject({ ...myDataObject, page: response.data, loadError: undefined });
-        console.log(myDataObject.page.content)
       })
       .catch((error) => {
         setmyDataObject({ ...myDataObject, loadError: "User load failed" });

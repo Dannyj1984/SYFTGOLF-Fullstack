@@ -53,6 +53,10 @@ export const makeUser = (userid) => {
   return axios.put('/api/1.0/management/users/User/' + userid);
 };
 
+export const updateHandicap = (userid, body) => {
+  return axios.put('api/1.0/management/users/handicap/' + userid, body);
+}
+
 //course calls
 
 export const signupCourse = (course) => {
@@ -122,3 +126,9 @@ export const getCourseDetails = (eventid) => {
 export const eventEnter = (entrant) => {
   return axios.post('/api/1.0/management/events/entrants', entrant);
 }
+
+//Society calls
+
+export const signupSociety = (society) => {
+  return axios.post('/api/1.0/management/society', society);
+};

@@ -3,6 +3,8 @@ package com.syftgolf.syftgolf.user;
 
 import com.syftgolf.syftgolf.error.NotFoundException;
 import com.syftgolf.syftgolf.file.FileService;
+import com.syftgolf.syftgolf.user.vm.UserHandicapVM;
+import com.syftgolf.syftgolf.user.vm.UserUpdateHandicapVM;
 import com.syftgolf.syftgolf.user.vm.UserUpdateVM;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -74,6 +76,14 @@ public class UserService {
     public User updateEventAdmin(long id){
         User inDB = userRepository.getById(id);
         inDB.setRole("EVENTADMIN");
+
+        return userRepository.save(inDB);
+    }
+
+    public User updateHandicap(long id, UserUpdateHandicapVM userHandicapVM) {
+        User inDB = userRepository.getById(id);
+        inDB.setHandicap(userHandicapVM.getHandicap());
+        inDB.setSochcpred(userHandicapVM.getSochcpred());
 
         return userRepository.save(inDB);
     }

@@ -21,7 +21,7 @@ const EventProfileCard = (props) => {
       <div className="card-body text-center">
       {!props.inEditMode && (
       <h3>{`Event : ${eventname}`}</h3>)}
-      <hr></hr>
+      <hr/>
       <h5>{`Date: ${date}`}</h5>
       <h5>{`Format: ${eventtype}`}</h5>
       <h5>{`Qualifier: ${qualifier}`}</h5>
@@ -32,7 +32,7 @@ const EventProfileCard = (props) => {
       
         {props.inEditMode && (
           <div className="mb-2">
-          <hr></hr>
+          <hr/>
           <h3>{`Amend ${eventname}`}</h3>
             <Input
               name="eventname"
@@ -101,7 +101,7 @@ const EventProfileCard = (props) => {
             />
           </div>
         )}
-        {showEditButton && (authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN') && (
+        {showEditButton && (authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN' || authorityJSON.role === 'SUPERUSER') && (
           <button
           className="btn btn-outline-success"
           onClick={props.onClickEdit}

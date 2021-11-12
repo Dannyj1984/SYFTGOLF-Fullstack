@@ -112,7 +112,7 @@ const EventListItem = (props) => {
                         
                     </div>
                 </div>
-                <hr></hr>
+                <hr/>
                 
                 <div className="card-body">
                     <div className="float-left btn-group btn-group-sm px-2">
@@ -122,8 +122,8 @@ const EventListItem = (props) => {
                                 className="btn btn-primary tooltips float-left" 
                                 data-placement="left" 
                                 data-toggle="tooltip" 
-                                data-original-title="view"><i 
-                                className="fa fa-eye"></i> 
+                                data-original-title="view"><i
+    className="fa fa-eye"/>
                               </button>
                       </Link>
                     </div>
@@ -133,8 +133,8 @@ const EventListItem = (props) => {
                           data-placement="left" 
                           onClick={handleShowLeader}
                           data-toggle="tooltip" 
-                          data-original-title="view"><i 
-                          className="fa fa-trophy"></i> 
+                          data-original-title="view"><i
+                            className="fa fa-trophy"/>
                       </button>
                     </div>
 
@@ -144,13 +144,13 @@ const EventListItem = (props) => {
                           data-placement="left" 
                           onClick={handleShowEntrants}
                           data-toggle="tooltip" 
-                          data-original-title="view"><i 
-                          className="fa fa-users"></i> 
+                          data-original-title="view"><i
+                            className="fa fa-users"/>
                       </button>
                     </div>
 
                     <div className="float-right btn-group btn-group-m">
-                      {authorityJSON.role === 'ADMIN'  && 
+                      {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-secondary tooltips" 
                                 onClick={deleteEvent} 

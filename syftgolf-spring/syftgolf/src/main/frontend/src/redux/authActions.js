@@ -31,7 +31,7 @@ export const signupHandler = (user) => {
 export const courseSignupHandler = (course) => {
   return async function(dispatch) {
     await apiCalls.signupCourse(course);
-    return;
+
   };
 };
 
@@ -40,7 +40,7 @@ export const courseSignupHandler = (course) => {
 export const eventSignupHandler = (event) => {
   return async function(dispatch) {
     await apiCalls.signupEvent(event);
-    return;
+
   };
 };
 
@@ -48,7 +48,16 @@ export const enterEntrantHandler = (entrant) => {
   return async function(dispatch) {
     console.log(entrant);
     await apiCalls.eventEnter(entrant);
-    return;
+
   };
 };
+
+//Register new society
+export const signupSocietyHandler = (society) => {
+  return async function(dispatch) {
+    await apiCalls.signupSociety(society);
+
+  };
+};
+
 

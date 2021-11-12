@@ -121,7 +121,7 @@ const CourseProfileCard = (props) => {
             />
           </div>
         )}
-        {showEditButton && (authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN') && (
+        {showEditButton && (authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN' || authorityJSON.role === 'SUPERUSER') && (
           <button
           className="btn btn-outline-success"
           onClick={props.onClickEdit}

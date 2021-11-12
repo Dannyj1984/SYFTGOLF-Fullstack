@@ -93,6 +93,104 @@ class TopBar extends React.Component {
     </nav>
    );
 
+      if(this.props.user.role === "SUPERUSER") {
+          let dropDownClass = 'p-0 shadow dropdown-menu';
+          if (this.state.dropDownVisible) {
+              dropDownClass += ' show';
+          }
+          links = (
+              <ul className="nav navbar-nav ml-auto" ref={this.assignActionArea}>
+                  <li className="nav-item dropdown">
+                      <div
+                          className="d-flex"
+                          style={{ cursor: 'pointer' }}
+                          onClick={this.onClickUsername}
+                      >
+                          <ProfileImageWithDefault
+                              className="rounded-circle m-auto"
+                              width="32"
+                              height="32"
+                              image={this.props.user.image}
+                          />
+                          <span className="nav-link dropdown-toggle">
+                {this.props.user.username}
+              </span>
+                      </div>
+                      <div className={dropDownClass} data-testid="drop-down-menu">
+                          <Link
+                              to={`/member/${this.props.user.username}`}
+                              className="dropdown-item"
+                              onClick={this.onClickMyProfile}
+                          >
+                              <i className="fas fa-user text-info"/> My Profile
+                          </Link>
+                          <Link
+                              to={`/members`}
+                              className="dropdown-item"
+                              onClick={this.onClickMember}
+                          >
+                              <i className="fas fa-users text-info"/> Members
+                          </Link>
+                          <Link
+                              to={`/signup`}
+                              className="dropdown-item"
+                              onClick={this.onClickMember}
+                          >
+                              <i className="fas fa-users text-info"/> Add Member
+                          </Link>
+                          <Link
+                              to={`/events`}
+                              className="dropdown-item"
+                              onClick={this.onClickMember}
+                          >
+                              <i className="fas fa-calendar text-info"/> Events
+                          </Link>
+                          <Link
+                              to={`/eventSignup`}
+                              className="dropdown-item"
+                              onClick={this.onClickMember}
+                          >
+                              <i className="fas fa-calendar text-info"/> Add Event
+                          </Link>
+                          <Link
+                              to={`/courses`}
+                              className="dropdown-item"
+                              onClick={this.onClickCourses}
+                          >
+                              <i className="fas fa-globe-europe text-info"/> Courses
+                          </Link>
+                          <Link
+                              to={`/courseSignup`}
+                              className="dropdown-item"
+                              onClick={this.onClickCourseSignup}
+                          >
+                              <i className="fas fa-file-alt text-info"/> Add course
+                          </Link>
+
+                          <Link
+                              to={`/createSociety`}
+                              className="dropdown-item"
+                              onClick={this.onClickCourseSignup}
+                          >
+                              <i className="fas fa-file-alt text-info"/> Add Society
+                          </Link>
+
+                          <Link
+                              to={"login"}
+                              className="dropdown-item"
+                              onClick={this.onClickLogout}
+                              style={{
+                                  cursor: 'pointer'
+                              }}
+                          >
+                              <i className="fas fa-sign-out-alt text-danger"/> Logout
+                          </Link>
+                      </div>
+                  </li>
+              </ul>
+          );
+      }
+
    
    if(this.props.user.role === "ADMIN") {
     let dropDownClass = 'p-0 shadow dropdown-menu';
@@ -123,49 +221,49 @@ class TopBar extends React.Component {
                 className="dropdown-item"
                 onClick={this.onClickMyProfile}
               >
-                <i className="fas fa-user text-info"></i> My Profile
+                <i className="fas fa-user text-info"/> My Profile
               </Link>
               <Link
                 to={`/members`}
                 className="dropdown-item"
                 onClick={this.onClickMember}
               >
-                <i className="fas fa-users text-info"></i> Members
+                <i className="fas fa-users text-info"/> Members
               </Link>
               <Link
                 to={`/signup`}
                 className="dropdown-item"
                 onClick={this.onClickMember}
               >
-                <i className="fas fa-users text-info"></i> Add Member
+                <i className="fas fa-users text-info"/> Add Member
               </Link>
               <Link
                 to={`/events`}
                 className="dropdown-item"
                 onClick={this.onClickMember}
               >
-                <i className="fas fa-calendar text-info"></i> Events
+                <i className="fas fa-calendar text-info"/> Events
               </Link>
               <Link
                 to={`/eventSignup`}
                 className="dropdown-item"
                 onClick={this.onClickMember}
               >
-                <i className="fas fa-calendar text-info"></i> Add Event
+                <i className="fas fa-calendar text-info"/> Add Event
               </Link>
               <Link
                 to={`/courses`}
                 className="dropdown-item"
                 onClick={this.onClickCourses}
               >
-                <i className="fas fa-globe-europe text-info"></i> Courses
+                <i className="fas fa-globe-europe text-info"/> Courses
               </Link>
               <Link
                 to={`/courseSignup`}
                 className="dropdown-item"
                 onClick={this.onClickCourseSignup}
               >
-                <i className="fas fa-file-alt text-info"></i> Add course
+                <i className="fas fa-file-alt text-info"/> Add course
               </Link>
 
               <Link
@@ -176,7 +274,7 @@ class TopBar extends React.Component {
                   cursor: 'pointer'
                 }}
               >
-                <i className="fas fa-sign-out-alt text-danger"></i> Logout
+                <i className="fas fa-sign-out-alt text-danger"/> Logout
               </Link>
             </div>
         </li>
@@ -213,21 +311,21 @@ class TopBar extends React.Component {
                 className="dropdown-item"
                 onClick={this.onClickMyProfile}
               >
-                <i className="fas fa-user text-info"></i> My Profile
+                <i className="fas fa-user text-info"/> My Profile
               </Link>
               <Link
                 to={`/members`}
                 className="dropdown-item"
                 onClick={this.onClickMember}
               >
-                <i className="fas fa-users text-info"></i> Members
+                <i className="fas fa-users text-info"/> Members
               </Link>
               <Link
                 to={`/courses`}
                 className="dropdown-item"
                 onClick={this.onClickCourses}
               >
-                <i className="fas fa-globe-europe text-info"></i> Courses
+                <i className="fas fa-globe-europe text-info"/> Courses
               </Link>
                 <Link
                     to={"login"}
@@ -237,7 +335,7 @@ class TopBar extends React.Component {
                         cursor: 'pointer'
                     }}
                 >
-                    <i className="fas fa-sign-out-alt text-danger"></i> Logout
+                    <i className="fas fa-sign-out-alt text-danger"/> Logout
                 </Link>
             </div>
         </li>
@@ -274,42 +372,42 @@ class TopBar extends React.Component {
                 className="dropdown-item"
                 onClick={this.onClickMyProfile}
               >
-                <i className="fas fa-user text-info"></i> My Profile
+                <i className="fas fa-user text-info"/> My Profile
               </Link>
               <Link
                 to={`/members`}
                 className="dropdown-item"
                 onClick={this.onClickMember}
               >
-                <i className="fas fa-users text-info"></i> Members
+                <i className="fas fa-users text-info"/> Members
               </Link>
               <Link
                 to={`/events`}
                 className="dropdown-item"
                 onClick={this.onClickMember}
               >
-                <i className="fas fa-calendar text-info"></i> Events
+                <i className="fas fa-calendar text-info"/> Events
               </Link>
               <Link
                 to={`/eventSignup`}
                 className="dropdown-item"
                 onClick={this.onClickMember}
               >
-                <i className="fas fa-calendar text-info"></i> Add Event
+                <i className="fas fa-calendar text-info"/> Add Event
               </Link>
               <Link
                 to={`/courses`}
                 className="dropdown-item"
                 onClick={this.onClickCourses}
               >
-                <i className="fas fa-globe-europe text-info"></i> Courses
+                <i className="fas fa-globe-europe text-info"/> Courses
               </Link>
               <Link
                 to={`/courseSignup`}
                 className="dropdown-item"
                 onClick={this.onClickCourseSignup}
               >
-                <i className="fas fa-file-alt text-info"></i> Add course
+                <i className="fas fa-file-alt text-info"/> Add course
               </Link>
                 <Link
                     to={"login"}
@@ -319,7 +417,7 @@ class TopBar extends React.Component {
                         cursor: 'pointer'
                     }}
                 >
-                    <i className="fas fa-sign-out-alt text-danger"></i> Logout
+                    <i className="fas fa-sign-out-alt text-danger"/> Logout
                 </Link>
             </div>
         </li>
@@ -356,28 +454,28 @@ class TopBar extends React.Component {
                 className="dropdown-item"
                 onClick={this.onClickMyProfile}
               >
-                <i className="fas fa-user text-info"></i> My Profile
+                <i className="fas fa-user text-info"/> My Profile
               </Link>
               <Link
                 to={`/members`}
                 className="dropdown-item"
                 onClick={this.onClickMember}
               >
-                <i className="fas fa-users text-info"></i> Members
+                <i className="fas fa-users text-info"/> Members
               </Link>
               <Link
                 to={`/courses`}
                 className="dropdown-item"
                 onClick={this.onClickCourses}
               >
-                <i className="fas fa-globe-europe text-info"></i> Courses
+                <i className="fas fa-globe-europe text-info" /> Courses
               </Link>
               <Link
                 to={`/events`}
                 className="dropdown-item"
                 onClick={this.onClickCourses}
               >
-                <i className="fas fa-calendar text-info"></i> Events
+                <i className="fas fa-calendar text-info"/> Events
               </Link>
                 <Link
                     to={"login"}
@@ -387,7 +485,7 @@ class TopBar extends React.Component {
                         cursor: 'pointer'
                     }}
                 >
-                    <i className="fas fa-sign-out-alt text-danger"></i> Logout
+                    <i className="fas fa-sign-out-alt text-danger"/> Logout
                 </Link>
             </div>
         </li>

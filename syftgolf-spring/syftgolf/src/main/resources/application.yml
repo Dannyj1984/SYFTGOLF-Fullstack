@@ -1,7 +1,7 @@
 spring:
   profiles:
     active:
-      - dev
+      - prod
   datasource:
     url: jdbc:postgresql://ec2-35-168-65-132.compute-1.amazonaws.com:5432/d45i08ccifd54q
     username: uzpbujjwbunmfe

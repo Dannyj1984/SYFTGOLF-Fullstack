@@ -54,17 +54,17 @@ const CourseListItem = (props) => {
                     </div>
                 </div>
 
-                <hr></hr>
+                <hr/>
                 
                 <div className="card-body">
                     <div className="float-left btn-group btn-group-sm">
                     <Link
                         to={`/course/${props.course.courseName}`}>
-                            <button  className="btn btn-primary tooltips float-left" data-placement="left" data-toggle="tooltip" data-original-title="view"><i className="fa fa-eye"></i> </button>
+                            <button  className="btn btn-primary tooltips float-left" data-placement="left" data-toggle="tooltip" data-original-title="view"><i className="fa fa-eye"/> </button>
                     </Link>
                     </div>
 
-                    {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN') &&
+                    {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN' || authorityJSON.role === 'SUPERUSER') &&
 
                     <div className="float-left btn-group btn-group-m pl-2">
                       <Link
@@ -86,14 +86,14 @@ const CourseListItem = (props) => {
                     </div>}
 
                     <div className="float-right btn-group btn-group-m">
-                      {authorityJSON.role === 'ADMIN'  && 
+                      {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-secondary tooltips" 
                                 onClick={submit} 
                                 data-placement="top" 
                                 data-toggle="tooltip" 
                                 data-original-title="Delete">
-                                    <i className="fa fa-times"></i>
+                                    <i className="fa fa-times"/>
                             </button>
                         }
                     </div>

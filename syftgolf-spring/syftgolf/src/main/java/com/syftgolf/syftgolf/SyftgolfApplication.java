@@ -88,7 +88,7 @@ public class SyftgolfApplication {
 				user.setHomeclub("Stamford");
 				user.setSochcpred(0);
 				user.setPassword("P4ssword");
-				user.setRole("ADMIN");
+				user.setRole("SUPERUSER");
 				user.setSociety(soc);
 				userService.save(user);
 			}
