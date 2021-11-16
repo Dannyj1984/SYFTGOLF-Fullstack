@@ -2,9 +2,12 @@ package com.syftgolf.syftgolf.event;
 
 import com.syftgolf.syftgolf.error.NotFoundException;
 import com.syftgolf.syftgolf.event.vm.EventUpdateVM;
+import com.syftgolf.syftgolf.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -25,6 +28,8 @@ public class EventService {
 
         return eventRepository.findAll(pageable);
     }
+
+
 
     public Event getByEventName(String eventname) {
         Event inDB = eventRepository.findByEventname(eventname);

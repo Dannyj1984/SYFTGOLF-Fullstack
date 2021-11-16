@@ -59,6 +59,7 @@ export const EventSignupPage = (props) => {
           date: form.date,
           info: form.info,
           maxentrants: form.maxentrants,
+          currententrants: 0,
           qualifier: form.qualifier,
           cost: form.cost,
           course: {

@@ -107,6 +107,7 @@ const EventListItem = (props) => {
                         <h5>{props.event.eventname} </h5>
                         <p className="m-0">Course: {courseName}</p>
                         <p className="m-0">Date : {formatDate}</p>
+                        <p className="m-0">Entrants : {props.event.currententrants} / {props.event.maxentrants}</p>
                         <p className="m-0">Event Format : {props.event.eventtype}</p>
                         <p className="m-0">Cost : £{props.event.cost}</p>
                         

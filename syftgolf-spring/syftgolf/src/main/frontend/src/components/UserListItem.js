@@ -196,6 +196,48 @@ const UserListItem = (props) => {
         });
       };
 
+      //Add win for member
+      const addWin = () => {
+
+        confirmAlert({
+          title: 'Add to this members win tally?',
+          buttons: [
+            {
+              label: 'Yes',
+              onClick: () => 
+                apiCalls.addWin(props.user.id)
+                .then (response => window.location.reload())
+                
+            },
+            {
+              label: 'No',
+              onClick: () => ''
+            }
+          ]
+        });
+      };
+
+      //Take win from member
+      const takeWin = () => {
+
+        confirmAlert({
+          title: 'Take away a win from this members win tally?',
+          buttons: [
+            {
+              label: 'Yes',
+              onClick: () => 
+                apiCalls.takeWin(props.user.id)
+                .then (response => window.location.reload())
+                
+            },
+            {
+              label: 'No',
+              onClick: () => ''
+            }
+          ]
+        });
+      };
+
 
    return (
             <div className="card col-12">
@@ -212,9 +254,11 @@ const UserListItem = (props) => {
                     <div className="col-12 card-title align-self-center mb-0">
                         <h5>{props.user.firstname} {props.user.surname}</h5>
                         <p className="m-0">Society Handicap : {Number(props.user.handicap - props.user.sochcpred).toFixed(1)}</p> {/*Show society handicap to 1dp*/}
-                        <p className="m-0">Wins : {props.user.wins}</p>
                         <p className="m-0">Home club : {props.user.homeclub}</p>
                         <p className="m-0">Role : {props.user.role}</p>
+                        <p className="m-0">Wins : {props.user.wins}</p> 
+                        {(roleJSON.role === 'EVENTADMIN' || roleJSON.roel === 'ADMIN') && <button className="btn btn-outline-success" onClick={addWin}>+</button> } 
+                        {(roleJSON.role === 'EVENTADMIN' || roleJSON.role === 'ADMIN') && <button className="btn btn-outline-danger" onClick={takeWin}>-</button> }
                     </div>
                 </div>
                 <div>

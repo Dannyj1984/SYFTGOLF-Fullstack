@@ -24,6 +24,8 @@ public class EventUpdateVM {
     @NotNull
     private int maxentrants;
 
+    private int currententrants;
+
     private double cost;
 
     private String eventtype;

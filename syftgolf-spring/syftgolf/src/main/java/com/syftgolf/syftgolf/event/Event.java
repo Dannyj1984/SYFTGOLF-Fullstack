@@ -43,6 +43,13 @@ public class Event {
     )
     private int maxentrants;
 
+    @NotNull(message = "{syftgolf.constraints.eventname.NotNull.message}")
+    @Column(
+            name = "currententrants",
+            columnDefinition = "INTEGER"
+    )
+    private int currententrants;
+
     @NotNull
     @Column(
             name = "cost",

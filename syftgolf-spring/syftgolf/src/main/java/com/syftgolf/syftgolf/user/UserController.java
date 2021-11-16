@@ -9,10 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.syftgolf.syftgolf.shared.CurrentUser;
-import com.syftgolf.syftgolf.user.vm.UserHandicapVM;
-import com.syftgolf.syftgolf.user.vm.UserUpdateHandicapVM;
-import com.syftgolf.syftgolf.user.vm.UserUpdateVM;
-import com.syftgolf.syftgolf.user.vm.UserVM;
+import com.syftgolf.syftgolf.user.vm.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +35,7 @@ public class UserController {
     UserRepository userRepository;
 
     //Create new member
+    @CrossOrigin
     @PostMapping("/management/users")
     GenericResponse createUser(@Valid @RequestBody User user) {
         userService.save(user);
@@ -45,12 +43,14 @@ public class UserController {
     }
 
     //get List of members
+    @CrossOrigin
     @GetMapping("/getListOfUser")
     List<User> users(){
         return userRepository.findAllUsers(Sort.by("username"));
     }
 
     //Get page of members
+    @CrossOrigin
     @GetMapping("/users")
     Page<UserVM> getUsers(Pageable page) {
         System.out.println(page);
@@ -58,6 +58,7 @@ public class UserController {
     }
 
     //Get member by username
+    @CrossOrigin
     @GetMapping("/users/{username}")
     UserVM getUserByName(@PathVariable String username) {
         User user = userService.getByUsername(username);
@@ -65,6 +66,7 @@ public class UserController {
     }
 
     //Make member admin
+    @CrossOrigin
     @PutMapping("/management/users/admin/{id:[0-9]+}")
     UserVM makeAdmin(@PathVariable long id) {
         User userUpdated = userService.updateAdmin(id);
@@ -72,6 +74,7 @@ public class UserController {
     }
 
     //Make member handicap admin
+    @CrossOrigin
     @PutMapping("/management/users/HcpAdmin/{id:[0-9]+}")
     UserVM makeHcpAdmin(@PathVariable long id) {
         User userUpdated = userService.updateHcpAdmin(id);
@@ -79,6 +82,7 @@ public class UserController {
     }
 
     //Make member eventadmin
+    @CrossOrigin
     @PutMapping("/management/users/EventAdmin/{id:[0-9]+}")
     UserVM makeEventAdmin(@PathVariable long id) {
         User userUpdated = userService.updateEventAdmin(id);
@@ -86,6 +90,7 @@ public class UserController {
     }
 
     //Make member a user
+    @CrossOrigin
     @PutMapping("/management/users/User/{id:[0-9]+}")
     UserVM makeUser(@PathVariable long id) {
         User userUpdated = userService.updateUser(id);
@@ -94,7 +99,7 @@ public class UserController {
 
     //Edit member details
     @PutMapping("/management/users/{id:[0-9]+}")
-    //@PreAuthorize("#id == principal.id")
+    @CrossOrigin
     UserVM updateUser(@PathVariable long id, @Valid @RequestBody(required = false) UserUpdateVM userUpdate) {
         System.out.println(userUpdate);
         User updated = userService.update(id, userUpdate);
@@ -102,15 +107,32 @@ public class UserController {
     }
 
     //Edit members handicap
+    @CrossOrigin
     @PutMapping("/management/users/handicap/{id:[0-9]+}")
     UserHandicapVM updateHandicap(@PathVariable long id, @Valid @RequestBody(required = false) UserUpdateHandicapVM userUpdate) {
-        System.out.println(userUpdate);
         User updated = userService.updateHandicap(id, userUpdate);
         return new UserHandicapVM(updated);
     }
 
+    //Edit members win count add one
+    @CrossOrigin
+    @PutMapping("/management/user/win/{id:[0-9]+}")
+    UserHandicapVM updateWins(@PathVariable long id) {
+        User updated = userService.addWins(id);
+        return new UserHandicapVM(updated);
+    }
+
+    //Edit members win count take one
+    @CrossOrigin
+    @PutMapping("/management/user/takeWin/{id:[0-9]+}")
+    UserHandicapVM takeWins(@PathVariable long id) {
+        User updated = userService.takeWins(id);
+        return new UserHandicapVM(updated);
+    }
+
     //Delete member
-    @DeleteMapping("management/users/delete/{id:[0-9]+}")
+    @CrossOrigin
+    @DeleteMapping("/management/users/delete/{id:[0-9]+}")
     GenericResponse deleteMember(@PathVariable long id) {
         userService.deleteMember(id);
         return new GenericResponse("Member has been removed");

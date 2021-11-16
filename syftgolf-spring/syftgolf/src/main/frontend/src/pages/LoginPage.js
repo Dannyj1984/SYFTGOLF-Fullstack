@@ -41,7 +41,7 @@ export class LoginPage extends React.Component {
     .postLogin(body)
     .then((response) => {
     this.setState({ pendingApiCall: false }, () => {
-          this.props.history.push('/members');
+          this.props.history.push('/events');
         });
       })
       .catch((error) => {

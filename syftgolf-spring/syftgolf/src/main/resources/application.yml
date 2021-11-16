@@ -1,11 +1,11 @@
 spring:
   profiles:
     active:
-      - dev
+      - prod
   datasource:
     url: jdbc:postgresql://ec2-35-168-65-132.compute-1.amazonaws.com:5432/d45i08ccifd54q
-    username: uzpbujjwbunmfe
-    password: 7515dd7af5a7b798d554c4f74b7895eb58e8f55d02da16a86a792b16cf67b7fd
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     jpa:
       properties:
         hibernate:
@@ -36,8 +36,8 @@ spring:
       on-profile: prod
   datasource:
     url: jdbc:postgresql://ec2-35-168-65-132.compute-1.amazonaws.com:5432/d45i08ccifd54q
-    username: uzpbujjwbunmfe
-    password: 7515dd7af5a7b798d554c4f74b7895eb58e8f55d02da16a86a792b16cf67b7fd
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -73,6 +73,7 @@ spring:
 
 syftgolf:
   upload-path: uploads-test
+
 
 
 

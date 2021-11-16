@@ -6,6 +6,7 @@ import com.syftgolf.syftgolf.file.FileService;
 import com.syftgolf.syftgolf.user.vm.UserHandicapVM;
 import com.syftgolf.syftgolf.user.vm.UserUpdateHandicapVM;
 import com.syftgolf.syftgolf.user.vm.UserUpdateVM;
+import com.syftgolf.syftgolf.user.vm.UserUpdateWinVM;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -87,6 +88,20 @@ public class UserService {
 
         return userRepository.save(inDB);
     }
+
+    public User addWins(long id) {
+        User inDB = userRepository.getById(id);
+        inDB.setWins(inDB.getWins() + 1);
+
+        return userRepository.save(inDB);
+    }
+    public User takeWins(long id) {
+        User inDB = userRepository.getById(id);
+        inDB.setWins(inDB.getWins() - 1);
+
+        return userRepository.save(inDB);
+    }
+
 
     public User update(long id, UserUpdateVM userUpdate) {
         User inDB = userRepository.getOne(id);

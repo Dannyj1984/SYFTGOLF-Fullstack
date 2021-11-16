@@ -31,6 +31,7 @@ public class CourseController {
     CourseRepository courseRepository;
 
     @PostMapping("/management/courses")
+    @CrossOrigin
     GenericResponse createCourse(@Valid @RequestBody Course course) {
         courseService.save(course);
         return new GenericResponse("Course saved");
@@ -38,6 +39,7 @@ public class CourseController {
 
     //For listing courses in the add new event page
     @GetMapping("/management/courses")
+    @CrossOrigin
     List<Course> getCourses() {
 
         List<Course> courses;
@@ -46,17 +48,20 @@ public class CourseController {
     }
 
     @GetMapping("/courses")
+    @CrossOrigin
     Page<CourseVM> getCourses(Pageable page) {
         return courseService.getCourses(page).map(CourseVM::new);
     }
 
     @GetMapping("/courses/{courseName}")
+    @CrossOrigin
     CourseVM getCourseByName(@PathVariable String courseName) {
         Course course = courseService.getByCourseName(courseName);
         return new CourseVM(course);
     }
 
     @PutMapping("/management/courses/{id:[0-9]+}")
+    @CrossOrigin
     CourseVM updateCourse(@PathVariable long id, @Valid @RequestBody(required = false) CourseUpdateVM courseUpdate) {
         System.out.println(courseUpdate);
         Course updated = courseService.updateCourse(id, courseUpdate);
@@ -64,6 +69,7 @@ public class CourseController {
 
     }
     @DeleteMapping("/management/courses/delete/{id:[0-9]+}")
+    @CrossOrigin
     GenericResponse deleteCourse(@PathVariable long id) {
         courseService.deleteCourse(id);
         return new GenericResponse("Course has been removed");

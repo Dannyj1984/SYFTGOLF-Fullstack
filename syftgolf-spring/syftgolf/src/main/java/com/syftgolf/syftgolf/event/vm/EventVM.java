@@ -22,6 +22,8 @@ public class EventVM {
 
     private int maxentrants;
 
+    private int currententrants;
+
     private double cost;
 
     private String eventtype;

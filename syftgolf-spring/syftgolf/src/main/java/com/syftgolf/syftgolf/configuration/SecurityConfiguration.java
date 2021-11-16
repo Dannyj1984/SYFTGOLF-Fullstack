@@ -34,10 +34,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
         http.httpBasic().authenticationEntryPoint(new BasicAuthenticationEntryPoint());
 
         http
+                .cors()
+                .and()
                 .authorizeRequests()
-                    .antMatchers("/api/1.0/signup").hasAnyAuthority("USER", "ADMIN")
-                    .antMatchers(HttpMethod.POST, "/api/1.0/login").authenticated()
-                    .antMatchers(HttpMethod.PUT, "/api/1.0/users/{id:[0-9]+}").authenticated()
+                    .antMatchers("/login").permitAll()
+                    .antMatchers("/*").authenticated()
+                    //.antMatchers(HttpMethod.POST).hasAuthority("ADMIN")
+                    //.antMatchers(HttpMethod.POST, "/api/1.0/login").authenticated()
+                    //.antMatchers(HttpMethod.PUT, "/api/1.0/users/{id:[0-9]+}").authenticated()
                     //.antMatchers(HttpMethod.DELETE, "/api/1.0/management/users/delete/{id:[0-9]+}").authenticated()
                 .and()
                 .authorizeRequests().anyRequest().permitAll();
