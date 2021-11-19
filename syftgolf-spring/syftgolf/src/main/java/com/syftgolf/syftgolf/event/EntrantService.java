@@ -27,7 +27,7 @@ public class EntrantService{
         Event event = this.eventRepository.findById(entrant.getEvent_id()).orElseThrow(IllegalArgumentException::new);
         System.out.println(event.getEventid());
         Entrants entrants = new Entrants(user, event);
-        
+
         //TODO need to add 1 to current entrants count for this event
         return entrantRepository.save(entrants);
     }

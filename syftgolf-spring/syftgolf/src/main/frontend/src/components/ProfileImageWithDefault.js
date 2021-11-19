@@ -4,7 +4,7 @@ import defaultPicture from '../assets/profile.png';
 const ProfileImageWithDefault = (props) => {
   let imageSource = defaultPicture;
   if (props.image) {
-    imageSource = `https://glacial-sierra-91195.herokuapp.com/images/profile/${props.image}`;
+    imageSource = `${props.image}`;
   }
   return (
     //eslint-disable-next-line
@@ -12,7 +12,7 @@ const ProfileImageWithDefault = (props) => {
       {...props}
       src={props.src || imageSource}
       onError={(event) => {
-        event.target.src = defaultPicture;
+      event.target.src = defaultPicture;
       }}
     />
   );

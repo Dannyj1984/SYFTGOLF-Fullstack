@@ -38,7 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .and()
                 .authorizeRequests()
                     .antMatchers("/login").permitAll()
-                    .antMatchers("/*").authenticated()
+                    .antMatchers("/**").authenticated()
                     //.antMatchers(HttpMethod.POST).hasAuthority("ADMIN")
                     //.antMatchers(HttpMethod.POST, "/api/1.0/login").authenticated()
                     //.antMatchers(HttpMethod.PUT, "/api/1.0/users/{id:[0-9]+}").authenticated()

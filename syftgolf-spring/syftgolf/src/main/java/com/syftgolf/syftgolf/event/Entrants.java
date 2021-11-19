@@ -19,6 +19,9 @@ public class Entrants {
     @Column(name = "entrantid")
     long entrantid;
 
+    @Column(name = "score")
+    private int score = 0;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;

@@ -75,6 +75,7 @@ public class Event {
 
     private String info;
 
+
     //relationship with event and course
     @ManyToOne
     @JoinColumn(name = "course_id")
@@ -84,6 +85,7 @@ public class Event {
     @ToString.Exclude
     @OneToMany(mappedBy = "event")
     Set<Entrants> entrants;
+
 
 
 }

@@ -3,6 +3,7 @@ package com.syftgolf.syftgolf.event;
 import com.syftgolf.syftgolf.error.ApiError;
 import com.syftgolf.syftgolf.event.vm.EventUpdateVM;
 import com.syftgolf.syftgolf.event.vm.EventVM;
+import com.syftgolf.syftgolf.event.vm.TeeSheetVM;
 import com.syftgolf.syftgolf.shared.GenericResponse;
 import com.syftgolf.syftgolf.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,15 @@ public class EventController {
         System.out.println(updated);
         return new EventVM(updated);
 
+    }
+
+    //Set tee sheet
+    @PutMapping("/management/events/teesheet/{id:[0-9]+}")
+    @CrossOrigin
+    TeeSheetVM updateTeeSheet(@PathVariable long id, @RequestBody TeeSheet teeSheetUpdate) {
+        System.out.print("id" + id);
+
+        return new TeeSheetVM();
     }
 
 

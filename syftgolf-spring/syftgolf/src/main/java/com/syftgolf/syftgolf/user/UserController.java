@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -46,6 +47,13 @@ public class UserController {
     @CrossOrigin
     @GetMapping("/getListOfUser")
     List<User> users(){
+        return userRepository.findAllUsers(Sort.by("username"));
+    }
+
+    //get List of members who have entered an event
+    @CrossOrigin
+    @GetMapping("/users/events/entrants")
+    List<User> entrants(){
         return userRepository.findAllUsers(Sort.by("username"));
     }
 

@@ -29,6 +29,9 @@ function App() {
       {/* When using switch need it will try each route in order. If two routes match it will show the first one. */}
         <Switch>
           <Redirect exact from="/" to="/login" />
+          <Redirect exact from="/member/login" to="/login" />
+          <Redirect exact from="/event/login" to="/login" />
+          <Redirect exact from="/course/login" to="/login" />
           <Route  path="/" exact component={HomePage} />
           <Route path="/about" exact component={AboutPage} />
           <Route  path="/login" exact component={LoginPage} />

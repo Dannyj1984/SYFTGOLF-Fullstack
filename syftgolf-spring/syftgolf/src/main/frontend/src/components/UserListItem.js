@@ -238,6 +238,8 @@ const UserListItem = (props) => {
         });
       };
 
+      console.log(props.user.image);
+
 
    return (
             <div className="card col-12">
@@ -257,8 +259,8 @@ const UserListItem = (props) => {
                         <p className="m-0">Home club : {props.user.homeclub}</p>
                         <p className="m-0">Role : {props.user.role}</p>
                         <p className="m-0">Wins : {props.user.wins}</p> 
-                        {(roleJSON.role === 'EVENTADMIN' || roleJSON.roel === 'ADMIN') && <button className="btn btn-outline-success" onClick={addWin}>+</button> } 
-                        {(roleJSON.role === 'EVENTADMIN' || roleJSON.role === 'ADMIN') && <button className="btn btn-outline-danger" onClick={takeWin}>-</button> }
+                        {(roleJSON.role === 'EVENTADMIN' && <button className="btn btn-outline-success" onClick={addWin}>+</button> )} 
+                        {(roleJSON.role === 'EVENTADMIN' && <button className="btn btn-outline-danger" onClick={takeWin}>-</button> )}
                     </div>
                 </div>
                 <div>
