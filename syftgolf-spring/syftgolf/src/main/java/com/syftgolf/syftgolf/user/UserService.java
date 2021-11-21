@@ -3,10 +3,7 @@ package com.syftgolf.syftgolf.user;
 
 import com.syftgolf.syftgolf.error.NotFoundException;
 import com.syftgolf.syftgolf.file.FileService;
-import com.syftgolf.syftgolf.user.vm.UserHandicapVM;
-import com.syftgolf.syftgolf.user.vm.UserUpdateHandicapVM;
-import com.syftgolf.syftgolf.user.vm.UserUpdateVM;
-import com.syftgolf.syftgolf.user.vm.UserUpdateWinVM;
+import com.syftgolf.syftgolf.user.vm.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +33,13 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setSochcp(user.getHandicap());
         return userRepository.save(user);
+    }
+
+    public User changePassword(long userid, UserPasswordUpdateVM userPasswordUpdateVM) {
+        User inDB = userRepository.getOne(userid);
+        inDB.setPassword(passwordEncoder.encode(userPasswordUpdateVM.getPassword()));
+        System.out.println(userPasswordUpdateVM.getPassword());
+        return userRepository.save(inDB);
     }
 
     public Page<User> getUsers(Pageable pageable) {

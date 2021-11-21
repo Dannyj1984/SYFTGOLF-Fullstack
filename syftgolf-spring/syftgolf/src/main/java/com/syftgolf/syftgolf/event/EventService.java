@@ -1,6 +1,8 @@
 package com.syftgolf.syftgolf.event;
 
 import com.syftgolf.syftgolf.error.NotFoundException;
+import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
+import com.syftgolf.syftgolf.event.teesheet.TeeSheetRepository;
 import com.syftgolf.syftgolf.event.vm.EventUpdateVM;
 import com.syftgolf.syftgolf.user.User;
 import org.springframework.data.domain.Page;
@@ -41,7 +43,6 @@ public class EventService {
 
     public Event updateEvent(long id, EventUpdateVM eventUpdate) {
         Event inDB = eventRepository.getOne(id);
-        System.out.println(inDB);
         inDB.setEventname(eventUpdate.getEventname());
         inDB.setDate(eventUpdate.getDate());
         inDB.setCost(eventUpdate.getCost());

@@ -10,6 +10,7 @@ class UserPage extends React.Component{
         userNotFound: false,
         isLoadingUser: false,
         inEditMode: false,
+        inPasswordEditMode: false,
         originalUsername: undefined,
         originalEmail: undefined,
         originalHomeclub: undefined,
@@ -59,6 +60,14 @@ class UserPage extends React.Component{
         inEditMode: true
       });
     };
+
+    //Password edit
+    onClickEditPassword = () => {
+      this.setState({
+        inPasswordEditMode: true
+      });
+      console.log(this.state.inPasswordEditMode);
+    };
   
     onClickCancel = () => {
       const user = { ...this.state.user };
@@ -78,10 +87,13 @@ class UserPage extends React.Component{
         originalMobile: undefined,
         originalHomeclub: undefined,
         inEditMode: false,
+        inPasswordEditMode: false,
         image: undefined
         
       });
     };
+
+    
 
     onClickSave = () => {
       const userId = this.props.loggedInUser.id;
@@ -93,7 +105,6 @@ class UserPage extends React.Component{
         mobile: this.state.user.mobile,
         image: this.state.image && this.state.image.split(',')[1]
       };
-      console.log(userUpdate);
       this.setState({ pendingUpdateCall: true });
     apiCalls
       .updateUser(userId, userUpdate)
@@ -103,6 +114,7 @@ class UserPage extends React.Component{
         this.setState(
           {
             inEditMode: false,
+            inPasswordEditMode: false,
             originalUsername: undefined,
             originalHandicap: undefined,
             originalEmail: undefined,
@@ -237,8 +249,10 @@ class UserPage extends React.Component{
           <ProfileCard
           user={this.state.user}
           isEditable={isEditable}
+          inPasswordEditMode={this.state.inPasswordEditMode}
           inEditMode={this.state.inEditMode}
           onClickEdit={this.onClickEdit}
+          onClickEditPassword={this.onClickEditPassword}
           onClickCancel={this.onClickCancel}
           onClickSave={this.onClickSave}
           onChangeUsername={this.onChangeUsername}

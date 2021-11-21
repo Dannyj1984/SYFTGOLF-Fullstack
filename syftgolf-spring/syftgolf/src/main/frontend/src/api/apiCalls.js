@@ -69,6 +69,10 @@ export const takeWin = (userid) => {
   return axios.put(url + '/api/1.0/management/user/' + userid);
 }
 
+export const changePassword = (userid, user) => {
+  return axios.put(url + '/api/1.0/user/passwordChange/' + userid, user);
+}
+
 
 //course calls
 
@@ -125,11 +129,11 @@ export const getEvents = () => {
 };
 
 export const updateEvent = (eventId, body) => {
-  return axios.put(url + '/api/1.0/management/events/' + eventId, body);
+  return axios.put(url + '/api/1.0/management/events/teesheet/' + eventId, body);
 };
 
-export const updateTeeSheetCall = (eventId) => {
-  return axios.put(url + '/api/1.0/management/events/teesheet/' + eventId);
+export const updateTeeSheetCall = (eventId, body) => {
+  return axios.put(url + '/api/1.0/management/events/teesheet/' + eventId, body);
 };
 
 
@@ -143,6 +147,10 @@ export const getCourseDetails = (eventid) => {
 
 export const eventEnter = (entrant) => {
   return axios.post(url + '/api/1.0/management/events/entrants', entrant);
+}
+
+export const getTeesheet = (eventid) => {
+  return axios.get(url + '/api/1.0/event/getTeeSheet/'+ eventid);
 }
 
 //Society calls

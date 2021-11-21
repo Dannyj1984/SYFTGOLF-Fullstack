@@ -1,11 +1,12 @@
 package com.syftgolf.syftgolf.event;
 
 import com.syftgolf.syftgolf.error.ApiError;
+import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
+import com.syftgolf.syftgolf.event.teesheet.TeeSheetService;
 import com.syftgolf.syftgolf.event.vm.EventUpdateVM;
 import com.syftgolf.syftgolf.event.vm.EventVM;
 import com.syftgolf.syftgolf.event.vm.TeeSheetVM;
 import com.syftgolf.syftgolf.shared.GenericResponse;
-import com.syftgolf.syftgolf.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ public class EventController {
     EventRepository eventRepository;
 
     @Autowired
-    EntrantRepository entrantRepository;
+    TeeSheetService teeSheetService;
 
     @GetMapping("/management/events")
     @CrossOrigin
@@ -48,6 +49,11 @@ public class EventController {
     @CrossOrigin
     GenericResponse createEvent(@Valid @RequestBody Event event) {
         eventService.save(event);
+        Event inDB = eventRepository.findByEventname(event.getEventname());
+        TeeSheet newTee = new TeeSheet();
+        newTee.setId(inDB.getEventid());
+        inDB.setTeeSheet(newTee);
+        eventService.save(inDB);
         return new GenericResponse("Event saved");
     }
 
@@ -95,20 +101,18 @@ public class EventController {
     @PutMapping("/management/events/{id:[0-9]+}")
     @CrossOrigin
     EventVM updateEvent(@PathVariable long id, @Valid @RequestBody(required = false) EventUpdateVM eventUpdate) {
-        System.out.println("id" + id);
         Event updated = eventService.updateEvent(id, eventUpdate);
-        System.out.println(updated);
         return new EventVM(updated);
 
     }
 
-    //Set tee sheet
+    //Update tee sheet
     @PutMapping("/management/events/teesheet/{id:[0-9]+}")
     @CrossOrigin
-    TeeSheetVM updateTeeSheet(@PathVariable long id, @RequestBody TeeSheet teeSheetUpdate) {
-        System.out.print("id" + id);
+    GenericResponse updateTeeSheet(@PathVariable long id, @RequestBody TeeSheet teeSheetUpdate) {
+        teeSheetService.updateTeeSheet(id, teeSheetUpdate);
 
-        return new TeeSheetVM();
+        return new GenericResponse("teesheet updated");
     }
 
 

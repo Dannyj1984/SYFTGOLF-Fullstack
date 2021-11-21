@@ -1,12 +1,13 @@
 package com.syftgolf.syftgolf.event;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.syftgolf.syftgolf.course.Course;
+import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -82,9 +83,12 @@ public class Event {
     @ToString.Exclude
     private Course course;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "event")
-    Set<Entrants> entrants;
+    //Relationship for event and teesheet
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "teesheet_id", referencedColumnName = "teesheetid")
+    private TeeSheet teeSheet;
+
 
 
 

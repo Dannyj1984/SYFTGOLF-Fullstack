@@ -38,17 +38,17 @@ const EventListItem = (props) => {
 
   //Tee times array
   const [teeTimes, setTeeTimes] = useState({
-      teetime1: '10:40',
-      p1t1: 'Danny J',
-      p2t1: 'Mike D',
-      p3t1: 'James U',
-      p4t1: 'Damien H',
-      teetime2: '10:50',
+      teetime1: '',
+      p1t1: '',
+      p2t1: '',
+      p3t1: '',
+      p4t1: '',
+      teetime2: '',
       p1t2: '',
       p2t2: '',
       p3t2: '',
       p4t2: '',
-      teetime3: '11:00',
+      teetime3: '',
       p1t3: '',
       p2t3: '',
       p3t3: '',
@@ -57,7 +57,12 @@ const EventListItem = (props) => {
       p1t4: '',
       p2t4: '',
       p3t4: '',
-      p4t4: ''
+      p4t4: '',
+      teetime5: '',
+      p1t5: '',
+      p2t5: '',
+      p3t5: '',
+      p4t5: ''
   });
 
   //Edit Tee time modal setup
@@ -65,6 +70,7 @@ const EventListItem = (props) => {
 
   const handleCloseEditTeeTime = () => setShowEditTeeTime(false);
   const handleShowEditTeeTime = () => {
+    //Check if device is in portrait and if so, warn that using in Landscape is advisable for this task
     if(window.innerHeight > window.innerWidth){
       alert("Please use Landscape mode when editing tee times!");
   }
@@ -131,12 +137,15 @@ const EventListItem = (props) => {
       const updateTeeSheet = () => {
         const event = {...props.event}
         const eventid = event.id;
-        console.log("event is : " + eventid);
+        setPendingApiCall(true)
 
 
         apiCalls
-        .updateTeeSheetCall(eventid)
-        .then (window.location.reload());
+        .updateTeeSheetCall(eventid, teeTimes)
+        .then((response) => {
+          window.location.reload();
+        })
+        setPendingApiCall(false)
 
       };
 
@@ -146,9 +155,19 @@ const EventListItem = (props) => {
           .getCourseDetails(props.event.id)
           .then((response) => {
             setCourseName(response.data.course);
-          });
+          }, []);
           
       });
+
+      //Get teesheet data for event when loading that modal
+      const getTeesheet = () =>  {
+        apiCalls
+          .getTeesheet(props.event.id)
+          .then((response) => {
+            setTeeTimes(response.data);
+            console.log(teeTimes);
+          }, []);
+      }
 
       //Data change in edit tee sheet
       const onChange = (event) => {
@@ -233,7 +252,7 @@ const EventListItem = (props) => {
                       <button  
                           className="btn btn-primary tooltips float-left" 
                           data-placement="left" 
-                          onClick={handleShowTeeTime}
+                          onClick={()=>{ handleShowTeeTime(); getTeesheet() }}
                           data-toggle="tooltip" 
                           data-original-title="view"><i
                           className="fa fa-clock"/>
@@ -339,7 +358,7 @@ const EventListItem = (props) => {
               <>
                         
                   <Modal show={showTeeTime} onHide={handleCloseTeeTime} >
-                    <Modal.Header closeButton>
+                    <Modal.Header>
                       <Modal.Title>Tee sheet for {props.event.eventname} on {formatDate}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
@@ -350,7 +369,7 @@ const EventListItem = (props) => {
                           <th scope="col">Player 1</th>
                           <th scope="col">Player 2</th>
                           <th scope="col">Player 3</th>
-                          {teeTimes.p4t1 !== '' &&
+                          {teeTimes.p4t1 !== null &&
                           <th scope="col">Player 4</th>}
                         </tr>
                       </thead>
@@ -362,14 +381,15 @@ const EventListItem = (props) => {
                           <td>{teeTimes.p3t1}</td>
                           <td>{teeTimes.p4t1}</td>
                         </tr>
+                        {teeTimes.teetime2 !== null &&
                         <tr>
                           <th scope="row">{teeTimes.teetime2}</th>
                           <td>{teeTimes.p1t2}</td>
                           <td>{teeTimes.p2t2}</td>
                           <td>{teeTimes.p3t2}</td>
                           <td>{teeTimes.p4t2}</td>
-                        </tr>
-                        {teeTimes.teetime3 !== '' &&
+                        </tr>}
+                        {teeTimes.teetime3 !== null &&
                         <tr>
                           <th scope="row">{teeTimes.teetime3}</th>
                           <td>{teeTimes.p1t3}</td>
@@ -377,13 +397,21 @@ const EventListItem = (props) => {
                           <td>{teeTimes.p3t3}</td>
                           <td>{teeTimes.p4t3}</td>
                         </tr>}
-                        {teeTimes.teetime4 !== '' &&
+                        {teeTimes.teetime4 !== null &&
                         <tr>
                           <th scope="row">{teeTimes.teetime4}</th>
                           <td>{teeTimes.p1t4}</td>
                           <td>{teeTimes.p2t4}</td>
                           <td>{teeTimes.p3t4}</td>
                           <td>{teeTimes.p4t4}</td>
+                        </tr>}
+                        {teeTimes.teetime5 !== null &&
+                        <tr>
+                          <th scope="row">{teeTimes.teetime5}</th>
+                          <td>{teeTimes.p1t5}</td>
+                          <td>{teeTimes.p2t5}</td>
+                          <td>{teeTimes.p3t5}</td>
+                          <td>{teeTimes.p4t5}</td>
                         </tr>}
                       </tbody>
                     </Table>
@@ -542,12 +570,96 @@ const EventListItem = (props) => {
                                     onChange={onChange}  
                                   />
                                 </td>
+                                </tr>
+                                <tr>
+                                <th scope="row">
+                                <Input 
+                                    name="teetime4"
+                                    placeholder="tee time 4"
+                                    value={teeTimes.teetime4}
+                                    onChange={onChange}  
+                                  />
+                                </th>
+                                <td>
+                                <Input 
+                                    name="p1t4"
+                                    placeholder="Player 1"
+                                    value={teeTimes.p1t4}
+                                    onChange={onChange}  
+                                  />
+                                </td>
+                                <td>
+                                <Input 
+                                    name="p2t4"
+                                    placeholder="Player 2"
+                                    value={teeTimes.p2t4}
+                                    onChange={onChange}  
+                                  />
+                                </td>
+                                <td>
+                                <Input 
+                                    name="p3t4"
+                                    placeholder="Player 3"
+                                    value={teeTimes.p3t4}
+                                    onChange={onChange}  
+                                  />
+                                </td>
+                                <td>
+                                <Input 
+                                    name="p4t4"
+                                    placeholder="Player 4"
+                                    value={teeTimes.p4t4}
+                                    onChange={onChange}  
+                                  />
+                                </td>
+                              </tr>
+                              <tr>
+                                <th scope="row">
+                                <Input 
+                                    name="teetime5"
+                                    placeholder="tee time 5"
+                                    value={teeTimes.teetime5}
+                                    onChange={onChange}  
+                                  />
+                                </th>
+                                <td>
+                                <Input 
+                                    name="p1t5"
+                                    placeholder="Player 1"
+                                    value={teeTimes.p1t5}
+                                    onChange={onChange}  
+                                  />
+                                </td>
+                                <td>
+                                <Input 
+                                    name="p2t5"
+                                    placeholder="Player 2"
+                                    value={teeTimes.p2t5}
+                                    onChange={onChange}  
+                                  />
+                                </td>
+                                <td>
+                                <Input 
+                                    name="p3t5"
+                                    placeholder="Player 3"
+                                    value={teeTimes.p3t5}
+                                    onChange={onChange}  
+                                  />
+                                </td>
+                                <td>
+                                <Input 
+                                    name="p4t5"
+                                    placeholder="Player 4"
+                                    value={teeTimes.p4t5}
+                                    onChange={onChange}  
+                                  />
+                                </td>
                               </tr>
                             </tbody>
                           </Table>
                           </Modal.Body>
                           <Modal.Footer>
-                            <Button variant="success " onClick={updateTeeSheet}>Update</Button>
+                            <Button variant="success" disabled={pendingApiCall} onClick={updateTeeSheet}>Update</Button>
                             <Button variant="secondary" onClick={handleCloseEditTeeTime}>
                               Close
                             </Button>

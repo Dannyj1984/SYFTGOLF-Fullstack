@@ -27,6 +27,12 @@ export const signupHandler = (user) => {
   };
 };
 
+export const changePassword = (id, user) => {
+  return async function(dispatch) {
+    await apiCalls.changePassword(id, user);
+  };
+};
+
 //course sign up
 export const courseSignupHandler = (course) => {
   return async function(dispatch) {
@@ -46,7 +52,6 @@ export const eventSignupHandler = (event) => {
 
 export const enterEntrantHandler = (entrant) => {
   return async function(dispatch) {
-    console.log(entrant);
     await apiCalls.eventEnter(entrant);
 
   };

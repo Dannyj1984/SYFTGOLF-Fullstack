@@ -1,5 +1,6 @@
-package com.syftgolf.syftgolf.course;
+package com.syftgolf.syftgolf.course.hole;
 
+import com.syftgolf.syftgolf.course.Course;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,8 +33,5 @@ public class Hole {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-
-
-
 
 }

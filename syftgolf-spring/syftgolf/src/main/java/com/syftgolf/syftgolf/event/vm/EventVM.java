@@ -1,6 +1,7 @@
 package com.syftgolf.syftgolf.event.vm;
 
 import com.syftgolf.syftgolf.event.Event;
+import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -34,6 +35,8 @@ public class EventVM {
 
     private String winner;
 
+    private TeeSheet teesheet;
+
     public EventVM(Event event) {
         this.setId(event.getEventid());
         this.setEventname(event.getEventname());
@@ -44,6 +47,7 @@ public class EventVM {
         this.setQualifier(event.getQualifier());
         this.setMaxentrants(event.getMaxentrants());
         this.setWinner(event.getWinner());
+        this.setTeesheet(event.getTeeSheet());
 //        this.setCourse_id(event.getCourse_id());
     }
 }

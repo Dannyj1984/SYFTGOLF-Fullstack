@@ -21,8 +21,6 @@ const MultipleSignUp = (props) => {
         }
       },
     ]);
-
-    console.log(forms);
     
     // this function will be called by the SignUpForm
     // this is taking the index as param and also the name and value of that input

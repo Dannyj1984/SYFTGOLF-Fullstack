@@ -238,8 +238,6 @@ const UserListItem = (props) => {
         });
       };
 
-      console.log(props.user.image);
-
 
    return (
             <div className="card col-12">

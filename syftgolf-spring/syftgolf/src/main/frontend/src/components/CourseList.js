@@ -102,7 +102,6 @@ export default CourseList;
 //           page: response.data,
 //           loadError: undefined
 //         });
-//         console.log(this.state.page);
 //       })
 //       .catch((error) => {
 //         this.setState({ loadError: 'Course load failed' });

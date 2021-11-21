@@ -1,9 +1,7 @@
 package com.syftgolf.syftgolf.user;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -17,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -107,6 +106,7 @@ public class UserController {
 
     //Edit member details
     @PutMapping("/management/users/{id:[0-9]+}")
+    @PreAuthorize("#id == principal.id")
     @CrossOrigin
     UserVM updateUser(@PathVariable long id, @Valid @RequestBody(required = false) UserUpdateVM userUpdate) {
         System.out.println(userUpdate);
@@ -144,6 +144,16 @@ public class UserController {
     GenericResponse deleteMember(@PathVariable long id) {
         userService.deleteMember(id);
         return new GenericResponse("Member has been removed");
+    }
+
+    //Update password
+    @CrossOrigin
+    @PreAuthorize("#id == principal.id")
+    @PutMapping("/user/passwordChange/{id:[0-9]+}")
+    GenericResponse changePassword(@PathVariable long id, @Valid @RequestBody UserPasswordUpdateVM userPasswordUpdate) {
+        userService.changePassword(id, userPasswordUpdate);
+
+        return new GenericResponse("Password Changed");
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

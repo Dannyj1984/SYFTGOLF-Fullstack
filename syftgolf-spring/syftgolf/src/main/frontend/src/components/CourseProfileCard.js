@@ -29,7 +29,6 @@ const CourseProfileCard = (props) => {
       .getCourseHoles(id)
       .then((response) => {
         setmyDataObject({ ...myDataObject, hole: response.data, loadError: undefined})
-        console.log(response.data);
       })
       .catch((error) => {
         setmyDataObject({ ...myDataObject, loadError: "Hole load failed" });
