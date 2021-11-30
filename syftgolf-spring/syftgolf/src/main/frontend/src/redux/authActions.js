@@ -37,7 +37,7 @@ export const changePassword = (id, user) => {
 export const courseSignupHandler = (course) => {
   return async function(dispatch) {
     await apiCalls.signupCourse(course);
-
+    console.log(course)
   };
 };
 

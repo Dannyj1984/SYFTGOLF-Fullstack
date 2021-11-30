@@ -149,5 +149,4 @@ public class User implements UserDetails, Serializable {
     private Society society;
 
 
-
 }

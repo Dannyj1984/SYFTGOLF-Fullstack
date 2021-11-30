@@ -3,6 +3,8 @@ package com.syftgolf.syftgolf.user;
 
 import com.syftgolf.syftgolf.error.NotFoundException;
 import com.syftgolf.syftgolf.file.FileService;
+import com.syftgolf.syftgolf.society.Society;
+import com.syftgolf.syftgolf.society.SocietyRepository;
 import com.syftgolf.syftgolf.user.vm.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +22,14 @@ public class UserService {
 
     PasswordEncoder passwordEncoder;
 
+    SocietyRepository societyRepository;
+
     FileService fileService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, FileService fileService) {
+    public UserService(UserRepository userRepository, SocietyRepository societyRepository, PasswordEncoder passwordEncoder, FileService fileService) {
         super();
         this.userRepository = userRepository;
+        this.societyRepository = societyRepository;
         this.passwordEncoder = passwordEncoder;
         this.fileService = fileService;
     }
@@ -32,6 +37,8 @@ public class UserService {
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setSochcp(user.getHandicap());
+        Society inDB = societyRepository.getOne(user.getSociety().getId());
+        user.setSociety(inDB);
         return userRepository.save(user);
     }
 
@@ -43,11 +50,13 @@ public class UserService {
     }
 
     public Page<User> getUsers(Pageable pageable) {
-//        if(loggedInUser != null) {
-//            //Get all users except for logged in user
-//            return userRepository.findByUsernameNot(loggedInUser.getUsername(), pageable);
-//        }
+
         return userRepository.findAll(pageable);
+    }
+
+    public Page<User> getSocietyUsers(Pageable pageable, long id) {
+
+        return userRepository.findAllSocietyUsers(pageable, id);
     }
 
     public User getByUsername(String username) {
@@ -114,6 +123,7 @@ public class UserService {
         inDB.setSochcp(userUpdate.getHandicap() - inDB.getSochcpred());
         inDB.setEmail(userUpdate.getEmail());
         inDB.setHomeclub(userUpdate.getHomeclub());
+        inDB.setCdh(userUpdate.getCdh());
         inDB.setMobile(userUpdate.getMobile());
         if(userUpdate.getImage() != null) {
             String savedImageName;
@@ -132,6 +142,10 @@ public class UserService {
         User user = userRepository.getOne(id);
         userRepository.deleteById(id);
 
+    }
+
+    public Page<User> getSomeUsers(Pageable pageable, long id) {
+        return userRepository.findAllBySocietyId(pageable, id);
     }
 
 

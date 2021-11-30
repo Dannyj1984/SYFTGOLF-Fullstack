@@ -23,15 +23,17 @@ public class CourseService {
         this.fileService = fileService;
     }
 
+    //Save a new course
     public Course save(Course course) {
         return courseRepository.save(course);
     }
 
+    //Get a page of courses
     public Page<Course> getCourses(Pageable pageable ) {
-        System.out.println(courseRepository.findAll(pageable));
         return courseRepository.findAll(pageable);
     }
 
+    //Get a course by coursename to show on course profile card
     public Course getByCourseName(String courseName) {
         Course inDB = courseRepository.findByCourseName(courseName);
         if(inDB == null) {
@@ -40,6 +42,7 @@ public class CourseService {
         return inDB;
     }
 
+    //Update course details
     public Course updateCourse(long id, CourseUpdateVM courseUpdate) {
         Course inDB = courseRepository.getOne(id);
         inDB.setCourseName(courseUpdate.getCourseName());
@@ -58,10 +61,16 @@ public class CourseService {
         return courseRepository.save(inDB);
     }
 
+    //Delete a course
     public void deleteCourse(long id) {
         Course course = courseRepository.getOne(id);
         courseRepository.deleteById(id);
 
+    }
+
+    //Get a page of courses for a society
+    public Page<Course> getCoursesForSociety(Pageable pageable, long id) {
+        return courseRepository.findAllBySocietyId(pageable, id);
     }
 
 

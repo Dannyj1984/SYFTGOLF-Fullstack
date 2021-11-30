@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.syftgolf.syftgolf.shared.CurrentUser;
+import com.syftgolf.syftgolf.society.Society;
+import com.syftgolf.syftgolf.society.SocietyRepository;
 import com.syftgolf.syftgolf.user.vm.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,34 +36,31 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    SocietyRepository societyRepository;
+
+
     //Create new member
     @CrossOrigin
     @PostMapping("/management/users")
     GenericResponse createUser(@Valid @RequestBody User user) {
         userService.save(user);
+        //Get the society this user will be added to
+        Society soc = societyRepository.getOne(user.getSociety().getId());
+
+        //Increase the number of members for this society by 1
+        soc.setMembers(soc.getMembers() + 1);
+
+        //Save the society with updated members
+        societyRepository.save(soc);
         return new GenericResponse("User saved");
     }
 
-    //get List of members
+    //Get Page of users for a society.
     @CrossOrigin
-    @GetMapping("/getListOfUser")
-    List<User> users(){
-        return userRepository.findAllUsers(Sort.by("username"));
-    }
-
-    //get List of members who have entered an event
-    @CrossOrigin
-    @GetMapping("/users/events/entrants")
-    List<User> entrants(){
-        return userRepository.findAllUsers(Sort.by("username"));
-    }
-
-    //Get page of members
-    @CrossOrigin
-    @GetMapping("/users")
-    Page<UserVM> getUsers(Pageable page) {
-        System.out.println(page);
-        return userService.getUsers(page).map(UserVM::new);
+    @GetMapping("/societyUsers/{id:[0-9]+}")
+    Page<User> getSomeUsers(Pageable page, @PathVariable long id) {
+        return userService.getSomeUsers(page, id);
     }
 
     //Get member by username
@@ -70,6 +69,36 @@ public class UserController {
     UserVM getUserByName(@PathVariable String username) {
         User user = userService.getByUsername(username);
         return new UserVM(user);
+    }
+
+    //Edit member details
+    @PutMapping("/management/users/{id:[0-9]+}")
+    @PreAuthorize("#id == principal.id")
+    @CrossOrigin
+    UserVM updateUser(@PathVariable long id, @Valid @RequestBody(required = false) UserUpdateVM userUpdate) {
+        User updated = userService.update(id, userUpdate);
+        return new UserVM(updated);
+    }
+
+    //Delete member
+    @CrossOrigin
+    @DeleteMapping("/management/users/delete/{id:[0-9]+}")
+    GenericResponse deleteMember(@PathVariable long id) {
+        //Get the user from the database
+        User u = userRepository.getOne(id);
+
+        //Get the society this user belongs to
+        Society s = societyRepository.getOne(u.getSociety().getId());
+
+        //Take one from the number of members of this society
+        s.setMembers(s.getMembers() - 1);
+
+        //Delete the user from database
+        userService.deleteMember(id);
+
+        //Save the society with the updated number of members
+        societyRepository.save(s);
+        return new GenericResponse("Member has been removed");
     }
 
     //Make member admin
@@ -104,16 +133,6 @@ public class UserController {
         return new UserVM(userUpdated);
     }
 
-    //Edit member details
-    @PutMapping("/management/users/{id:[0-9]+}")
-    @PreAuthorize("#id == principal.id")
-    @CrossOrigin
-    UserVM updateUser(@PathVariable long id, @Valid @RequestBody(required = false) UserUpdateVM userUpdate) {
-        System.out.println(userUpdate);
-        User updated = userService.update(id, userUpdate);
-        return new UserVM(updated);
-    }
-
     //Edit members handicap
     @CrossOrigin
     @PutMapping("/management/users/handicap/{id:[0-9]+}")
@@ -138,23 +157,58 @@ public class UserController {
         return new UserHandicapVM(updated);
     }
 
-    //Delete member
-    @CrossOrigin
-    @DeleteMapping("/management/users/delete/{id:[0-9]+}")
-    GenericResponse deleteMember(@PathVariable long id) {
-        userService.deleteMember(id);
-        return new GenericResponse("Member has been removed");
-    }
-
     //Update password
     @CrossOrigin
     @PreAuthorize("#id == principal.id")
     @PutMapping("/user/passwordChange/{id:[0-9]+}")
     GenericResponse changePassword(@PathVariable long id, @Valid @RequestBody UserPasswordUpdateVM userPasswordUpdate) {
-        userService.changePassword(id, userPasswordUpdate);
+        User user = userRepository.getOne(id);
+        if (user.getSociety().getId() == 2) {
+            System.out.println("test user");
+            return new GenericResponse("Ah Ah Ah, Dont change test passwords");
+        } else {
+            userService.changePassword(id, userPasswordUpdate);
 
-        return new GenericResponse("Password Changed");
+            return new GenericResponse("Password Changed");
+        }
     }
+
+    //get List of members who have entered an event
+    @CrossOrigin
+    @GetMapping("/users/events/entrants")
+    List<User> entrants(){
+        return userRepository.findAllUsers(Sort.by("username"));
+    }
+
+    //get List of members
+//    @CrossOrigin
+//    @GetMapping("/getListOfUser")
+//    List<User> users(){
+//        return userRepository.findAllUsers(Sort.by("username"));
+//    }
+
+
+
+    //Get page of members
+//    @CrossOrigin
+//    @GetMapping("/users")
+//    Page<UserVM> getUsers(Pageable page) {
+//        return userService.getUsers(page).map(UserVM::new);
+//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)

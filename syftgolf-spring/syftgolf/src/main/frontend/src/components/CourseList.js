@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import * as apiCalls from '../api/apiCalls';
 import CourseListItem from './CourseListItem';
+import Search from './Search';
+import { connect } from 'react-redux';
 
 export const CourseList = (props) => {
 
@@ -17,8 +19,9 @@ export const CourseList = (props) => {
     }, []);
 
     const loadData = (requestedPage = 0) => {
+      let id = props.user.society.id
         apiCalls
-            .listCourses({ page: requestedPage, size: 9 })
+            .listCourses(id, { page: requestedPage, size: 9 })
             .then((response) => {
                 setPage(response.data);
                 setLoadError();
@@ -41,6 +44,7 @@ export const CourseList = (props) => {
     return (
       <div >
         <h3 className="card-title m-auto text-center">Courses</h3>
+        <Search/>
         <hr/>
         <div className="list-group list-group-flush" data-testid="coursegroup">
           <div className="row">
@@ -78,7 +82,13 @@ export const CourseList = (props) => {
     );
 };
 
-export default CourseList;
+const mapStateToProps = (state) => {
+  return {
+    user: state
+  };
+};
+
+export default connect(mapStateToProps)(CourseList);
 
 // class CourseList extends React.Component {
 //   state = {

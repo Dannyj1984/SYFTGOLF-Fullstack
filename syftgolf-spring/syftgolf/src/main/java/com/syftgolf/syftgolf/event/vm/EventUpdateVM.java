@@ -20,7 +20,7 @@ public class EventUpdateVM {
     private long courseid;
 
     @NotNull
-    private LocalDate date;
+    private Date date;
 
     @NotNull
     private int maxentrants;

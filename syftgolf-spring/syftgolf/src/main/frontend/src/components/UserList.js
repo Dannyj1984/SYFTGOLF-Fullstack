@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import * as apiCalls from '../api/apiCalls';
+import Search from "./Search";
 import UserListItem from './UserListItem';
+import { connect } from 'react-redux';
 
 export const UserList = (props) => {
   const [page, setPage] = useState({
@@ -16,8 +18,10 @@ export const UserList = (props) => {
   }, []);
 
   const loadData = (requestedPage = 0) => {
+    let id = props.user.society.id
+    console.log(id)
     apiCalls
-      .listUsers({ page: requestedPage, size: 9 })
+      .listUsers(id,{ page: requestedPage, size: 9 })
       .then((response) => {
         setPage(response.data);
         setLoadError();
@@ -39,7 +43,8 @@ export const UserList = (props) => {
 
   return (
     <div>
-      <h3 className="card-title m-auto text-center">Members</h3>
+      <h3 className="card-title m-auto text-center">Members</h3> 
+      <Search/>
       <hr></hr>
       <div className="list-group list-group-flush" data-testid="usergroup">
         <div className="row">
@@ -72,7 +77,13 @@ export const UserList = (props) => {
   );
 };
 
-export default UserList;
+const mapStateToProps = (state) => {
+  return {
+    user: state
+  };
+};
+
+export default connect(mapStateToProps)(UserList);
 
 
 

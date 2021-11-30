@@ -14,6 +14,7 @@ import CourseRegisterPage from '../pages/CourseRegisterPage';
 import CourseInfoPage from '../pages/CourseInfoPage';
 import EventInfoPage from '../pages/EventInfoPage';
 import Events from '../pages/Events';
+import PreviousEvents from '../pages/PreviousEvents';
 import Terms from '../pages/Terms';
 import HolesPage from '../pages/HolesPage';
 import MultipleSignUp from '../components/multiHolePage';
@@ -33,7 +34,7 @@ function App() {
           <Redirect exact from="/event/login" to="/login" />
           <Redirect exact from="/course/login" to="/login" />
           <Route  path="/" exact component={HomePage} />
-          <Route path="/about" exact component={AboutPage} />
+          <Route  path="/about" exact component={AboutPage} />
           <Route  path="/login" exact component={LoginPage} />
           <Route  path="/test" exact component={MultipleSignUp} />
           <Route  path="/terms" exact component={Terms} />
@@ -44,6 +45,7 @@ function App() {
           <Route  path="/eventSignup" exact component={EventSignupPage} />
           <Route  path="/members" exact component={MemberPage} />
           <Route  path="/events" exact component={Events} />
+          <Route  path="/previousEvent" exact component={PreviousEvents} />
           <Route  path="/courses" exact component={CoursePage} />
           <Route  path="/member/:username" exact component={UserPage} />
           <Route path="/course/:coursename" extact component={CourseInfoPage} />

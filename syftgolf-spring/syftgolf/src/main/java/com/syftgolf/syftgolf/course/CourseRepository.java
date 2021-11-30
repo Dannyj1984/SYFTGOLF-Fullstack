@@ -14,8 +14,13 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     //return User with this username
     Course findByCourseName(String courseName);
 
+
      List<Course> findAllByOrderByCourseNameAsc();
 
+     public List<Course> findAllBySocietyIdOrderByCourseNameAsc(long id);
+
     Page<Course> findByCourseNameNot(String courseName, Pageable page);
+
+    public Page<Course> findAllBySocietyId(Pageable page, long id);
 
 }

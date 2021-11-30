@@ -1,5 +1,6 @@
 package com.syftgolf.syftgolf.user.vm;
 
+import com.syftgolf.syftgolf.society.Society;
 import com.syftgolf.syftgolf.user.User;
 
 import lombok.Data;
@@ -37,6 +38,8 @@ public class UserVM {
 
     private String image;
 
+    private Society society;
+
 
     public UserVM(User user) {
         this.setId(user.getId());
@@ -53,6 +56,7 @@ public class UserVM {
         this.setSocHcp(user.getSochcp());
         this.setImage(user.getImage());
         this.setWins(user.getWins());
+        this.setSociety(user.getSociety());
     }
 
 }

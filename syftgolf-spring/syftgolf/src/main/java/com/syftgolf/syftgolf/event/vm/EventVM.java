@@ -19,7 +19,7 @@ public class EventVM {
 
     private long course_id;
 
-    private LocalDate date;
+    private Date date;
 
     private int maxentrants;
 

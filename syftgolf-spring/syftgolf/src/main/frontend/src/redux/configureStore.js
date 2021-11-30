@@ -20,6 +20,9 @@ const configureStore = (addLogger = true) => {
     cdh: '',
     homeclub: '',
     password: '',
+    society : {
+      id: ''
+    },
     isLoggedIn: false
   };
 

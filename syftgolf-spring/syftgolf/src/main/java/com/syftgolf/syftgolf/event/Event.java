@@ -2,13 +2,14 @@ package com.syftgolf.syftgolf.event;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.syftgolf.syftgolf.course.Course;
 import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
+import com.syftgolf.syftgolf.society.Society;
 import lombok.*;
+import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDate;
-import java.util.Set;
+import java.util.Date;
 
 @Data
 //Entity maps object to database
@@ -35,16 +36,17 @@ public class Event {
             name = "date",
             columnDefinition = "DATE"
     )
-    private LocalDate date;
+    private Date date;
 
-    @NotNull(message = "{syftgolf.constraints.eventname.NotNull.message}")
+    @NotNull(message = "{syftgolf.constraints.maxentrants.NotNull.message}")
+    @Range(min = 1, max = 100, message = "Please enter a value for the maximum number of entrants between 1 and 100")
     @Column(
             name = "maxentrants",
             columnDefinition = "INTEGER"
     )
     private int maxentrants;
 
-    @NotNull(message = "{syftgolf.constraints.eventname.NotNull.message}")
+    @NotNull
     @Column(
             name = "currententrants",
             columnDefinition = "INTEGER"
@@ -56,7 +58,7 @@ public class Event {
             name = "cost",
             columnDefinition = "NUMERIC"
     )
-
+    @Range(min = 1, max = 250, message = "Please enter the cost of this event, between 1 and 250")
     private double cost;
 
     @NotNull(message = "{syftgolf.constraints.eventtype.NotNull.message}")
@@ -64,6 +66,7 @@ public class Event {
             name = "eventtype",
             columnDefinition = "TEXT"
     )
+    @Size(min = 1, max = 30, message = "Please enter an event type")
     private String eventtype;
 
     @NotNull(message = "{syftgolf.constraints.qualifier.NotNull.message}")
@@ -78,6 +81,7 @@ public class Event {
 
 
     //relationship with event and course
+    @NotNull(message = "Please choose a course")
     @ManyToOne
     @JoinColumn(name = "course_id")
     @ToString.Exclude
@@ -88,6 +92,10 @@ public class Event {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "teesheet_id", referencedColumnName = "teesheetid")
     private TeeSheet teeSheet;
+
+    @ManyToOne
+    @JoinColumn(name = "society_id")
+    private Society society;
 
 
 

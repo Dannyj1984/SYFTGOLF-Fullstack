@@ -1,10 +1,12 @@
 import axios from 'axios';
 
-const url = 'https://glacial-sierra-91195.herokuapp.com';
+//const url = 'https://glacial-sierra-91195.herokuapp.com';
 
-//const url = 'http://localhost:8080';
+const url = 'http://localhost:8080';
 
 //user calls
+
+let id = '';
 
 export const signup = (user) => {
   return axios.post(url + '/api/1.0/management/users', user);
@@ -24,8 +26,8 @@ export const setAuthorizationHeader = ({ username, password, isLoggedIn }) => {
   }
 };
 
-export const listUsers = (param = { page: 0, size: 9 }) => {
-  const path = url + `/api/1.0/users?page=${param.page || 0}&size=${param.size || 9}&sort=username,asc`;
+export const listUsers = (id, param = { page: 0, size: 9 }) => {
+  const path = url + `/api/1.0/societyUsers/${id}?page=${param.page || 0}&size=${param.size || 9}&sort=username,asc`;
   return axios.get(path);
 };
 
@@ -80,12 +82,15 @@ export const signupCourse = (course) => {
   return axios.post(url + '/api/1.0/management/courses', course);
 };
 
-export const getCourses = () => {
-  return axios.get(url + `/api/1.0/management/courses`);
+//Getting courses for new event page dropdown list
+export const getCourses = (id) => {
+  return axios.get(url + `/api/1.0/management/getCourses/` + id);
 };
 
-export const listCourses = (param = { page: 0, size: 9 }) => {
-  const path = url + `/api/1.0/courses?page=${param.page || 0}&size=${param.size || 9}&sort=courseName,asc`;
+//Showing page of courses on course page
+export const listCourses = (id, param = { page: 0, size: 9 }) => {
+  //id = JSON.parse(localStorage.getItem('syft-auth')).society.id;
+  const path = url + `/api/1.0/getCourses/${id}?page=${param.page || 0}&size=${param.size || 9}&sort=courseName,asc`;
   return axios.get(path);
 };
   
@@ -115,8 +120,13 @@ export const signupEvent = (event) => {
   return axios.post(url + '/api/1.0/management/events', event);
 };
 
-export const listEvents = (param = { page: 0, size: 9 }) => {
-  const path = url + `/api/1.0/events?page=${param.page || 0}&size=${param.size || 9}&sort=eventname,asc`;
+export const listEvents = (id, param = { page: 0, size: 9 }) => {
+  const path = url + `/api/1.0/upcomingEvents/${id}?page=${param.page || 0}&size=${param.size || 9}&sort=date,asc`;
+  return axios.get(path);
+};
+
+export const listPreviousEvents = (id, param = { page: 0, size: 9 }) => {
+  const path = url + `/api/1.0/previousEvents/${id}?page=${param.page || 0}&size=${param.size || 9}&sort=date,desc`;
   return axios.get(path);
 };
   
@@ -129,7 +139,7 @@ export const getEvents = () => {
 };
 
 export const updateEvent = (eventId, body) => {
-  return axios.put(url + '/api/1.0/management/events/teesheet/' + eventId, body);
+  return axios.put(url + '/api/1.0/management/events/' + eventId, body);
 };
 
 export const updateTeeSheetCall = (eventId, body) => {

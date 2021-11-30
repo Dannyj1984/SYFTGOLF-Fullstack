@@ -3,6 +3,7 @@ import ButtonWithProgress from '../components/ButtonWithProgress';
 import Input from '../components/Input';
 import { connect } from 'react-redux';
 import * as authActions from '../redux/authActions';
+import * as ApiCalls from '../api/apiCalls';
 
 export const CourseRegisterPage = (props) => {
     //state = Json object to add fields to
@@ -12,7 +13,7 @@ export const CourseRegisterPage = (props) => {
       par: '',
       courseRating: '',
       slopeRating: ''
-    
+      
     });
 
   const [errors, setErrors] = useState({});
@@ -20,6 +21,7 @@ export const CourseRegisterPage = (props) => {
 
   const onChange = (event) => {
     const { value, name } = event.target;
+    console.log(value)
 
     setForm((previousForm) => {
       return {
@@ -42,23 +44,26 @@ export const CourseRegisterPage = (props) => {
           postCode: form.postCode,
           par: form.par,
           courseRating: form.courseRating,
-          slopeRating: form.slopeRating
+          slopeRating: form.slopeRating,
+          society: {
+            id: props.user.society.id
+          }
+          };
+          console.log(course)
+          setPendingApiCall(true);
+        props.actions
+          .postSignupCourse(course)
+          .then((response) => {
+            setPendingApiCall(false);
+            props.history.push('/courses');
+          })
+          .catch((apiError) => {
+            if (apiError.response.data && apiError.response.data.validationErrors) {
+              setErrors(apiError.response.data.validationErrors);
+            }
+            setPendingApiCall(false);
+          });
       };
-      
-      setPendingApiCall(true);
-    props.actions
-      .postSignupCourse(course)
-      .then((response) => {
-        setPendingApiCall(false);
-        props.history.push('/courses');
-      })
-      .catch((apiError) => {
-        if (apiError.response.data && apiError.response.data.validationErrors) {
-          setErrors(apiError.response.data.validationErrors);
-        }
-        setPendingApiCall(false);
-      });
-  };
 
         return (
           <div className="container">
@@ -148,6 +153,12 @@ export const CourseRegisterPage = (props) => {
           }
         };
 
+        const mapStateToProps = (state) => {
+          return {
+            user: state
+          };
+        };
+
         const mapDispatchToProps = (dispatch) => {
             return {
               actions: {
@@ -157,7 +168,7 @@ export const CourseRegisterPage = (props) => {
           };
 
     export default connect(
-        null,
+        mapStateToProps,
         mapDispatchToProps
       )(CourseRegisterPage);
       
