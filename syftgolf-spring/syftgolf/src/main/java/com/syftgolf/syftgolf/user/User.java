@@ -1,9 +1,6 @@
 package com.syftgolf.syftgolf.user;
 
 
-import com.syftgolf.syftgolf.course.Course;
-import com.syftgolf.syftgolf.event.Entrants;
-import com.syftgolf.syftgolf.event.Event;
 import com.syftgolf.syftgolf.society.Society;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -101,9 +98,6 @@ public class User implements UserDetails, Serializable {
     )
     private String role = "USER";
 
-    @OneToMany(mappedBy = "user")
-    Set<Entrants> entrants;
-
 
     @Override
     @Transient
@@ -153,7 +147,6 @@ public class User implements UserDetails, Serializable {
     @ManyToOne
     @JoinColumn(name = "society_id")
     private Society society;
-
 
 
 }

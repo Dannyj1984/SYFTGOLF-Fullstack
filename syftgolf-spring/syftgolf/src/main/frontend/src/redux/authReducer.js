@@ -13,11 +13,15 @@ const initialState = {
   societyHcp: '',
   password: '',
   wins: '',
+  society: {
+    id: ''
+  },
   isLoggedIn: false 
 };
 
 export default function authReducer(state = initialState, action) {
   if (action.type === 'logout-success') {
+    window.localStorage.clear();
     return { ...initialState };
   } else if (action.type === 'login-success') {
     return {
@@ -33,6 +37,7 @@ export default function authReducer(state = initialState, action) {
       homeclub: action.payload.homeclub,
       role: action.payload.role,
       mobile: action.payload.mobile,
+      cdh: action.payload.cdh,
       image: action.payload.image
     };
   } else if (action.type === 'event-update-success') {

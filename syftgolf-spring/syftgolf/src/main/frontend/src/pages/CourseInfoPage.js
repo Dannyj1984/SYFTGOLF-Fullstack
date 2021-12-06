@@ -83,7 +83,6 @@ class CourseInfoPage extends React.Component{
         courseRating: course.courseRating,
         image: this.state.image && this.state.image.split(',')[1]
       };
-      console.log(courseUpdate);
       this.setState({ pendingUpdateCall: true });
     apiCalls
       .updateCourse(courseId, courseUpdate)

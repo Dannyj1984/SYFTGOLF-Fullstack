@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import * as apiCalls from '../api/apiCalls';
 import CourseListItem from './CourseListItem';
+import Input from './Input';
+import { connect } from 'react-redux';
 
 export const CourseList = (props) => {
 
@@ -10,15 +12,55 @@ export const CourseList = (props) => {
         size: 9
     });
 
+    const [pendingApiCall, setPendingApiCall] = useState(false);
+
     const [loadError, setLoadError] = useState();
 
-    useEffect(() => {
-        loadData();
-    }, []);
+    //Name filter when filtering users
+  const [nameFilter, setNameFilter] = useState('');
+
+  const clearFilter = () => {
+    setNameFilter('');
+    loadData();
+  }
+
+  //Change filter value
+  const onChange = (event) => {
+    //set value to event.target.value
+    const { value } = event.target;
+    console.log(value)
+    //set nameFilter as the value of the event.target.value
+    setNameFilter(value)
+    //run loadFilter func
+    loadFilter()
+  }
+
+  const loadFilter = async (requestedPage = 0) => {
+    //Create name to use in api call and set to value of loadFilter
+    let name = nameFilter
+    //Get the society of the user
+    let id = props.user.society.id 
+    setPendingApiCall(true);
+    await apiCalls
+      .listFilteredCourses({ page: requestedPage, size: 9 }, id, name.toLowerCase())
+       .then ((response)  => {
+        setPage(response.data);
+        if(Object.entries(response.data.content).length === 0) {
+          setLoadError('No courses found');
+        }
+      })
+      .catch((error) => {
+        setLoadError("Course load failed" );
+      });
+      setPendingApiCall(false);
+  };
+
+    
 
     const loadData = (requestedPage = 0) => {
+      let id = props.user.society.id
         apiCalls
-            .listCourses({ page: requestedPage, size: 9 })
+            .listCourses(id, { page: requestedPage, size: 9 })
             .then((response) => {
                 setPage(response.data);
                 setLoadError();
@@ -27,6 +69,10 @@ export const CourseList = (props) => {
                 setLoadError("Course load failed" );
             });
     };
+
+    useEffect(() => {
+        loadFilter();
+    }, [nameFilter]);
 
     const onClickNext = () => {
         loadData(page.number + 1);
@@ -37,10 +83,29 @@ export const CourseList = (props) => {
     };
 
     const { content, first, last } = page;
-
+    console.log(content)
     return (
       <div >
-        <h3 className="card-title m-auto text-center">Courses</h3>
+        
+      <div className="container">
+        <div className="row">
+          <div className="col-sm">
+            <div className="row">
+              <Input name="nameFilter" value={nameFilter} type="text" placeholder="Search" onChange={onChange} />
+              <button className="btn btn-primary" onClick={clearFilter} >Clear</button>
+            </div>
+          </div>
+          <div className="col-sm">
+            <h3 className="card-title m-auto text-center">Members</h3>
+          </div>
+        </div>
+      </div>
+      
+      <hr />
+      {pendingApiCall &&
+      <div>
+        <span>Loading...</span>
+      </div>}
         <hr/>
         <div className="list-group list-group-flush" data-testid="coursegroup">
           <div className="row">
@@ -78,7 +143,13 @@ export const CourseList = (props) => {
     );
 };
 
-export default CourseList;
+const mapStateToProps = (state) => {
+  return {
+    user: state
+  };
+};
+
+export default connect(mapStateToProps)(CourseList);
 
 // class CourseList extends React.Component {
 //   state = {
@@ -102,7 +173,6 @@ export default CourseList;
 //           page: response.data,
 //           loadError: undefined
 //         });
-//         console.log(this.state.page);
 //       })
 //       .catch((error) => {
 //         this.setState({ loadError: 'Course load failed' });

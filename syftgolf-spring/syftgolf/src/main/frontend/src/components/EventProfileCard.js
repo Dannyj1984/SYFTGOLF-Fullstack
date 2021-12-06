@@ -1,6 +1,7 @@
 import React from 'react';
 import Input from './Input';
 import ButtonWithProgress from './ButtonWithProgress';
+import moment from 'moment';
 
 const EventProfileCard = (props) => {
   const { eventname, date, maxentrants, cost, eventtype, qualifier, winner, info} = props.event;
@@ -15,6 +16,8 @@ const EventProfileCard = (props) => {
   if(winnerName === null) {
     winnerName = '';
   };
+  let yourDate = date;
+      const formatDate = moment(yourDate).format('DD-MM-YYYY')
   
   return (
     <div className="card">
@@ -22,7 +25,7 @@ const EventProfileCard = (props) => {
       {!props.inEditMode && (
       <h3>{`Event : ${eventname}`}</h3>)}
       <hr/>
-      <h5>{`Date: ${date}`}</h5>
+      <h5>{`Date: ${formatDate}`}</h5>
       <h5>{`Format: ${eventtype}`}</h5>
       <h5>{`Qualifier: ${qualifier}`}</h5>
       <h5>{`Max Entrants: ${maxentrants}`}</h5>

@@ -1,5 +1,6 @@
 package com.syftgolf.syftgolf.event.vm;
 
+import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -19,7 +20,7 @@ public class EventUpdateVM {
     private long courseid;
 
     @NotNull
-    private LocalDate date;
+    private Date date;
 
     @NotNull
     private int maxentrants;
@@ -35,4 +36,6 @@ public class EventUpdateVM {
     private String info;
 
     private String winner;
+
+    private TeeSheet teesheet;
 }

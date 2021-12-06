@@ -4,6 +4,7 @@ import com.syftgolf.syftgolf.course.vm.CourseUpdateVM;
 import com.syftgolf.syftgolf.course.vm.CourseVM;
 import com.syftgolf.syftgolf.error.ApiError;
 import com.syftgolf.syftgolf.shared.GenericResponse;
+import com.syftgolf.syftgolf.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/1.0")
 public class CourseController {
 
@@ -30,6 +32,8 @@ public class CourseController {
     @Autowired
     CourseRepository courseRepository;
 
+
+    //Create new course for society
     @PostMapping("/management/courses")
     @CrossOrigin
     GenericResponse createCourse(@Valid @RequestBody Course course) {
@@ -38,20 +42,29 @@ public class CourseController {
     }
 
     //For listing courses in the add new event page
-    @GetMapping("/management/courses")
+    @GetMapping("/management/getCourses/{id:[0-9]+}")
     @CrossOrigin
-    List<Course> getCourses() {
-
+    List<Course> getCourses(@PathVariable long id) {
         List<Course> courses;
-        courses = courseRepository.findAllByOrderByCourseNameAsc();
+        courses = courseRepository.findAllBySocietyIdOrderByCourseNameAsc(id);
         return courses;
     }
 
-    @GetMapping("/courses")
+    //Get Page of courses for this society
+    @GetMapping("/getCourses/{id:[0-9]+}")
     @CrossOrigin
-    Page<CourseVM> getCourses(Pageable page) {
-        return courseService.getCourses(page).map(CourseVM::new);
+    Page<CourseVM> getCourses(Pageable page, @PathVariable long id) {
+        return courseService.getCoursesForSociety(page, id).map(CourseVM::new);
     }
+
+    //Get page of courses for a society filtered by coursename containing
+    @CrossOrigin
+    @GetMapping("/societyFilteredCourses/{id:[0-9]+}")
+    Page<Course> getFilteredCourses(Pageable page, @PathVariable long id, @RequestParam String query) {
+        return courseService.getFilteredCourses(query, page, id);
+    }
+
+    //Get course by name for course profile card
 
     @GetMapping("/courses/{courseName}")
     @CrossOrigin
@@ -60,14 +73,15 @@ public class CourseController {
         return new CourseVM(course);
     }
 
+    //Update a course
     @PutMapping("/management/courses/{id:[0-9]+}")
     @CrossOrigin
     CourseVM updateCourse(@PathVariable long id, @Valid @RequestBody(required = false) CourseUpdateVM courseUpdate) {
-        System.out.println(courseUpdate);
         Course updated = courseService.updateCourse(id, courseUpdate);
         return new CourseVM(updated);
-
     }
+
+    //Delete a course
     @DeleteMapping("/management/courses/delete/{id:[0-9]+}")
     @CrossOrigin
     GenericResponse deleteCourse(@PathVariable long id) {

@@ -1,5 +1,8 @@
-package com.syftgolf.syftgolf.event;
+package com.syftgolf.syftgolf.event.teesheet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.syftgolf.syftgolf.event.Event;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,10 +12,10 @@ import javax.persistence.*;
 //Entity maps object to database
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "teesheet")
 public class TeeSheet {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "teesheetid")
     private long id;
 
@@ -43,5 +46,11 @@ public class TeeSheet {
     private String p3t4;
     private String p4t4;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "teeSheet")
+    private Event event;
 
+
+    public TeeSheet(TeeSheet teeSheet) {
+    }
 }

@@ -7,6 +7,7 @@ import * as apiCalls from '../api/apiCalls';
 import { Modal, Button } from 'react-bootstrap';
 import Input from './Input';
 import ButtonWithProgress from "./ButtonWithProgress";
+import { connect } from 'react-redux';
 
 
 const UserListItem = (props) => {
@@ -25,10 +26,6 @@ const UserListItem = (props) => {
     });
 
     const [pendingUpdateCall, setPendingUpdateCall] = useState(false);
-
-    //Get details of current logged in user
-    const userObj = localStorage.getItem('syft-auth');
-    const roleJSON = JSON.parse(userObj);
 
     const [showModal, setShow ] = useState(false);
 
@@ -238,8 +235,6 @@ const UserListItem = (props) => {
         });
       };
 
-      console.log(props.user.image);
-
 
    return (
             <div className="card col-12">
@@ -255,12 +250,13 @@ const UserListItem = (props) => {
                     </div>
                     <div className="col-12 card-title align-self-center mb-0">
                         <h5>{props.user.firstname} {props.user.surname}</h5>
+                        <p className="m-0">WHS : {props.user.handicap}</p>
                         <p className="m-0">Society Handicap : {Number(props.user.handicap - props.user.sochcpred).toFixed(1)}</p> {/*Show society handicap to 1dp*/}
                         <p className="m-0">Home club : {props.user.homeclub}</p>
                         <p className="m-0">Role : {props.user.role}</p>
                         <p className="m-0">Wins : {props.user.wins}</p> 
-                        {(roleJSON.role === 'EVENTADMIN' && <button className="btn btn-outline-success" onClick={addWin}>+</button> )} 
-                        {(roleJSON.role === 'EVENTADMIN' && <button className="btn btn-outline-danger" onClick={takeWin}>-</button> )}
+                        {(props.loggedInUser.role === 'EVENTADMIN' && <button className="btn btn-outline-success" onClick={addWin}>+</button> )} 
+                        {(props.loggedInUser.role === 'EVENTADMIN' && <button className="btn btn-outline-danger" onClick={takeWin}>-</button> )}
                     </div>
                 </div>
                 <div>
@@ -285,7 +281,7 @@ const UserListItem = (props) => {
                     </div>
                     <div className="float-right btn-group btn-group-m">
                         {/*Button to delete member*/}
-                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
+                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-danger tooltips"  
                                 onClick={submitDelete}
@@ -298,7 +294,7 @@ const UserListItem = (props) => {
                     </div>
                     {/*Button to view edit handicap modal*/}
                     <div className="float-right btn-group btn-group-m">
-                    {roleJSON.role === 'HANDICAPADMIN'  && 
+                    {props.loggedInUser.role === 'HANDICAPADMIN'  && 
                             <button  
                                 className="btn btn-secondary tooltips"  
                                 onClick={handleShow}
@@ -351,11 +347,11 @@ const UserListItem = (props) => {
                         
                     </Modal.Footer>
                 </Modal>
-
+                            {props.loggedInUser.id !== props.user.id &&
                 <div className="card-body">
                     {/*Change member to admin*/}
                     <div className="float-left btn-group btn-group-m">
-                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
+                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips m-2"  
                                 onClick={submitAdmin}
@@ -369,7 +365,7 @@ const UserListItem = (props) => {
                     </div>
                     {/*Change member to handicap admin*/}
                     <div className="float-left btn-group btn-group-m">
-                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
+                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips m-2"  
                                 onClick={submitHcpAdmin}
@@ -383,7 +379,7 @@ const UserListItem = (props) => {
                     </div>
                     {/*Change member to event admin*/}
                     <div className="float-left btn-group btn-group-m m-2">
-                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
+                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips"  
                                 onClick={submitEventAdmin}
@@ -397,7 +393,7 @@ const UserListItem = (props) => {
                     </div>
                     {/*Change member to user*/}
                     <div className="float-left btn-group btn-group-m m-2">
-                    {(roleJSON.role === 'ADMIN' || roleJSON.role === 'SUPERUSER')  &&
+                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips"  
                                 onClick={submitUser}
@@ -412,22 +408,28 @@ const UserListItem = (props) => {
 
                     {/*Edit handicap, only for handicap admin*/}
                     <div className="float-right btn-group btn-group-m">
-                    {(roleJSON.role === 'HANDICAPADMIN' || roleJSON.role === 'SUPERUSER')  &&
+                    {(props.loggedInUser.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips"  
                                 onClick={handleShow}
                                 data-placement="top" 
-                                data-toggle="tooltip" 
+                                data-toggle="tooltip" y
                                 data-original-title="Delete">
                                 <i className="fa fa-edit"/>
                             </button>
                         }
                     </div>
-                </div>
+                </div>}
             </div>
         
     
   );
 };
 
-export default UserListItem;
+const mapStateToProps = (state) => {
+  return {
+    loggedInUser: state
+  };
+};
+ 
+export default connect(mapStateToProps)(UserListItem);

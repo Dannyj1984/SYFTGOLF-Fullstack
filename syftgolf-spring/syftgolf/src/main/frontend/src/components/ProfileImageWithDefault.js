@@ -1,21 +1,21 @@
-import React from 'react';
-import defaultPicture from '../assets/profile.png';
+  import React from 'react';
+  import defaultPicture from '../assets/profile.png';
 
-const ProfileImageWithDefault = (props) => {
-  let imageSource = defaultPicture;
-  if (props.image) {
-    imageSource = `${props.image}`;
-  }
-  return (
-    //eslint-disable-next-line
-    <img
-      {...props}
-      src={props.src || imageSource}
-      onError={(event) => {
-      event.target.src = defaultPicture;
-      }}
-    />
-  );
-};
+  const ProfileImageWithDefault = (props) => {
+    let imageSource = defaultPicture;
+    if (props.image) {
+      imageSource = `${props.image}`;
+    }
+    return (
+      //eslint-disable-next-line
+      <img
+        {...props}
+        src={props.src || imageSource}
+        onError={(event) => {
+        event.target.src = defaultPicture;
+        }}
+      />
+    );
+  };
 
-export default ProfileImageWithDefault;
+  export default ProfileImageWithDefault;

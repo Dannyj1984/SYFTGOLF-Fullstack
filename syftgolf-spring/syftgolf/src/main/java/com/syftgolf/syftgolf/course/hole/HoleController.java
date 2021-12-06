@@ -1,11 +1,8 @@
-package com.syftgolf.syftgolf.course;
+package com.syftgolf.syftgolf.course.hole;
 
 import com.syftgolf.syftgolf.error.ApiError;
 import com.syftgolf.syftgolf.shared.GenericResponse;
-import com.syftgolf.syftgolf.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;

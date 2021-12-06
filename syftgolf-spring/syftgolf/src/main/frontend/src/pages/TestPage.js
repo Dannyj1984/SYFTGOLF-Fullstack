@@ -63,7 +63,7 @@ export class TestPage extends React.Component {
                 <div className="text-center">
                 
                     <h2 className="text-center">Want to join us?</h2>
-                    <a classname="btn btn-primary " href="mailto:admin@syftgolf.co.uk"> Contact</a>
+                    <a className="btn btn-primary " href="mailto:admin@syftgolf.co.uk"> Contact</a>
                     <hr></hr>
                 </div>
 

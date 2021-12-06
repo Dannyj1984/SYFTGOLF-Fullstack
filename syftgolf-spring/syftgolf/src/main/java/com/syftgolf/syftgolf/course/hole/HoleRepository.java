@@ -1,7 +1,5 @@
-package com.syftgolf.syftgolf.course;
+package com.syftgolf.syftgolf.course.hole;
 
-import com.syftgolf.syftgolf.user.User;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,7 +1,8 @@
 package com.syftgolf.syftgolf.society;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.syftgolf.syftgolf.course.Hole;
+import com.syftgolf.syftgolf.course.Course;
+import com.syftgolf.syftgolf.event.Event;
 import com.syftgolf.syftgolf.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,6 +32,18 @@ public class Society {
     @JsonIgnore
     @OneToMany(mappedBy = "society")
     private List<User> users;
+
+    //Relationship for courses
+    @JsonIgnore
+    @OneToMany(mappedBy = "society")
+    private List<Course> courses;
+
+    //Relationship for events
+    @JsonIgnore
+    @OneToMany(mappedBy = "society")
+    private List<Event> events;
+
+    private int members;
 
     public Society(String name) {
         this.name = name;

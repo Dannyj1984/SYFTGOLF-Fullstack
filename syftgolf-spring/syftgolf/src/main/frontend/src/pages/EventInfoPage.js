@@ -106,7 +106,7 @@ class EventInfoPage extends React.Component{
               {
                 inEditMode: false,
                 originalEventname: undefined,
-                originalDate: undefined,
+                originalDate: undefined,  
                 originalWinner: undefined,
                 originalEventtype: undefined,
                 originalMaxentrants: undefined,

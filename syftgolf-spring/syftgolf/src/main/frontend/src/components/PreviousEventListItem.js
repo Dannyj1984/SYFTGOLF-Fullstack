@@ -3,56 +3,16 @@ import { Link } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import * as apiCalls from '../api/apiCalls';
-import { Modal, Button, Table, NavItem } from "react-bootstrap";
+import { Modal, Button, Table } from "react-bootstrap";
 import moment from 'moment';
 import * as authActions from '../redux/authActions';
 import { connect } from 'react-redux';
 import Input from './Input';
-import ButtonWithProgress from './ButtonWithProgress';
 
-const EventListItem = (props) => {
+const PreviousEventListItem = (props) => {
 
   const [errors, setErrors] = useState({});
   const [pendingApiCall, setPendingApiCall] = useState(false);
-
-  //Check if member is in this event
-  const [entered, setEntered] = useState(false);
-  const [entrants, setEntrants] = useState([]);
-  //sorted entrants by score for leaderboard
-  const [sortedEntrants, setSortedEntrants] = useState([]);
-  const [showScore, setShowScore] = useState(false);
-  const [score, setScore] = useState(0);
-  const scoreArea = () => {
-    setShowScore(true);
-  }
-  const updateScore = () => {
-   const eventid = props.event.id;
-   const id = props.loggedInUser.id;
-   apiCalls
-   .updateScore(eventid, id, score)
-   .then((response) => {
-     setShowScore(false);
-     confirmAlert({
-       title: 'Thanks for updating your score',
-       message: 'Please see the leaderboard for other scores',
-       buttons: [
-         {
-         label: 'OK',
-         onClick: () =>
-         (window.location.reload())
-         }
-       ]
-     })
-   })
-  }
-
-  //cancel score
-  const cancelScore = () => {
-    setShowScore(false);
-  }
- 
-
-  //useEffect loading data
 
 
   //Leadboard modal setup
@@ -143,7 +103,11 @@ const EventListItem = (props) => {
       const enterEvent = () => {
         const event = {...props.event}
         const eventid = event.id;
-        const memberid = props.loggedInUser.id;
+        const userid = JSON.parse(localStorage.getItem('syft-auth')).id;
+        const entrant = {
+          user_id: userid,
+          event_id: eventid
+        };
         
         //Enter event
 
@@ -154,36 +118,9 @@ const EventListItem = (props) => {
             {
               label: 'Yes',
               onClick: () => 
-                apiCalls.addEntrant(eventid, memberid)
-                .then ((response => {
-                  //Confirm entry with member
-                  confirmAlert({
-                    title: 'You have successully entered',
-                    message: 'Please ensure you get a tee time from the event organiser',
-                    buttons: [
-                      {
-                        label: 'OK',
-                        onClick: () =>  window.location.reload()
-                      }
-                    ]
-                  });
-                }))
-                .catch((apiError) => {
-                  //If error returned because member is already in this event, tell them this
-                  if (apiError.response.status === 500) {
-                    confirmAlert({
-                      title: 'You are already in this event?',
-                      message: 'Please speak to the event organiser if you think there is a problem',
-                      buttons: [
-                        {
-                          label: 'ok',
-                          onClick: () => ''
-                        }
-                      ]
-                    });
-                  } 
-                  setPendingApiCall(false);
-                })
+                props.actions.eventEnter(entrant)
+                .then (window.location.reload())
+                
             },
             {
               label: 'No',
@@ -191,46 +128,7 @@ const EventListItem = (props) => {
             }
           ]
         });
-      };
-
-      //Remove user from event
-      const removeEntrant = () => {
-        const event = {...props.event}
-        const eventid = event.id;
-        const memberid = props.loggedInUser.id;
-
-        confirmAlert({
-          title: 'Do you want to be removed from this event?',
-          message: 'This will remove you from this event',
-          buttons: [
-            {
-              label: 'Yes',
-              onClick: () => 
-                apiCalls.removeEntrant(eventid, memberid)
-                .then ((response => {
-                  //Confirm entry with member
-                  confirmAlert({
-                    title: 'You have been successfully removed from this event',
-                    message: 'Please ensure you let the organiser know',
-                    buttons: [
-                      {
-                        label: 'OK',
-                        onClick: () =>  window.location.reload()
-                      }
-                    ]
-                  });
-                }))
-                .catch((apiError) => {
-                  
-                  setPendingApiCall(false);
-                })
-            },
-            {
-              label: 'No',
-              onClick: () => ''
-            }
-          ]
-        });
+        
         
       };
 
@@ -251,40 +149,15 @@ const EventListItem = (props) => {
 
       };
 
-      //load data - get Course details of the event, and check if the logged in user has already entered the event
+      //load data
       useEffect(() => {
-        const event = props.event;
-        const eventid = event.id;
           apiCalls
           .getCourseDetails(props.event.id)
           .then((response) => {
             setCourseName(response.data.course);
           }, []);
-          //Get the entrants for this event
-          apiCalls
-          .getEntrants(eventid)
-          .then((response) => {
-            //if entrants exist, check if the currently logged in user id is present for this event
-            if(response.data.length < 1){
-              setEntered(false);
-            } else {
-              setEntrants(response.data)
-              setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
-              //Check if the username of logged in user is present in the array of entrants
-              function userEntered(username) {
-                return entrants.some(function(el) {
-                  return el.username === username;
-                }); 
-              }
-              if(userEntered(props.loggedInUser.username)) {
-                setEntered(true);
-              } else {
-                setEntered(false);
-              }
-
-            }
-          })
-      }, [entrants]);
+          
+      });
 
       //Get teesheet data for event when loading that modal
       const getTeesheet = () =>  {
@@ -292,6 +165,7 @@ const EventListItem = (props) => {
           .getTeesheet(props.event.id)
           .then((response) => {
             setTeeTimes(response.data);
+            console.log(teeTimes);
           }, []);
       }
 
@@ -314,19 +188,16 @@ const EventListItem = (props) => {
         });
       };
 
-      //onChange score
-      const onChangeScore = (event) => {
-        const { value } = event.target;
-        setScore(value);
-      }
-
       
 
+      const userObj = localStorage.getItem('syft-auth');
+      const authorityJSON = JSON.parse(userObj);
 
       //Format date from backend to be DD-MM-YYYY
 
       let yourDate = props.event.date;
       const formatDate = moment(yourDate).format('DD-MM-YYYY')
+
   return (
             <div className="card col-12">
                 <div className="card-body">
@@ -343,7 +214,7 @@ const EventListItem = (props) => {
                 <hr/>
                 
                 <div className="card-body">
-                    <div className="float-left btn-group btn-group-m px-2 col-3">
+                    <div className="float-left btn-group btn-group-sm px-2">
                       <Link
                           to={`/event/${props.event.eventname}`}>
                               <button  
@@ -355,7 +226,7 @@ const EventListItem = (props) => {
                               </button>
                       </Link>
                     </div>
-                    <div className="float-left btn-group btn-group-m px-2 col-3">
+                    <div className="float-left btn-group btn-group-m px-2">
                       <button  
                           className="btn btn-primary tooltips float-left" 
                           data-placement="left" 
@@ -366,7 +237,7 @@ const EventListItem = (props) => {
                       </button>
                     </div>
 
-                    <div className="float-left btn-group btn-group-m px-2 col-3">
+                    <div className="float-left btn-group btn-group-m px-2">
                       <button  
                           className="btn btn-primary tooltips float-left" 
                           data-placement="left" 
@@ -377,7 +248,7 @@ const EventListItem = (props) => {
                       </button>
                     </div>
 
-                    <div className="float-left btn-group btn-group-m px-2 col-3">
+                    <div className="float-left btn-group btn-group-m">
                       <button  
                           className="btn btn-primary tooltips float-left" 
                           data-placement="left" 
@@ -387,20 +258,9 @@ const EventListItem = (props) => {
                           className="fa fa-clock"/>
                       </button>
                     </div>
-                    {entered &&
-                    <div className="float-left btn-group btn-group-m p-2 col-6">
-                            <button  
-                                className="btn btn-primary tooltips float-left" 
-                                onClick={scoreArea} 
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="Delete">
-                                Score Entry
-                            </button>
-                    </div>}
 
-                    <div className="float-right btn-group btn-group-m p-2">
-                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
+                    <div className="float-right btn-group btn-group-m">
+                      {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-secondary tooltips" 
                                 onClick={deleteEvent} 
@@ -411,57 +271,8 @@ const EventListItem = (props) => {
                             </button>
                         }
                     </div>
-                  </div>
-
-                    {showScore &&
-                    <div className="container row m-2">
-                      <div className="col-4">
-                        <Input 
-                          name="score"
-                          value={score}
-                          type="number"
-                          onChange={onChangeScore} 
-                        />
-                      </div>
-                      <div className="col-3">
-                        <ButtonWithProgress
-                          className="btn btn-primary"
-                          onClick={updateScore}
-                          text="Update"
-                        />
-                      </div>
-                      <div className="col-3">
-                        <ButtonWithProgress
-                          className="btn btn-danger"
-                          onClick={cancelScore}
-                          text="Cancel"
-                        />
-                      </div>
-                    </div>}
-
-                        {!entered &&
-                <div className="float-right btn-group btn-group-m">
-                            <button  
-                                className="btn btn-success tooltips" 
-                                onClick={enterEvent} 
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="Delete">
-                                Enter
-                            </button>
-                    </div>}
-
-                    {entered &&
-                <div className="float-right btn-group btn-group-m">
-                            <button  
-                                className="btn btn-success tooltips" 
-                                onClick={removeEntrant} 
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="Delete">
-                                Remove
-                            </button>
-                    </div>}
+                    
+                </div>
                         {/*Show entrants modal*/}
                 <>
                         
@@ -470,20 +281,14 @@ const EventListItem = (props) => {
                       <Modal.Title>Entrants for {props.event.eventname} on {formatDate}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                      <Table striped bordered hover>
-                      <thead>
-                        <tr>
-                          <th scope="col">Member</th>
-                        </tr>
-                      </thead>
-                      {entrants.map((entrant => 
-                        <tbody key={entrant.username}>
-                          <tr>
-                            <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
-                          </tr>
-                        </tbody>
-                      ))}
-                      </Table>
+                    <ol>
+                      <li>Danny Jebb </li>
+                      <li>Danny Jebb </li>
+                      <li>Danny Jebb </li>
+                      <li>Danny Jebb </li>
+                      <li>Danny Jebb </li>
+                      <li>Danny Jebb </li>
+                    </ol>
                     </Modal.Body>
                     <Modal.Footer>
                       <Button variant="secondary" onClick={handleCloseEntrants}>
@@ -507,18 +312,28 @@ const EventListItem = (props) => {
                     <Table striped bordered hover>
                       <thead>
                         <tr>
-                          <th scope="col">Member</th>
+                          <th scope="col">Position</th>
+                          <th scope="col">Name</th>
                           <th scope="col">Score</th>
                         </tr>
                       </thead>
-                      {sortedEntrants.map((entrant =>
-                        <tbody key={entrant.username}>
+                      <tbody>
                         <tr>
-                          <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
-                          <th scope="row">{entrant.score}</th>
+                          <th scope="row">1</th>
+                          <td>Danny J</td>
+                          <td>41 pts</td>
                         </tr>
-                        </tbody>
-                      ))}
+                        <tr>
+                          <th scope="row">2</th>
+                          <td>Lee O</td>
+                          <td>39 pts</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">3</th>
+                          <td>Damien H</td>
+                          <td>35pts</td>
+                        </tr>
+                      </tbody>
                     </Table>
                     </Modal.Body>
                     <Modal.Footer>
@@ -591,7 +406,7 @@ const EventListItem = (props) => {
                     </Table>
                     </Modal.Body>
                     <Modal.Footer>
-                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'EVENTADMIN' || props.loggedInUser.role === 'SUPERUSER') &&
+                    {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN' || authorityJSON.role === 'SUPERUSER') &&
                       <Button className="btn btn-primary" onClick={handleShowEditTeeTime}> Edit Times </Button>}
                       <Button variant="secondary" onClick={handleCloseTeeTime}>
                         Close
@@ -840,11 +655,11 @@ const EventListItem = (props) => {
                           </Modal.Footer>
                         </Modal>
                     </>
-          </div>
+            </div>
   );
 };
 
-EventListItem.defaultProps = {
+PreviousEventListItem.defaultProps = {
   actions: {
     enterEvent: () =>
       new Promise((resolve, reject) => {
@@ -856,20 +671,18 @@ EventListItem.defaultProps = {
     }
   };
 
-  const mapStateToProps = (state) => {
-    return {
-      loggedInUser: state
-    };
-  };
-
   const mapDispatchToProps = (dispatch) => {
       return {
         actions: {
-          eventEnter: (eventid, memberid) => dispatch(authActions.enterEntrantHandler(eventid, memberid))
+          eventEnter: (entrant) => dispatch(authActions.enterEntrantHandler(entrant))
         }
       };
     };
 
+    const mapStateToProps = (state) => {
+      return {
+        loggedInUser: state
+      };
+    };
 
-
-    export default connect(mapStateToProps, mapDispatchToProps)(EventListItem);
+    export default connect(mapStateToProps, mapDispatchToProps)(PreviousEventListItem);

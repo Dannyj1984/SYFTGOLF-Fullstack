@@ -1,4 +1,4 @@
-package com.syftgolf.syftgolf.course;
+package com.syftgolf.syftgolf.course.hole;
 
 import org.springframework.stereotype.Service;
 

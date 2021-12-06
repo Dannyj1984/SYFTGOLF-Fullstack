@@ -6,6 +6,8 @@ import * as authActions from '../redux/authActions';
 
 export const UserSignupPage = (props) => {
 
+  
+
 const [form, setForm] = useState({
     username: '',
     firstname: '',
@@ -32,6 +34,7 @@ const [form, setForm] = useState({
         [name]: value
       };
     });
+    console.log(form)
 
     setErrors((previousErrors) => {
       return {
@@ -43,6 +46,7 @@ const [form, setForm] = useState({
 
 const onClickSignup = () => {
 
+  //Set the user details to be sent to the server
   const user = {
       username: form.username.toLowerCase(),
       firstname: form.firstname,
@@ -52,9 +56,12 @@ const onClickSignup = () => {
       cdh: form.cdh,
       homeclub: form.homeclub,
       mobile: form.mobile,
-      password: form.password
-
+      password: form.password,
+      society: {
+        id: props.user.society.id
+      }
     };
+    console.log(user)
     setPendingApiCall(true);
     props.actions
       .postSignup(user)
@@ -66,6 +73,7 @@ const onClickSignup = () => {
         if (apiError.response.data && apiError.response.data.validationErrors) {
           setErrors(apiError.response.data.validationErrors);
         }
+        console.log(apiError.response.data.validationErrors.username);
         setPendingApiCall(false);
       });
   };
@@ -219,6 +227,12 @@ UserSignupPage.defaultProps = {
     }
   };
 
+  const mapStateToProps = (state) => {
+    return {
+      user: state
+    };
+  };
+
   const mapDispatchToProps = (dispatch) => {
     return {
       actions: {
@@ -227,4 +241,4 @@ UserSignupPage.defaultProps = {
     };
   };
   
-  export default connect(null, mapDispatchToProps)(UserSignupPage);
+  export default connect(mapStateToProps, mapDispatchToProps)(UserSignupPage);

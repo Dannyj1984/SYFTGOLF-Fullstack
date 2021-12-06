@@ -1,9 +1,10 @@
 package com.syftgolf.syftgolf.event;
 
 import com.syftgolf.syftgolf.error.ApiError;
+import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
+import com.syftgolf.syftgolf.event.teesheet.TeeSheetService;
 import com.syftgolf.syftgolf.event.vm.EventUpdateVM;
 import com.syftgolf.syftgolf.event.vm.EventVM;
-import com.syftgolf.syftgolf.event.vm.TeeSheetVM;
 import com.syftgolf.syftgolf.shared.GenericResponse;
 import com.syftgolf.syftgolf.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,9 @@ public class EventController {
     EventRepository eventRepository;
 
     @Autowired
-    EntrantRepository entrantRepository;
+    TeeSheetService teeSheetService;
+
+
 
     @GetMapping("/management/events")
     @CrossOrigin
@@ -47,16 +50,35 @@ public class EventController {
     @PostMapping("/management/events")
     @CrossOrigin
     GenericResponse createEvent(@Valid @RequestBody Event event) {
+        //Save the current event in the database
         eventService.save(event);
+        //Get the event from the database
+        Event inDB = eventRepository.findByEventname(event.getEventname());
+        //Create a new teesheet
+        TeeSheet newTee = new TeeSheet();
+        //Set the id of the teesheet to match the id of the event
+        newTee.setId(inDB.getEventid());
+        //Assign the teesheet to the event
+        inDB.setTeeSheet(newTee);
+        //Save the event
+        eventService.save(inDB);
         return new GenericResponse("Event saved");
     }
 
 
-    //Get a page of events
-    @GetMapping("/events")
+    //Get a page of upcoming events
+    @GetMapping("/upcomingEvents/{id:[0-9]+}")
     @CrossOrigin
-    Page<EventVM> getEvents(Pageable page) {
-        return eventService.getEvents(page).map(EventVM::new);
+    Page<EventVM> getEvents(Pageable page, @PathVariable long id) {
+        return eventService.getEvents(page, id).map(EventVM::new);
+
+    }
+
+    //Get a page of previous events
+    @GetMapping("/previousEvents/{id:[0-9]+}")
+    @CrossOrigin
+    Page<EventVM> getPreviousEvents(Pageable page, @PathVariable long id) {
+        return eventService.getPreviousEvents(page, id).map(EventVM::new);
 
     }
 
@@ -95,20 +117,18 @@ public class EventController {
     @PutMapping("/management/events/{id:[0-9]+}")
     @CrossOrigin
     EventVM updateEvent(@PathVariable long id, @Valid @RequestBody(required = false) EventUpdateVM eventUpdate) {
-        System.out.println("id" + id);
         Event updated = eventService.updateEvent(id, eventUpdate);
-        System.out.println(updated);
         return new EventVM(updated);
 
     }
 
-    //Set tee sheet
+    //Update tee sheet
     @PutMapping("/management/events/teesheet/{id:[0-9]+}")
     @CrossOrigin
-    TeeSheetVM updateTeeSheet(@PathVariable long id, @RequestBody TeeSheet teeSheetUpdate) {
-        System.out.print("id" + id);
+    GenericResponse updateTeeSheet(@PathVariable long id, @RequestBody TeeSheet teeSheetUpdate) {
+        teeSheetService.updateTeeSheet(id, teeSheetUpdate);
 
-        return new TeeSheetVM();
+        return new GenericResponse("teesheet updated");
     }
 
 
@@ -119,6 +139,55 @@ public class EventController {
         eventService.deleteEvent(id);
         return new GenericResponse("Event has been removed");
     }
+
+    //Add event entrant
+    @PostMapping("event/addEntrant/{eventid:[0-9]+}/{memberid:[0-9]+}")
+    @CrossOrigin
+    GenericResponse createEntrant(@PathVariable long eventid, @PathVariable long memberid) {
+        //Retrieve the event from database
+        Event e = eventRepository.getOne(eventid);
+        //Save the new entrant in the database
+        eventService.saveEntrant(memberid, eventid);
+        //add 1 from the current entrants count
+        e.setCurrententrants(e.getCurrententrants() + 1);
+        //Save event
+        eventRepository.save(e);
+
+        return new GenericResponse("You have been added to this event");
+    }
+
+    //Get event entrants
+    @GetMapping("event/getEntrants/{id:[0-9]+}")
+    @CrossOrigin
+    List<Entrant> getEntrants(@PathVariable long id){
+        return eventRepository.getEntrantDetails(id);
+    }
+
+    //Remove entrant from an event
+    @DeleteMapping("event/deleteEntrants/{eventid:[0-9]+}/{memberid:[0-9]+}")
+    @CrossOrigin
+    GenericResponse deleteEntrant(@PathVariable long eventid, @PathVariable long memberid) {
+        eventService.deleteEntrant(eventid, memberid);
+        //retrieve the event from the database
+        Event e = eventRepository.getOne(eventid);
+        //delete 1 from the current entrants count
+        e.setCurrententrants(e.getCurrententrants() - 1);
+        //Save event
+        eventRepository.save(e);
+        return new GenericResponse("You have been removed");
+    }
+
+    //Update entrant score
+    @PutMapping("event/entrant/score/{eventid:[0-9]+}/{memberid:[0-9]+}/{score:[0-9]+}")
+    @CrossOrigin
+    GenericResponse updateScore(@PathVariable long eventid, @PathVariable long memberid, @PathVariable int score) {
+        System.out.println("score = " + score);
+            eventRepository.updateScore(eventid, memberid, score);
+        return new GenericResponse("Thanks for adding your score");
+    }
+
+
+
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)

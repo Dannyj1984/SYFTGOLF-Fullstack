@@ -11,6 +11,7 @@ public class SocietyService {
         this.societyRepository = societyRepository;
     }
 
+    //Save a new society
     public Society save(Society society) {
         return societyRepository.save(society);
     }
