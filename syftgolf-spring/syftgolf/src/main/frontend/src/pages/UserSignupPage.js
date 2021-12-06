@@ -34,6 +34,7 @@ const [form, setForm] = useState({
         [name]: value
       };
     });
+    console.log(form)
 
     setErrors((previousErrors) => {
       return {

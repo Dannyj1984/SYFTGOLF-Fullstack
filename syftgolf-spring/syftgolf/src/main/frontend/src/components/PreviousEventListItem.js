@@ -273,17 +273,6 @@ const PreviousEventListItem = (props) => {
                     </div>
                     
                 </div>
-
-                <div className="float-right btn-group btn-group-m">
-                            <button  
-                                className="btn btn-success tooltips" 
-                                onClick={enterEvent} 
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="Delete">
-                                Enter
-                            </button>
-                    </div>
                         {/*Show entrants modal*/}
                 <>
                         
@@ -690,6 +679,10 @@ PreviousEventListItem.defaultProps = {
       };
     };
 
+    const mapStateToProps = (state) => {
+      return {
+        loggedInUser: state
+      };
+    };
 
-
-    export default connect(null, mapDispatchToProps)(PreviousEventListItem);
+    export default connect(mapStateToProps, mapDispatchToProps)(PreviousEventListItem);

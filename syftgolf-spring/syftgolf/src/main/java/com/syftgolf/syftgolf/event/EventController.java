@@ -144,8 +144,14 @@ public class EventController {
     @PostMapping("event/addEntrant/{eventid:[0-9]+}/{memberid:[0-9]+}")
     @CrossOrigin
     GenericResponse createEntrant(@PathVariable long eventid, @PathVariable long memberid) {
+        //Retrieve the event from database
+        Event e = eventRepository.getOne(eventid);
         //Save the new entrant in the database
         eventService.saveEntrant(memberid, eventid);
+        //add 1 from the current entrants count
+        e.setCurrententrants(e.getCurrententrants() + 1);
+        //Save event
+        eventRepository.save(e);
 
         return new GenericResponse("You have been added to this event");
     }
@@ -154,7 +160,6 @@ public class EventController {
     @GetMapping("event/getEntrants/{id:[0-9]+}")
     @CrossOrigin
     List<Entrant> getEntrants(@PathVariable long id){
-        System.out.println(id);
         return eventRepository.getEntrantDetails(id);
     }
 
@@ -163,8 +168,26 @@ public class EventController {
     @CrossOrigin
     GenericResponse deleteEntrant(@PathVariable long eventid, @PathVariable long memberid) {
         eventService.deleteEntrant(eventid, memberid);
+        //retrieve the event from the database
+        Event e = eventRepository.getOne(eventid);
+        //delete 1 from the current entrants count
+        e.setCurrententrants(e.getCurrententrants() - 1);
+        //Save event
+        eventRepository.save(e);
         return new GenericResponse("You have been removed");
     }
+
+    //Update entrant score
+    @PutMapping("event/entrant/score/{eventid:[0-9]+}/{memberid:[0-9]+}/{score:[0-9]+}")
+    @CrossOrigin
+    GenericResponse updateScore(@PathVariable long eventid, @PathVariable long memberid, @PathVariable int score) {
+        System.out.println("score = " + score);
+            eventRepository.updateScore(eventid, memberid, score);
+        return new GenericResponse("Thanks for adding your score");
+    }
+
+
+
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -32,8 +32,12 @@ const configureStore = (addLogger = true) => {
       apiCalls.setAuthorizationHeader(persistedState);
     } catch (error) {}
   }
+    // const middleware = addLogger
+    // ? applyMiddleware(thunk, logger)
+    // : applyMiddleware(thunk);
+
     const middleware = addLogger
-    ? applyMiddleware(thunk, logger)
+    ? applyMiddleware(thunk)
     : applyMiddleware(thunk);
 
     const store = createStore(authReducer, persistedState, middleware);

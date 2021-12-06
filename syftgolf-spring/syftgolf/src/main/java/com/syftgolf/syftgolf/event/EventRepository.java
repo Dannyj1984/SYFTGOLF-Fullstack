@@ -35,7 +35,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     public Page<Event> findAllBySocietyId(Pageable page, long id);
 
     //Get event entrants name, handicap and score
-    @Query(value = "SELECT member.firstname, member.surname, member.handicap, entrants.score FROM member INNER JOIN entrants ON member.userid=entrants.member_id WHERE entrants.event_id=:eventid", nativeQuery = true)
+    @Query(value = "SELECT member.username, member.firstname, member.surname, member.handicap, entrants.score FROM member INNER JOIN entrants ON member.userid=entrants.member_id WHERE entrants.event_id=:eventid", nativeQuery = true)
     List<Entrant> getEntrantDetails(long eventid);
 
     //Add new entrant
@@ -49,6 +49,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Modifying
     @Query(value = "DELETE FROM entrants WHERE member_id=:memberid AND event_id=:eventid", nativeQuery = true)
     void deleteEntrantByIds(long eventid, long memberid);
+
+    //Update an entrant's score
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE entrants SET score = :score WHERE member_id = :memberid AND event_id = :eventid ", nativeQuery = true)
+    void updateScore(long eventid, long memberid, int score);
 
 
 

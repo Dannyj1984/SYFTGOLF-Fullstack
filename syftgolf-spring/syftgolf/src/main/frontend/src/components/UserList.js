@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import * as apiCalls from '../api/apiCalls';
-import Search from "./Search";
 import UserListItem from './UserListItem';
 import { connect } from 'react-redux';
+import ExportCSV from "./ExportCSV";
+import Input from './Input';
 
 export const UserList = (props) => {
   const [page, setPage] = useState({
@@ -11,17 +12,54 @@ export const UserList = (props) => {
     size: 9
   });
 
+  const [pendingApiCall, setPendingApiCall] = useState(false);
+
+  //Name filter when filtering users
+  const [nameFilter, setNameFilter] = useState('');
+
+  const clearFilter = () => {
+    setNameFilter('')
+    loadData()
+  }
+  
+
   const [loadError, setLoadError] = useState();
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  //Change filter value
+  const onChange = (event) => {
+  const { value } = event.target;
+
+  
+  setNameFilter(value)
+  
+  loadFilter()
+  console.log(value)
+  console.log(nameFilter)
+}
+
+const loadFilter = async (requestedPage = 0) => {
+  let name = nameFilter
+  console.log(name)
+  let id = props.user.society.id 
+  setPendingApiCall(true);
+  await apiCalls
+    .listFilteredUsers({ page: requestedPage, size: 9 }, id, name.toLowerCase())
+     .then ((response)  => {
+      setPage(response.data);
+      if(Object.entries(response.data.content).length === 0) {
+        setLoadError('No members');
+      }
+    })
+    .catch((error) => {
+      setLoadError("Member load failed" );
+    });
+    setPendingApiCall(false);
+};
 
   const loadData = (requestedPage = 0) => {
-    let id = props.user.society.id
-    console.log(id)
+    let id = props.user.society.id  
     apiCalls
-      .listUsers(id,{ page: requestedPage, size: 9 })
+      .listUsers(id, { page: requestedPage, size: 9 })
       .then((response) => {
         setPage(response.data);
         setLoadError();
@@ -30,6 +68,11 @@ export const UserList = (props) => {
         setLoadError("User load failed" );
       });
   };
+
+  useEffect(() => {
+    //loadData();
+    loadFilter();
+  }, [nameFilter]);
 
   const onClickNext = () => {
     loadData(page.number + 1);
@@ -40,12 +83,37 @@ export const UserList = (props) => {
   };
 
   const { content, first, last } = page;
+  console.log(content)
+  
 
   return (
+
     <div>
-      <h3 className="card-title m-auto text-center">Members</h3> 
-      <Search/>
-      <hr></hr>
+      {(props.user.role === 'SUPERUSER' || props.user.role === 'ADMIN') &&
+      <div className="container">
+        <div className="row">
+          <div className="col-sm">
+            <div className="row">
+              <Input name="nameFilter" value={nameFilter} type="text" placeholder="Search" onChange={onChange} />
+              <button className="btn btn-primary" onClick={clearFilter} >Clear</button>
+            </div>
+          </div>
+          <div className="col-sm">
+            <h3 className="card-title m-auto text-center">Members</h3>
+          </div>
+          
+          <div className="col-sm">
+          <ExportCSV />
+          </div>
+        </div>
+      </div>}
+      
+      <hr />
+      {pendingApiCall &&
+      <div>
+        <span>Loading...</span>
+      </div>}
+      {!pendingApiCall && 
       <div className="list-group list-group-flush" data-testid="usergroup">
         <div className="row">
           {content.map((user) => (
@@ -59,7 +127,8 @@ export const UserList = (props) => {
             </div>
           ))}
         </div>
-      </div>
+      </div>}
+      
       <div className="clearfix">
         {!first && (
           <span className="badge badge-light float-left" style={{ cursor: "pointer" }} onClick={onClickPrevious}>

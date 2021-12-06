@@ -250,6 +250,7 @@ const UserListItem = (props) => {
                     </div>
                     <div className="col-12 card-title align-self-center mb-0">
                         <h5>{props.user.firstname} {props.user.surname}</h5>
+                        <p className="m-0">WHS : {props.user.handicap}</p>
                         <p className="m-0">Society Handicap : {Number(props.user.handicap - props.user.sochcpred).toFixed(1)}</p> {/*Show society handicap to 1dp*/}
                         <p className="m-0">Home club : {props.user.homeclub}</p>
                         <p className="m-0">Role : {props.user.role}</p>

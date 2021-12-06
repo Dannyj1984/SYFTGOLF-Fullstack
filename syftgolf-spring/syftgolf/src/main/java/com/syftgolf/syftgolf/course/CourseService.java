@@ -3,6 +3,7 @@ package com.syftgolf.syftgolf.course;
 import com.syftgolf.syftgolf.course.vm.CourseUpdateVM;
 import com.syftgolf.syftgolf.error.NotFoundException;
 import com.syftgolf.syftgolf.file.FileService;
+import com.syftgolf.syftgolf.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -71,6 +72,11 @@ public class CourseService {
     //Get a page of courses for a society
     public Page<Course> getCoursesForSociety(Pageable pageable, long id) {
         return courseRepository.findAllBySocietyId(pageable, id);
+    }
+
+    //Page of filtered courses for a society
+    public Page<Course> getFilteredCourses(String query, Pageable pageable, long id) {
+        return courseRepository.findByCourseNameStartsWithIgnoreCaseAndSocietyId(query, pageable, id);
     }
 
 

@@ -50,9 +50,9 @@ export const eventSignupHandler = (event) => {
   };
 };
 
-export const enterEntrantHandler = (entrant) => {
+export const enterEntrantHandler = (eventid, memberid) => {
   return async function(dispatch) {
-    await apiCalls.eventEnter(entrant);
+    await apiCalls.eventEnter(eventid, memberid);
 
   };
 };

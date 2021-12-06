@@ -14,10 +14,14 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
 
-
+    //Return list of society users and sort
+    List<User> findAllBySocietyId(long id, Sort sort);
 
     //return User with this username
     User findByUsername(String username);
+
+    //Return page of users filtered by username
+    Page<User> findByUsernameStartsWithAndSocietyId(String query, Pageable page, long id);
 
     //Get Society members
     public Page<User> findAllBySocietyId(Pageable page, long id);

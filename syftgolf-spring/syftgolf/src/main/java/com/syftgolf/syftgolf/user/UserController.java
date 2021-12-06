@@ -1,9 +1,13 @@
 package com.syftgolf.syftgolf.user;
 
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.syftgolf.syftgolf.shared.CurrentUser;
@@ -25,6 +29,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.syftgolf.syftgolf.error.ApiError;
 import com.syftgolf.syftgolf.shared.GenericResponse;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
 @RestController
 @RequestMapping("/api/1.0")
@@ -55,12 +62,45 @@ public class UserController {
         societyRepository.save(soc);
         return new GenericResponse("User saved");
     }
+    //Export CSV of users
+    @GetMapping("/users/export/{id:[0-9]+}")
+    public void exportToCSV(HttpServletResponse response, @PathVariable long id) throws IOException {
+        response.setContentType("text/csv");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=users_" + currentDateTime + ".csv";
+        response.setHeader(headerKey, headerValue);
+
+        List<User> listUsers = userService.listAll(id);
+
+        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+        String[] csvHeader = {"User ID", "E-mail", "First Name", "Surname", "CDH", "Handicap"};
+        String[] nameMapping = {"id", "email", "firstname", "surname", "cdh", "handicap"};
+
+        csvWriter.writeHeader(csvHeader);
+
+        for (User user : listUsers) {
+            csvWriter.write(user, nameMapping);
+        }
+
+        csvWriter.close();
+
+    }
 
     //Get Page of users for a society.
     @CrossOrigin
     @GetMapping("/societyUsers/{id:[0-9]+}")
     Page<User> getSomeUsers(Pageable page, @PathVariable long id) {
         return userService.getSomeUsers(page, id);
+    }
+
+    //Get page of users for a society filtered by username containing
+    @CrossOrigin
+    @GetMapping("/societyFilteredUsers/{id:[0-9]+}")
+    Page<User> getFilteredUsers(Pageable page, @PathVariable long id, @RequestParam String query) {
+        return userService.getFilteredUsers(query, page, id);
     }
 
     //Get member by username

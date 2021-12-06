@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 public interface Entrant {
 
+     String getUsername();
+
      String getFirstname();
 
      String getSurname();

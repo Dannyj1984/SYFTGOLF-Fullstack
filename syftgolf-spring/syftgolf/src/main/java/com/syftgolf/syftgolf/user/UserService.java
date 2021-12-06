@@ -8,10 +8,12 @@ import com.syftgolf.syftgolf.society.SocietyRepository;
 import com.syftgolf.syftgolf.user.vm.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @Service
@@ -40,6 +42,11 @@ public class UserService {
         Society inDB = societyRepository.getOne(user.getSociety().getId());
         user.setSociety(inDB);
         return userRepository.save(user);
+    }
+
+    //Get list of users by society and sort by username for exporting
+    public List<User> listAll(long id) {
+        return userRepository.findAllBySocietyId(id, Sort.by("username").ascending());
     }
 
     public User changePassword(long userid, UserPasswordUpdateVM userPasswordUpdateVM) {
@@ -146,6 +153,10 @@ public class UserService {
 
     public Page<User> getSomeUsers(Pageable pageable, long id) {
         return userRepository.findAllBySocietyId(pageable, id);
+    }
+
+    public Page<User> getFilteredUsers(String query, Pageable pageable, long id) {
+        return userRepository.findByUsernameStartsWithAndSocietyId(query, pageable, id);
     }
 
 

@@ -1,8 +1,7 @@
 import React from 'react'
-import { Alert } from 'react-bootstrap';
 import Input from './Input';
 
-const Search = () => {
+const Search = (props) => {
 
     const click = () => {
         alert('Coming soon!!');
@@ -10,8 +9,8 @@ const Search = () => {
 
     return (
         <div className="row">
-            <Input type="text" placeholder="Search" />
-            <button className="btn btn-primary" onClick={click}>Search</button>
+            <Input name="filter" type="text" placeholder="Search" onChange={props.onChangeFilter} />
+            <button className="btn btn-primary" onClick={props.onChangeFilter}>Search</button>
         </div>
     )
 

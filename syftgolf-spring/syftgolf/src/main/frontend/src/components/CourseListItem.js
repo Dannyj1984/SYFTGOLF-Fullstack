@@ -17,8 +17,8 @@ const CourseListItem = (props) => {
               label: 'Yes',
               onClick: () => 
                 apiCalls.deleteCourse(props.course.id)
-                .then (response => window.location.reload())
-                
+                .then (response => 
+                  window.location.reload())
             },
             {
               label: 'No',

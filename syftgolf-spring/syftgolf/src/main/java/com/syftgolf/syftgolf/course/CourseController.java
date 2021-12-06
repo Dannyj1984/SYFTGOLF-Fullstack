@@ -4,6 +4,7 @@ import com.syftgolf.syftgolf.course.vm.CourseUpdateVM;
 import com.syftgolf.syftgolf.course.vm.CourseVM;
 import com.syftgolf.syftgolf.error.ApiError;
 import com.syftgolf.syftgolf.shared.GenericResponse;
+import com.syftgolf.syftgolf.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +55,13 @@ public class CourseController {
     @CrossOrigin
     Page<CourseVM> getCourses(Pageable page, @PathVariable long id) {
         return courseService.getCoursesForSociety(page, id).map(CourseVM::new);
+    }
+
+    //Get page of courses for a society filtered by coursename containing
+    @CrossOrigin
+    @GetMapping("/societyFilteredCourses/{id:[0-9]+}")
+    Page<Course> getFilteredCourses(Pageable page, @PathVariable long id, @RequestParam String query) {
+        return courseService.getFilteredCourses(query, page, id);
     }
 
     //Get course by name for course profile card
