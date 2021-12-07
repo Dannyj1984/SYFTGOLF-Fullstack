@@ -28,7 +28,6 @@ export const CourseList = (props) => {
   const onChange = (event) => {
     //set value to event.target.value
     const { value } = event.target;
-    console.log(value)
     //set nameFilter as the value of the event.target.value
     setNameFilter(value)
     //run loadFilter func
@@ -83,7 +82,6 @@ export const CourseList = (props) => {
     };
 
     const { content, first, last } = page;
-    console.log(content)
     return (
       <div >
         

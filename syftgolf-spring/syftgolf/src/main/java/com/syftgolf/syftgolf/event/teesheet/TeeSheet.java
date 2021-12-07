@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Data
-//Entity maps object to database
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor

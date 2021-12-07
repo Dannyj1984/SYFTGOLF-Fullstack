@@ -88,7 +88,6 @@ export const EventSignupPage = (props) => {
         .catch((apiError) => {
           if (apiError.response.data && apiError.response.data.validationErrors) {
             setErrors(apiError.response.data.validationErrors);
-            console.log(apiError.response.data)
           }
           setPendingApiCall(false);
         });

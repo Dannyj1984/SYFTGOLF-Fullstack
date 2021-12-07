@@ -1,6 +1,8 @@
 package com.syftgolf.syftgolf.event;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.syftgolf.syftgolf.course.Course;
+import com.syftgolf.syftgolf.course.hole.Hole;
+import com.syftgolf.syftgolf.event.newteesheet.NewTeeSheet;
 import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
 import com.syftgolf.syftgolf.society.Society;
 import lombok.*;
@@ -10,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Data
 //Entity maps object to database
@@ -97,7 +100,10 @@ public class Event {
     @JoinColumn(name = "society_id")
     private Society society;
 
-
+    //Relationship for newteesheet
+    @JsonIgnore
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<NewTeeSheet> newteesheets;
 
 
 }

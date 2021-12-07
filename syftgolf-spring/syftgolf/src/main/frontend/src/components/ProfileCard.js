@@ -22,7 +22,6 @@ const ProfileCard = (props) => {
   //Change form for password change
   const onChange = (event) => {
     const { value, name } = event.target;
-    console.log(value)
   
       setForm((previousForm) => {
         return {
@@ -61,7 +60,6 @@ const ProfileCard = (props) => {
     ApiCalls
       .changePassword(id, userPasswordUpdate)
       .then((response) => {
-        console.log(response.data.message)
         setPendingApiCall(false);
         if(response.data.message === "Ah Ah Ah, Dont change test passwords") {
           confirmAlert({

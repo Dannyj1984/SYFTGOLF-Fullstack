@@ -1,6 +1,7 @@
 package com.syftgolf.syftgolf.event;
 
 import com.syftgolf.syftgolf.error.ApiError;
+import com.syftgolf.syftgolf.event.newteesheet.NewTeeSheet;
 import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
 import com.syftgolf.syftgolf.event.teesheet.TeeSheetService;
 import com.syftgolf.syftgolf.event.vm.EventUpdateVM;
@@ -37,8 +38,6 @@ public class EventController {
     @Autowired
     TeeSheetService teeSheetService;
 
-
-
     @GetMapping("/management/events")
     @CrossOrigin
     List<Event> getEvents() {
@@ -52,16 +51,6 @@ public class EventController {
     GenericResponse createEvent(@Valid @RequestBody Event event) {
         //Save the current event in the database
         eventService.save(event);
-        //Get the event from the database
-        Event inDB = eventRepository.findByEventname(event.getEventname());
-        //Create a new teesheet
-        TeeSheet newTee = new TeeSheet();
-        //Set the id of the teesheet to match the id of the event
-        newTee.setId(inDB.getEventid());
-        //Assign the teesheet to the event
-        inDB.setTeeSheet(newTee);
-        //Save the event
-        eventService.save(inDB);
         return new GenericResponse("Event saved");
     }
 

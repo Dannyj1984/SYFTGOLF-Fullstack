@@ -8,23 +8,68 @@ import moment from 'moment';
 import * as authActions from '../redux/authActions';
 import { connect } from 'react-redux';
 import Input from './Input';
+import ButtonWithProgress from './ButtonWithProgress';
 
 const PreviousEventListItem = (props) => {
+
+  //initial setup
+  const [courseName, setCourseName] = useState("");
+
+  //Errors and loading
 
   const [errors, setErrors] = useState({});
   const [pendingApiCall, setPendingApiCall] = useState(false);
 
+  //Entrants
+  const [entrants, setEntrants] = useState([]);
+  const [entered, setEntered] = useState(false);
 
-  //Leadboard modal setup
+  //Leadboard 
   const [showModalLeader, setShowLeader] = useState(false);
-  const [courseName, setCourseName] = useState("");
+  
+  //Array of entrants sorted by score
+  const [sortedEntrants, setSortedEntrants] = useState([]);
+  //Score
+  const [showScore, setShowScore] = useState(false);
+  const [score, setScore] = useState(0);
+  const scoreArea = () => {
+    setShowScore(true);
+  }
 
+  //Show and close leadboard modal
   const handleCloseLeader = () => setShowLeader(false);
   const handleShowLeader = () => setShowLeader(true);
 
+  //Update members score
+  const updateScore = () => {
+    const eventid = props.event.id;
+    const id = props.loggedInUser.id;
+    apiCalls
+    .updateScore(eventid, id, score)
+    .then((response) => {
+      setShowScore(false);
+      confirmAlert({
+        title: 'Thanks for updating your score',
+        message: 'Please see the leaderboard for other scores',
+        buttons: [
+          {
+          label: 'OK',
+          onClick: () =>
+          (window.location.reload())
+          }
+        ]
+      })
+    })
+   }
+
+   //cancel score
+  const cancelScore = () => {
+    setShowScore(false);
+  }
+
   //Entrants modal setup
 
-  const [showModalEntrants, setShowEntrants] = useState(false);
+  const [showEntrants, setShowEntrants] = useState(false);
 
   const handleCloseEntrants = () => setShowEntrants(false);
   const handleShowEntrants = () => setShowEntrants(true);
@@ -34,48 +79,15 @@ const PreviousEventListItem = (props) => {
   const [showTeeTime, setShowTeeTime] = useState(false);
 
   const handleCloseTeeTime = () => setShowTeeTime(false);
-  const handleShowTeeTime = () => setShowTeeTime(true);
-
-  //Tee times array
-  const [teeTimes, setTeeTimes] = useState({
-      teetime1: '',
-      p1t1: '',
-      p2t1: '',
-      p3t1: '',
-      p4t1: '',
-      teetime2: '',
-      p1t2: '',
-      p2t2: '',
-      p3t2: '',
-      p4t2: '',
-      teetime3: '',
-      p1t3: '',
-      p2t3: '',
-      p3t3: '',
-      p4t3: '',
-      teetime4: '',
-      p1t4: '',
-      p2t4: '',
-      p3t4: '',
-      p4t4: '',
-      teetime5: '',
-      p1t5: '',
-      p2t5: '',
-      p3t5: '',
-      p4t5: ''
-  });
-
-  //Edit Tee time modal setup
-  const [showEditTeeTime, setShowEditTeeTime] = useState(false);
-
-  const handleCloseEditTeeTime = () => setShowEditTeeTime(false);
-  const handleShowEditTeeTime = () => {
-    //Check if device is in portrait and if so, warn that using in Landscape is advisable for this task
+  const handleShowTeeTime = () => {
     if(window.innerHeight > window.innerWidth){
-      alert("Please use Landscape mode when editing tee times!");
+      alert("Please use Landscape mode when viewing tee times!");
   }
-    setShowEditTeeTime(true);
-  }
+  setShowTeeTime(true);
+}
+
+  //Tee times 
+  const [teeTimes, setTeeTimes] = useState([]);
 
     const deleteEvent = () => {
 
@@ -98,66 +110,40 @@ const PreviousEventListItem = (props) => {
         });
       }
 
-      //Enter currently logged in user into an event
-
-      const enterEvent = () => {
-        const event = {...props.event}
-        const eventid = event.id;
-        const userid = JSON.parse(localStorage.getItem('syft-auth')).id;
-        const entrant = {
-          user_id: userid,
-          event_id: eventid
-        };
-        
-        //Enter event
-
-        confirmAlert({
-          title: 'Do you want to enter this event?',
-          message: 'This will enter you into this event',
-          buttons: [
-            {
-              label: 'Yes',
-              onClick: () => 
-                props.actions.eventEnter(entrant)
-                .then (window.location.reload())
-                
-            },
-            {
-              label: 'No',
-              onClick: () => ''
-            }
-          ]
-        });
-        
-        
-      };
-
-      //update tee times
-
-      const updateTeeSheet = () => {
-        const event = {...props.event}
-        const eventid = event.id;
-        setPendingApiCall(true)
-
-
-        apiCalls
-        .updateTeeSheetCall(eventid, teeTimes)
-        .then((response) => {
-          window.location.reload();
-        })
-        setPendingApiCall(false)
-
-      };
-
       //load data
       useEffect(() => {
+        const event = props.event;
+        const eventid = event.id;
           apiCalls
           .getCourseDetails(props.event.id)
           .then((response) => {
             setCourseName(response.data.course);
           }, []);
-          
-      });
+          //Get the entrants for this event
+          apiCalls
+          .getEntrants(eventid)
+          .then((response) => {
+            //if entrants exist, check if the currently logged in user id is present for this event
+            if(response.data.length < 1){
+              setEntered(false);
+            } else {
+              setEntrants(response.data)
+              setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
+              //Check if the username of logged in user is present in the array of entrants
+              function userEntered(username) {
+                return entrants.some(function(el) {
+                  return el.username === username;
+                }); 
+              }
+              if(userEntered(props.loggedInUser.username)) {
+                setEntered(true);
+              } else {
+                setEntered(false);
+              }
+
+            }
+          })
+      }, [entrants]);
 
       //Get teesheet data for event when loading that modal
       const getTeesheet = () =>  {
@@ -165,7 +151,6 @@ const PreviousEventListItem = (props) => {
           .getTeesheet(props.event.id)
           .then((response) => {
             setTeeTimes(response.data);
-            console.log(teeTimes);
           }, []);
       }
 
@@ -188,22 +173,23 @@ const PreviousEventListItem = (props) => {
         });
       };
 
-      
-
-      const userObj = localStorage.getItem('syft-auth');
-      const authorityJSON = JSON.parse(userObj);
-
       //Format date from backend to be DD-MM-YYYY
 
       let yourDate = props.event.date;
       const formatDate = moment(yourDate).format('DD-MM-YYYY')
+
+      //onChange score
+      const onChangeScore = (event) => {
+        const { value } = event.target;
+        setScore(value);
+      }
 
   return (
             <div className="card col-12">
                 <div className="card-body">
                     <div className="col-12 card-title align-self-center mb-0">
                         <h5>{props.event.eventname} </h5>
-                        <p className="m-0">Course: {courseName}</p>
+                        <p className="m-0">Courses: {courseName}</p>
                         <p className="m-0">Date : {formatDate}</p>
                         <p className="m-0">Entries : {props.event.currententrants} / {props.event.maxentrants}</p>
                         <p className="m-0">Event Format : {props.event.eventtype}</p>
@@ -214,7 +200,7 @@ const PreviousEventListItem = (props) => {
                 <hr/>
                 
                 <div className="card-body">
-                    <div className="float-left btn-group btn-group-sm px-2">
+                    <div className="float-left btn-group btn-group-m px-2 col-3">
                       <Link
                           to={`/event/${props.event.eventname}`}>
                               <button  
@@ -226,7 +212,7 @@ const PreviousEventListItem = (props) => {
                               </button>
                       </Link>
                     </div>
-                    <div className="float-left btn-group btn-group-m px-2">
+                    <div className="float-left btn-group btn-group-m px-2 col-3">
                       <button  
                           className="btn btn-primary tooltips float-left" 
                           data-placement="left" 
@@ -237,7 +223,7 @@ const PreviousEventListItem = (props) => {
                       </button>
                     </div>
 
-                    <div className="float-left btn-group btn-group-m px-2">
+                    <div className="float-left btn-group btn-group-m px-2 col-3">
                       <button  
                           className="btn btn-primary tooltips float-left" 
                           data-placement="left" 
@@ -248,7 +234,7 @@ const PreviousEventListItem = (props) => {
                       </button>
                     </div>
 
-                    <div className="float-left btn-group btn-group-m">
+                    <div className="float-left btn-group btn-group-m px-2 col-3">
                       <button  
                           className="btn btn-primary tooltips float-left" 
                           data-placement="left" 
@@ -259,8 +245,20 @@ const PreviousEventListItem = (props) => {
                       </button>
                     </div>
 
-                    <div className="float-right btn-group btn-group-m">
-                      {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'SUPERUSER')  &&
+                    {entered &&
+                    <div className="float-left btn-group btn-group-m p-2 col-6">
+                            <button  
+                                className="btn btn-primary tooltips float-left" 
+                                onClick={scoreArea} 
+                                data-placement="top" 
+                                data-toggle="tooltip" 
+                                data-original-title="Delete">
+                                Score Entry
+                            </button>
+                    </div>}
+
+                    <div className="float-right btn-group btn-group-m p-2">
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER' || props.loggedInUser.role === 'EVENTADMIN')  &&
                             <button  
                                 className="btn btn-secondary tooltips" 
                                 onClick={deleteEvent} 
@@ -273,32 +271,67 @@ const PreviousEventListItem = (props) => {
                     </div>
                     
                 </div>
+
+                {showScore &&
+                    <div className="container row m-2">
+                      <div className="col-4">
+                        <Input 
+                          name="score"
+                          value={score}
+                          type="number"
+                          onChange={onChangeScore} 
+                        />
+                      </div>
+                      <div className="col-3">
+                        <ButtonWithProgress
+                          className="btn btn-primary"
+                          onClick={updateScore}
+                          text="Update"
+                        />
+                      </div>
+                      <div className="col-3">
+                        <ButtonWithProgress
+                          className="btn btn-danger"
+                          onClick={cancelScore}
+                          text="Cancel"
+                        />
+                      </div>
+                    </div>}
+
+                      
                         {/*Show entrants modal*/}
-                <>
+                        <>
                         
-                  <Modal show={showModalEntrants} onHide={handleCloseEntrants}>
-                    <Modal.Header closeButton>
-                      <Modal.Title>Entrants for {props.event.eventname} on {formatDate}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                    <ol>
-                      <li>Danny Jebb </li>
-                      <li>Danny Jebb </li>
-                      <li>Danny Jebb </li>
-                      <li>Danny Jebb </li>
-                      <li>Danny Jebb </li>
-                      <li>Danny Jebb </li>
-                    </ol>
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button variant="secondary" onClick={handleCloseEntrants}>
-                        Close
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-              </>
+                        <Modal show={showEntrants} onHide={handleCloseEntrants}>
+                          <Modal.Header closeButton>
+                            <Modal.Title>Entrants for {props.event.eventname} on {formatDate}</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                            <Table striped bordered hover>
+                            <thead>
+                              <tr>
+                                <th scope="col">Member</th>
+                              </tr>
+                            </thead>
+                            {entrants.map((entrant => 
+                              <tbody key={entrant.username}>
+                                <tr>
+                                  <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
+                                </tr>
+                              </tbody>
+                            ))}
+                            </Table>
+                          </Modal.Body>
+                          <Modal.Footer>
+                            <Button variant="secondary" onClick={handleCloseEntrants}>
+                              Close
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                    </>
+                
                         {/*Show leaderboard modal*/}
-                <>
+                        <>
                         
                   <Modal 
                     show={showModalLeader} 
@@ -312,28 +345,18 @@ const PreviousEventListItem = (props) => {
                     <Table striped bordered hover>
                       <thead>
                         <tr>
-                          <th scope="col">Position</th>
-                          <th scope="col">Name</th>
+                          <th scope="col">Member</th>
                           <th scope="col">Score</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      {sortedEntrants.map((entrant =>
+                        <tbody key={entrant.username}>
                         <tr>
-                          <th scope="row">1</th>
-                          <td>Danny J</td>
-                          <td>41 pts</td>
+                          <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
+                          <th scope="row">{entrant.score}</th>
                         </tr>
-                        <tr>
-                          <th scope="row">2</th>
-                          <td>Lee O</td>
-                          <td>39 pts</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">3</th>
-                          <td>Damien H</td>
-                          <td>35pts</td>
-                        </tr>
-                      </tbody>
+                        </tbody>
+                      ))}
                     </Table>
                     </Modal.Body>
                     <Modal.Footer>
@@ -343,318 +366,49 @@ const PreviousEventListItem = (props) => {
                     </Modal.Footer>
                   </Modal>
               </>
+                
                         {/*Show Tee time modal*/}
-              <>
-                        
-                  <Modal show={showTeeTime} onHide={handleCloseTeeTime} >
-                    <Modal.Header>
-                      <Modal.Title>Tee sheet for {props.event.eventname} on {formatDate}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                    <Table striped bordered hover >
-                      <thead>
-                        <tr>
-                          <th scope="col">Time</th>
-                          <th scope="col">Player 1</th>
-                          <th scope="col">Player 2</th>
-                          <th scope="col">Player 3</th>
-                          {teeTimes.p4t1 !== null &&
-                          <th scope="col">Player 4</th>}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <th scope="row">{teeTimes.teetime1}</th>
-                          <td>{teeTimes.p1t1}</td>
-                          <td>{teeTimes.p2t1}</td>
-                          <td>{teeTimes.p3t1}</td>
-                          <td>{teeTimes.p4t1}</td>
-                        </tr>
-                        {teeTimes.teetime2 !== null &&
-                        <tr>
-                          <th scope="row">{teeTimes.teetime2}</th>
-                          <td>{teeTimes.p1t2}</td>
-                          <td>{teeTimes.p2t2}</td>
-                          <td>{teeTimes.p3t2}</td>
-                          <td>{teeTimes.p4t2}</td>
-                        </tr>}
-                        {teeTimes.teetime3 !== null &&
-                        <tr>
-                          <th scope="row">{teeTimes.teetime3}</th>
-                          <td>{teeTimes.p1t3}</td>
-                          <td>{teeTimes.p2t3}</td>
-                          <td>{teeTimes.p3t3}</td>
-                          <td>{teeTimes.p4t3}</td>
-                        </tr>}
-                        {teeTimes.teetime4 !== null &&
-                        <tr>
-                          <th scope="row">{teeTimes.teetime4}</th>
-                          <td>{teeTimes.p1t4}</td>
-                          <td>{teeTimes.p2t4}</td>
-                          <td>{teeTimes.p3t4}</td>
-                          <td>{teeTimes.p4t4}</td>
-                        </tr>}
-                        {teeTimes.teetime5 !== null &&
-                        <tr>
-                          <th scope="row">{teeTimes.teetime5}</th>
-                          <td>{teeTimes.p1t5}</td>
-                          <td>{teeTimes.p2t5}</td>
-                          <td>{teeTimes.p3t5}</td>
-                          <td>{teeTimes.p4t5}</td>
-                        </tr>}
-                      </tbody>
-                    </Table>
-                    </Modal.Body>
-                    <Modal.Footer>
-                    {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN' || authorityJSON.role === 'SUPERUSER') &&
-                      <Button className="btn btn-primary" onClick={handleShowEditTeeTime}> Edit Times </Button>}
-                      <Button variant="secondary" onClick={handleCloseTeeTime}>
-                        Close
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-              </>
-
-                        {/*Show Edit tee time modal*/}
-              <>
-                        
-                        <Modal show={showEditTeeTime} onHide={handleCloseEditTeeTime} dialogClassName="modal-content-full modal-dialog-full" >
-                          <Modal.Header closeButton>
-                            <Modal.Title>Edit Tee times for {props.event.eventname} on {formatDate}</Modal.Title>
-                          </Modal.Header>
-                          <Modal.Body>
-                          <Table striped bordered hover>
-                          <thead>
-                            <tr>
-                              <th scope="col">Time</th>
-                              <th scope="col">Player 1</th>
-                              <th scope="col">Player 2</th>
-                              <th scope="col">Player 3</th>
-                              {teeTimes.p4t1 !== '' &&
-                              <th scope="col">Player 4</th>}
-                            </tr>
-                          </thead>
-                            <tbody>
-                              <tr>
-                                <th scope="row">
-                                  <Input
-                                  name="teetime1"
-                                  placeholder="tee time 1"
-                                  value={teeTimes.teetime1}
-                                  onChange={onChange} />
-                                </th>
-                                <td>
-                                  <Input 
-                                    name="p1t1"
-                                    placeholder="Player 1"
-                                    value={teeTimes.p1t1}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                  <Input 
-                                      name="p2t1"
-                                      placeholder="Player 2"
-                                      value={teeTimes.p2t1}
-                                      onChange={onChange}  
-                                    />
-                                </td>
-                                <td>
-                                  <Input 
-                                      name="p3t1"
-                                      placeholder="Player 3"
-                                      value={teeTimes.p3t1}
-                                      onChange={onChange}  
-                                    />
-                                </td>
-                                <td>
-                                  <Input 
-                                      name="p4t1"
-                                      placeholder="Player 4"
-                                      value={teeTimes.p4t1}
-                                      onChange={onChange}  
-                                    />
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">
-                                <Input 
-                                    name="teetime2"
-                                    placeholder="tee time 2"
-                                    value={teeTimes.teetime2}
-                                    onChange={onChange}  
-                                  />
-                                </th>
-                                <td>
-                                <Input 
-                                    name="p1t2"
-                                    placeholder="Player 1"
-                                    value={teeTimes.p1t2}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p2t2"
-                                    placeholder="Player 2"
-                                    value={teeTimes.p2t2}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p3t2"
-                                    placeholder="Player 3"
-                                    value={teeTimes.p3t2}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p4t2"
-                                    placeholder="Player 4"
-                                    value={teeTimes.p4t2}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">
-                                <Input 
-                                    name="teetime3"
-                                    placeholder="tee time 3"
-                                    value={teeTimes.teetime3}
-                                    onChange={onChange}  
-                                  />
-                                </th>
-                                <td>
-                                <Input 
-                                    name="p1t3"
-                                    placeholder="Player 1"
-                                    value={teeTimes.p1t3}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p2t3"
-                                    placeholder="Player 2"
-                                    value={teeTimes.p2t3}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p3t3"
-                                    placeholder="Player 3"
-                                    value={teeTimes.p3t3}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p4t3"
-                                    placeholder="Player 4"
-                                    value={teeTimes.p4t3}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                </tr>
+                        <>
+                          <Modal 
+                            show={showTeeTime} 
+                            onHide={handleCloseTeeTime} 
+                            dialogClassName="modal-content-full modal-dialog-full"
+                          >
+                            <Modal.Header closeButton>
+                              <Modal.Title>Tee times for {props.event.eventname} on {formatDate}</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                            <Table striped bordered hover>
+                              <thead>
                                 <tr>
-                                <th scope="row">
-                                <Input 
-                                    name="teetime4"
-                                    placeholder="tee time 4"
-                                    value={teeTimes.teetime4}
-                                    onChange={onChange}  
-                                  />
-                                </th>
-                                <td>
-                                <Input 
-                                    name="p1t4"
-                                    placeholder="Player 1"
-                                    value={teeTimes.p1t4}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p2t4"
-                                    placeholder="Player 2"
-                                    value={teeTimes.p2t4}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p3t4"
-                                    placeholder="Player 3"
-                                    value={teeTimes.p3t4}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p4t4"
-                                    placeholder="Player 4"
-                                    value={teeTimes.p4t4}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">
-                                <Input 
-                                    name="teetime5"
-                                    placeholder="tee time 5"
-                                    value={teeTimes.teetime5}
-                                    onChange={onChange}  
-                                  />
-                                </th>
-                                <td>
-                                <Input 
-                                    name="p1t5"
-                                    placeholder="Player 1"
-                                    value={teeTimes.p1t5}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p2t5"
-                                    placeholder="Player 2"
-                                    value={teeTimes.p2t5}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p3t5"
-                                    placeholder="Player 3"
-                                    value={teeTimes.p3t5}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                                <td>
-                                <Input 
-                                    name="p4t5"
-                                    placeholder="Player 4"
-                                    value={teeTimes.p4t5}
-                                    onChange={onChange}  
-                                  />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </Table>
-                          </Modal.Body>
-                          <Modal.Footer>
-                            <Button variant="success" disabled={pendingApiCall} onClick={updateTeeSheet}>Update</Button>
-                            <Button variant="secondary" onClick={handleCloseEditTeeTime}>
-                              Close
-                            </Button>
-                          </Modal.Footer>
-                        </Modal>
-                    </>
+                                  <th scope="col">Tee time</th>
+                                  <th scope="col">Player 1</th>
+                                  <th scope="col">Player 2</th>
+                                  <th scope="col">Player 3</th>
+                                  <th scope="col">Player 4</th>
+                                </tr>
+                              </thead>
+                              {teeTimes.map((teetime =>
+                                <tbody key={teetime.id}>
+                                <tr>
+                                  <th scope="col">{teetime.teetime}</th>
+                                  <th scope="col">{teetime.player1}</th>
+                                  <th scope="col">{teetime.player2}</th>
+                                  <th scope="col">{teetime.player3}</th>
+                                  <th scope="col">{teetime.player4}</th>
+                                </tr>
+                                </tbody>
+                              ))}
+                            </Table>
+                            </Modal.Body>
+                            <Modal.Footer>
+                              <Button variant="secondary" onClick={handleCloseTeeTime}>
+                                Close
+                              </Button>
+                            </Modal.Footer>
+                          </Modal>
+                        </>
+              
             </div>
   );
 };

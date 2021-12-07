@@ -25,7 +25,6 @@ const reducer = (state, action) => {
       userNotFound: true,
     };
   } else if (action.type === 'cancel') {
-    console.log("cancel")
     let username = state.user.username;
     let email = state.user.email;
     let homeclub = state.user.homeclub;
@@ -110,7 +109,6 @@ const reducer = (state, action) => {
     }
     const errors = state.errors;
     errors.username = undefined;
-    console.log(state.user.username)
     return {
       ...state,
       errors,
@@ -209,13 +207,11 @@ const reducer = (state, action) => {
       image: action.payload,
     };
   } else if (action.type === 'edit-mode') {
-    console.log("edit")
     return {
       ...state,
       inEditMode: true,
     };
   } else if (action.type === 'editPassword-mode') {
-    console.log("edit password clicked")
     return {
       ...state,
       inPasswordEditMode: true,
