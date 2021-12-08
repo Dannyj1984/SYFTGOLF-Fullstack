@@ -21,7 +21,6 @@ export const CourseRegisterPage = (props) => {
 
   const onChange = (event) => {
     const { value, name } = event.target;
-    console.log(value)
 
     setForm((previousForm) => {
       return {
@@ -49,7 +48,6 @@ export const CourseRegisterPage = (props) => {
             id: props.user.society.id
           }
           };
-          console.log(course)
           setPendingApiCall(true);
         props.actions
           .postSignupCourse(course)

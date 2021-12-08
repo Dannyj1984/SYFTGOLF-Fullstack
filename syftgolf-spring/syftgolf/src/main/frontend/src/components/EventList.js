@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import * as apiCalls from '../api/apiCalls';
-import EventListItem from './EventListItem';
+import EventListItems from './EventListItems';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -60,7 +60,7 @@ export const EventList = (props) => {
               <div className="row">
               {content.map((event) => (
                   <div key={event.id} className="col-xl-4 col-m-12 mb-4">
-                  <EventListItem  event={event} events={events} />
+                  <EventListItems event={event} events={events} />
                   </div>
                 ))}
               </div>

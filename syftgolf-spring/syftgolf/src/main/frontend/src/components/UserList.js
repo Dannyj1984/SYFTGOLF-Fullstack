@@ -33,13 +33,10 @@ export const UserList = (props) => {
   setNameFilter(value)
   
   loadFilter()
-  console.log(value)
-  console.log(nameFilter)
 }
 
 const loadFilter = async (requestedPage = 0) => {
   let name = nameFilter
-  console.log(name)
   let id = props.user.society.id 
   setPendingApiCall(true);
   await apiCalls
@@ -83,7 +80,6 @@ const loadFilter = async (requestedPage = 0) => {
   };
 
   const { content, first, last } = page;
-  console.log(content)
   
 
   return (

@@ -46,6 +46,7 @@ public class EventVM {
         this.setInfo(event.getInfo());
         this.setQualifier(event.getQualifier());
         this.setMaxentrants(event.getMaxentrants());
+        this.setCurrententrants(event.getCurrententrants());
         this.setWinner(event.getWinner());
         this.setTeesheet(event.getTeeSheet());
 //        this.setCourse_id(event.getCourse_id());

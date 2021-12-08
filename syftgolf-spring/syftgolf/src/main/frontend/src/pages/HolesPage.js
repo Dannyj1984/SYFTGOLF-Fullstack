@@ -44,7 +44,7 @@ const MultipleSignUp = (props) => {
       })
     };
    
-    // this is for adding new user form to the screen.
+    // this is for adding new hole form to the screen.
     const addNew = () => {
       setForms((previousForms) => {
         return [

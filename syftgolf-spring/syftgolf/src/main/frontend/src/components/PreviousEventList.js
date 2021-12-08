@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import * as apiCalls from '../api/apiCalls';
-import PreviousEventListItem from './EventListItem';
+import PreviousEventListItem from './PreviousEventListItem';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -45,7 +45,7 @@ export const PreviousEventList = (props) => {
 
   return (
           <div >
-            <h3 className="card-title m-auto text-center">Events</h3>
+            <h3 className="card-title m-auto text-center">Past Events</h3>
             <Link
                   to={`/events`}>
                     <button  
@@ -61,7 +61,7 @@ export const PreviousEventList = (props) => {
               {content.map((event) => (
                   <div key={event.id} className="col-xl-4 col-m-12 mb-4">
                  
-                  <PreviousEventListItem  event={event} events={events} />
+                    <PreviousEventListItem  event={event} events={events} /> 
                   </div>
                 ))}
               </div>

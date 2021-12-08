@@ -33,7 +33,6 @@ const onClickLogin = () => {
     .catch((apiError) => {
       if (apiError.response) {
         setPendingApiCall(false);
-        console.log(apiError.response.status)
         if(apiError.response.status === 401) {
         setApiError('Incorrect username or password. Please try again');
         }
