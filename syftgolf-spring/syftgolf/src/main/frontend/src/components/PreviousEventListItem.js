@@ -190,10 +190,9 @@ const PreviousEventListItem = (props) => {
                     <div className="col-12 card-title align-self-center mb-0">
                         <h5>{props.event.eventname} </h5>
                         <p className="m-0">Courses: {courseName}</p>
-                        <p className="m-0">Date : {formatDate}</p>
                         <p className="m-0">Entries : {props.event.currententrants} / {props.event.maxentrants}</p>
                         <p className="m-0">Event Format : {props.event.eventtype}</p>
-                        <p className="m-0">Cost : £{props.event.cost}</p>
+                        <p className="m-0">Winner : {props.event.winner}</p>
                         
                     </div>
                 </div>

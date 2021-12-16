@@ -1,14 +1,20 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import {
+  Container,
+  Box,
+  Button,
+  makeStyles
+  } from '@material-ui/core';
 import logo from '../assets/syft.png';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ProfileImageWithDefault from './ProfileImageWithDefault';
 import useClickTracker from '../shared/useClickTracker';
-
+import SessionTimeout from '../components/SessionTimeout';
 
 
 const TopBar = (props) => {
-
+  
   const actionArea = useRef();
 
   const dropDownVisible = useClickTracker(actionArea);
@@ -19,7 +25,6 @@ const TopBar = (props) => {
     };
     props.dispatch(action);
   };
-
   
 
    let links = (
@@ -424,6 +429,7 @@ try {
             <div className="navbar-brand d-md-none mt-2">
               <h5>{society}</h5>
             </div>
+            <SessionTimeout isAuthenticated={props.user.isLoggedIn} logOut={onClickLogout} dispatch={props.dispatch} />
             {links}
           </nav>
         </div>
@@ -436,6 +442,13 @@ const mapStateToProps = (state) => {
   return {
     user: state
   };
+};
+
+TopBar.defaultProps = {
+  
+  history: {
+    push: () => {}
+}
 };
 
 export default connect(mapStateToProps)(TopBar);

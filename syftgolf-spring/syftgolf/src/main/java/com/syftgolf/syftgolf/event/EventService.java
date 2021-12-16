@@ -5,11 +5,14 @@ import com.syftgolf.syftgolf.event.teesheet.TeeSheet;
 import com.syftgolf.syftgolf.event.teesheet.TeeSheetRepository;
 import com.syftgolf.syftgolf.event.vm.EventUpdateVM;
 import com.syftgolf.syftgolf.user.User;
+import com.syftgolf.syftgolf.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -18,12 +21,21 @@ public class EventService {
 
     EventRepository eventRepository;
 
-    public EventService(EventRepository eventRepository) {
+    UserRepository userRepository;
+
+    public EventService(EventRepository eventRepository, UserRepository userRepository) {
         this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
     }
 
     //Save new event
     public Event save(Event event) {
+        //Check and trim event name for white space
+        String name = event.getEventname();
+        System.out.println(name.length());
+        String trimmedName = name.trim();
+        System.out.println(trimmedName.length());
+        event.setEventname(trimmedName);
         return eventRepository.save(event);
     }
 
@@ -31,6 +43,21 @@ public class EventService {
     public Page<Event> getEvents(Pageable pageable, long id) {
 
         return eventRepository.findAllByDate(pageable, id);
+    }
+
+    //Get List of previous events for an entrant
+    public List<Event> getPreviousEventsForEntrant(long userid) {
+        //Get the current member
+        User user = userRepository.getOne(userid);
+        return eventRepository.getPreviousEventsForEntrant(user.getId());
+    }
+
+    //Get List of previous events for an entrant
+    public List<Event> getUpcomingEventsForEntrant(long userid) {
+        //Get the current member
+        User user = userRepository.getOne(userid);
+
+        return eventRepository.getUpcomingEventsForEntrant(user.getId());
     }
 
 
@@ -42,6 +69,8 @@ public class EventService {
 
     //Get an event by the event name
     public Event getByEventName(String eventname) {
+        String s = eventname;
+        System.out.println(s.indexOf(' '));
         Event inDB = eventRepository.findByEventname(eventname);
         if(inDB == null) {
             throw new NotFoundException(eventname + " not found");

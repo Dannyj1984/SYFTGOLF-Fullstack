@@ -1,5 +1,6 @@
 package com.syftgolf.syftgolf.course.hole;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.syftgolf.syftgolf.course.Course;
 import lombok.AllArgsConstructor;
 import lombok.Data;

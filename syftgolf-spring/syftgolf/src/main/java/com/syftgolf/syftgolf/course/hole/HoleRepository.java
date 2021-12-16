@@ -9,6 +9,6 @@ import java.util.List;
 public interface HoleRepository extends JpaRepository<Hole, Long> {
 
     //Get all holes
-    @Query("SELECT h FROM Hole h WHERE h.course.courseid=:course_id")
+    @Query(value = "SELECT * FROM hole WHERE hole.course_id=29 ORDER BY hole asc", nativeQuery = true)
     List<Hole> findAllHoles(@Param("course_id") long course_id);
 }

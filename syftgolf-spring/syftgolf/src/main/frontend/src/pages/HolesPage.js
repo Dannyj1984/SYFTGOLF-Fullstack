@@ -42,6 +42,9 @@ const MultipleSignUp = (props) => {
       .then((response) => {
         props.history.push('/courses');
       })
+      .catch((apiError) => {
+        console.log(apiError);
+      })
     };
    
     // this is for adding new hole form to the screen.

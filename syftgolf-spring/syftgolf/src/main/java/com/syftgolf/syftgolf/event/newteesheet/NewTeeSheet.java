@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 @Entity
@@ -21,10 +22,10 @@ public class NewTeeSheet {
     @Column(name = "teesheetid")
     private long id;
 
-    @NotNull
+    @NotNull(message = "{syftgolf.constraints.teesheet.NotNull.message}")
+    @Size(min = 3, max = 8, message = "Please enter a valid time in the format hh : mm")
     private String teetime;
 
-    @NotNull
     private String player1;
 
     private String player2;

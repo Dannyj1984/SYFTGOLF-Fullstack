@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import ProfileImageWithDefault from './ProfileImageWithDefault';
+import { Link } from 'react-router-dom';
 import Input from './Input';
 import ButtonWithProgress from './ButtonWithProgress';
 import { connect } from 'react-redux';
@@ -8,9 +9,10 @@ import * as ApiCalls from '../api/apiCalls';
 import PasswordInput from './PasswordInput';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import moment from 'moment';
 
 const ProfileCard = (props) => {
-  const { username, firstname, surname, handicap, email, image, mobile, cdh, homeclub, wins } = props.user
+  const { id, username, firstname, surname, handicap, email, image, mobile, cdh, homeclub, wins } = props.user
   const [errors, setErrors] = useState({});
   const [pendingApiCall, setPendingApiCall] = useState(false);
 
@@ -18,6 +20,10 @@ const ProfileCard = (props) => {
     password: '',
     passwordRepeat: ''
   });
+
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+
+  const [previousEvents, setPreviousEvents] = useState([]);
 
   //Change form for password change
   const onChange = (event) => {
@@ -41,6 +47,17 @@ const ProfileCard = (props) => {
   const showEditButton = props.isEditable && !props.inEditMode;
 
   const showEditPasswordButton = props.isEditable && !props.inPasswordEditMode;
+
+  const [showUpcoming, setShowUpcoming] = useState(false);
+  const [showPast, setShowPast] = useState(false);
+
+  const handleShowUpcoming = () => {
+    setShowUpcoming(!showUpcoming);
+  }
+
+  const handleShowPast = () => {
+    setShowPast(!showPast);
+  }
 
   //Cancel button on password change form
   const onClickCancel = () => {
@@ -94,6 +111,59 @@ const ProfileCard = (props) => {
       });
   };
 
+  useEffect(() => {
+    ApiCalls
+      .getUpcomingEventsForEntrant(id)
+      .then((response) => {
+        setUpcomingEvents(response.data);
+      },[])
+      .catch((apiError) => {
+        setErrors(apiError.response);
+    });
+    ApiCalls
+      .getPreviousEventsForEntrant(id)
+      .then((response) => {
+        setPreviousEvents(response.data);
+      },[])
+      .catch((apiError) => {
+        setErrors(apiError.response);
+    });
+  })
+
+  //Calculate days till the event
+  function diffInDays(start) {
+    const last = new Date(moment());
+    const first = new Date(start);
+
+    // One day in milliseconds
+    const oneDay = 1000 * 60 * 60 * 24;
+
+    // Calculating the time difference between two dates
+    const diffInTime = last.getTime() - first.getTime();
+
+    // Calculating the no. of days between two dates
+    const diffInDays = Math.round(diffInTime / oneDay);
+
+    return diffInDays;
+  }
+
+  //Calculate days since the event
+  function diffInDaysPast(end) {
+    const first = new Date(moment());
+    const last = new Date(end);
+
+    // One day in milliseconds
+    const oneDay = 1000 * 60 * 60 * 24;
+
+    // Calculating the time difference between two dates
+    const diffInTime = last.getTime() - first.getTime();
+
+    // Calculating the no. of days between two dates
+    const diffInDays = Math.round(diffInTime / oneDay);
+
+    return diffInDays;
+  }
+
   //Check passwords match when updating user password
   let passwordRepeatError;
   const { password, passwordRepeat } = form;
@@ -125,6 +195,64 @@ const ProfileCard = (props) => {
       <h5>{`CDH: ${cdh}`}</h5>
       <h5>{`Home club: ${homeclub}`}</h5>
       <h5>{`Wins: ${wins}`}</h5>
+      <div>
+        {!showPast &&<button className="btn btn-primary m-2" onClick={ () => {handleShowUpcoming(true)}} >{showUpcoming ? "Hide" : "Upcoming events"}</button>}
+        {!showUpcoming &&<button className="btn btn-secondary" onClick={ () => {handleShowPast(true)}}>{!showPast ? "Past events" : "Hide" }</button>}
+      </div>
+
+      {showUpcoming &&
+      <div className="container">
+      <hr />
+        <div className="row justify-content-center">
+          {upcomingEvents.map((event => 
+            <Link
+              to={`/event/${event.eventname}`}>
+              <div key={event.id} className="col p-2">
+                  <div className ="card-title">
+                    <div className="card-header">
+                      {event.eventname} 
+                    </div>
+                    <div className="card-text p-4">
+                    <p>Course : {event.course.courseName}</p>
+                    Date : {moment(event.date).format('DD-MM-YYYY')}
+                    </div>
+                  </div>
+                  <div className="card-footer text-muted">
+                  Starts in {diffInDays(event.date)} days
+                  </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>}
+
+      {showPast &&
+        <div className="container">
+      <hr />
+        <div className="row justify-content-center">
+          {previousEvents.map((event => 
+            <Link
+              to={`/event/${event.eventname}`}>
+              <div key={event.id} className="col p-2">
+                  <div className ="card-title">
+                    <div className="card-header">
+                      {event.eventname} 
+                    </div>
+                    <div className="card-text p-4">
+                    <p>Course : {event.course.courseName}</p>
+                    <p>Date : {moment(event.date).format('DD-MM-YYYY')}</p>
+                    <p>Winner : {event.winner}</p>
+                    </div>
+                  </div>
+                  <div className="card-footer text-muted">
+                  {diffInDaysPast(event.date)} ago
+                  </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>}
+
         {props.inEditMode && (
           <div className="mb-2">
             <Input

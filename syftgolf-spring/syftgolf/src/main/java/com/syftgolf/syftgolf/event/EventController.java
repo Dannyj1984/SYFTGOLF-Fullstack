@@ -71,7 +71,6 @@ public class EventController {
 
     }
 
-
     //Get an event by its name
     @GetMapping("/events/{eventName}")
     @CrossOrigin
@@ -79,7 +78,6 @@ public class EventController {
         Event event = eventService.getByEventName(eventName);
         return new EventVM(event);
     }
-
 
     //Get the course details an event is being played at
     @GetMapping("/management/events/courseDetails/{id:[0-9]+}")
@@ -101,7 +99,6 @@ public class EventController {
 
     }
 
-
     //Edit an event
     @PutMapping("/management/events/{id:[0-9]+}")
     @CrossOrigin
@@ -119,7 +116,6 @@ public class EventController {
 
         return new GenericResponse("teesheet updated");
     }
-
 
     //Delete an event
     @DeleteMapping("management/events/delete/{id:[0-9]+}")
@@ -150,6 +146,20 @@ public class EventController {
     @CrossOrigin
     List<Entrant> getEntrants(@PathVariable long id){
         return eventRepository.getEntrantDetails(id);
+    }
+
+    //Get all events an entrant is in
+    @GetMapping("event/getPreviousEventsForEntrant/{memberid:[0-9]+}")
+    @CrossOrigin
+    List<Event> getPreviousEventForEntrant(@PathVariable long memberid) {
+        return eventService.getPreviousEventsForEntrant(memberid);
+    }
+
+    //Get all events an entrant is in
+    @GetMapping("event/getUpcomingEventsForEntrant/{memberid:[0-9]+}")
+    @CrossOrigin
+    List<Event> getUpcomingEventForEntrant(@PathVariable long memberid) {
+        return eventService.getUpcomingEventsForEntrant(memberid);
     }
 
     //Remove entrant from an event

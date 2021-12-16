@@ -238,8 +238,6 @@ const UserPage = (props) => {
     errors: {},
   });
 
-  console.log(props)
-
   useEffect(() => {
     const loadUser = () => {
       const username = props.match.params.username;

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -38,6 +40,7 @@ public class EventVM {
     private TeeSheet teesheet;
 
     public EventVM(Event event) {
+
         this.setId(event.getEventid());
         this.setEventname(event.getEventname());
         this.setEventtype(event.getEventtype());

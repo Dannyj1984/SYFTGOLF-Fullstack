@@ -37,6 +37,9 @@ public class UserService {
     }
 
     public User save(User user) {
+        String uname = user.getUsername();
+        String trimmed = uname.trim();
+        user.setUsername(trimmed);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setSochcp(user.getHandicap());
         Society inDB = societyRepository.getOne(user.getSociety().getId());

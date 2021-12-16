@@ -30,6 +30,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query(value = "select * from Event where event.date < current_date AND event.society_id=:id", nativeQuery = true)
     Page<Event> findAllBeforeByDate(Pageable pageable, long id);
 
+    //Find all  previous events for a single entrant
+    @Query(value = "select * from event INNER JOIN entrants on event_id = eventid where date < current_date AND member_id=:userid LIMIT 6", nativeQuery = true)
+    public List<Event> getPreviousEventsForEntrant(long userid);
+
+    //Find all  upcoming events for a single entrant
+    @Query(value = "select * from event INNER JOIN entrants on event_id = eventid where date >= current_date AND member_id=:userid LIMIT 6", nativeQuery = true)
+    public List<Event> getUpcomingEventsForEntrant(long userid);
+
 
     //Find all events for a society
     public Page<Event> findAllBySocietyId(Pageable page, long id);

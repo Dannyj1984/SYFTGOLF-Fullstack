@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
+import {
+  Container,
+  Box,
+  Button,
+  makeStyles
+  } from '@material-ui/core';
 import MemberPage from '../pages/MemberPage';
 import LoginPage from '../pages/LoginPage';
 import UserSignupPage from '../pages/UserSignupPage';
@@ -20,12 +26,15 @@ import HolesPage from '../pages/HolesPage';
 import MultipleSignUp from '../components/multiHolePage';
 import SocietySignupPage from "../pages/SocietySignupPage";
 
-
-
 function App() {
+  
+  
   return (
     <div>
       <TopBar />
+      
+
+
       <div className="container">
       {/* When using switch need it will try each route in order. If two routes match it will show the first one. */}
         <Switch>

@@ -1,5 +1,7 @@
 package com.syftgolf.syftgolf.course.hole;
 
+import com.syftgolf.syftgolf.course.Course;
+import com.syftgolf.syftgolf.course.CourseRepository;
 import com.syftgolf.syftgolf.error.ApiError;
 import com.syftgolf.syftgolf.shared.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +28,16 @@ public class HoleController {
     @Autowired
     HoleRepository holeRepository;
 
+    @Autowired
+    CourseRepository courseRepository;
+
 
     @PostMapping("/management/holes")
     @CrossOrigin
     GenericResponse createCourse(@Valid @RequestBody List<Hole> holes) {
-        for(int i = 0; i < holes.size(); i++) {
-            holeRepository.save(holes.get(i));
-            System.out.println(holes.get(i));
+        for (Hole hole : holes) {
+            holeRepository.save(hole);
+            System.out.println(hole);
         }
         return new GenericResponse("Hole saved");
     }

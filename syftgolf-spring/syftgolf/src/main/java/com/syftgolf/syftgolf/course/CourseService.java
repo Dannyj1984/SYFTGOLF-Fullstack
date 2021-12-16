@@ -26,6 +26,9 @@ public class CourseService {
 
     //Save a new course
     public Course save(Course course) {
+        String name = course.getCourseName();
+        String trimmed = name.trim();
+        course.setCourseName(trimmed);
         return courseRepository.save(course);
     }
 

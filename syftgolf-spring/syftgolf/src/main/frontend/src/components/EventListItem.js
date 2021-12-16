@@ -105,6 +105,8 @@ const EventListItem = (props) => {
       p4t5: ''
   });
 
+  const [sortedTeeTime, setSortedTeeTimes] = useState([])
+
   //Edit Tee time modal setup
   const [showEditTeeTime, setShowEditTeeTime] = useState(false);
 
@@ -284,14 +286,15 @@ const EventListItem = (props) => {
 
             }
           })
-      }, [entrants]);
+      }, []);
 
       //Get teesheet data for event when loading that modal
       const getTeesheet = () =>  {
         apiCalls
-          .getTeesheet(props.event.id)
+          .getTeesheet(props.event)
           .then((response) => {
             setTeeTimes(response.data);
+            setSortedTeeTimes(teeTimes.sort((a, b) => (a.teetime > b.teetime) ? -1 : 1))
           }, []);
       }
 
@@ -319,7 +322,6 @@ const EventListItem = (props) => {
         const { value } = event.target;
         setScore(value);
       }
-
       
 
 

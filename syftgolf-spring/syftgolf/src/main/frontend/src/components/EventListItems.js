@@ -31,6 +31,7 @@ const EventListItem = (props) => {
   const scoreArea = () => {
     setShowScore(true);
   }
+  //Update
   const updateScore = () => {
    const eventid = props.event.id;
    const id = props.loggedInUser.id;
@@ -56,9 +57,6 @@ const EventListItem = (props) => {
   const cancelScore = () => {
     setShowScore(false);
   }
- 
-
-  //useEffect loading data
 
 
   //Leadboard modal setup
@@ -88,6 +86,8 @@ const EventListItem = (props) => {
     setShowTeeTime(true);
 }
 
+const [sortedTeeTimes, setSortedTeeTimes] = useState([])
+
 //Add tee time modal setup
 const [showAddTeeTime, setShowAddTeeTime] = useState(false);
 
@@ -103,7 +103,7 @@ const [showAddTeeTime, setShowAddTeeTime] = useState(false);
 //New tee time inputs
 const [newTeeTime, setNewTeeTime] = useState({
     
-        addnewTeeTime: '',
+        teetime: '',
         addplayer1: '',
         addplayer2: '',
         addplayer3: '',
@@ -143,6 +143,7 @@ const [newTeeTime, setNewTeeTime] = useState({
   }
   )
   .catch((apiError) => {
+    setErrors(apiError)
     setPendingApiCall(false);
   });
 
@@ -348,7 +349,7 @@ const [newTeeTime, setNewTeeTime] = useState({
       const addTeeTime = () => {
           const eventid = props.event.id
           const newTeeSheet = {
-              teetime: newTeeTime.addnewTeeTime,
+              teetime: newTeeTime.teetime,
               player1: newTeeTime.addplayer1,
               player2: newTeeTime.addplayer2,
               player3: newTeeTime.addplayer3,
@@ -376,10 +377,26 @@ const [newTeeTime, setNewTeeTime] = useState({
         const event = props.event;
         const eventid = event.id;
           apiCalls
-          .getCourseDetails(props.event.id)
-          .then((response) => {
-            setCourseName(response.data.course);
-          }, []);
+            .getCourseDetails(props.event.id)
+            .then((response) => {
+              setCourseName(response.data.course);
+            }, 
+            [])
+            .catch((apiError) => {
+              setErrors(apiError.response);
+            setPendingApiCall(false);
+          });
+          //Get the teesheet for this event
+          apiCalls
+            .getTeesheet(props.event.id)
+            .then((response) => {
+                  setTeeTimes(response.data)
+                  setSortedTeeTimes(teeTimes.sort((a,b) => (a.teetime < b.teetime) ? -1 : 1))
+              })
+              .catch((apiError) => {
+                  setErrors(apiError.response);
+                setPendingApiCall(false);
+              })
           //Get the entrants for this event
           apiCalls
           .getEntrants(eventid)
@@ -401,22 +418,25 @@ const [newTeeTime, setNewTeeTime] = useState({
               } else {
                 setEntered(false);
               }
-
+              
+              
             }
           })
-      }, [entrants]);
+          .catch((apiError) => {
+            setErrors(apiError.response);
+          setPendingApiCall(false);
+        })  
+
+      }, [sortedTeeTimes, teeTimes]);
 
       //Get teesheet data for event when loading that modal
       const getTeesheet = () =>  {
-        apiCalls
-          .getTeesheet(props.event.id)
-          .then((response) => {
-            setTeeTimes(response.data);
+            setSortedTeeTimes(teeTimes);
             if(Object.entries(teeTimes).length === 0) {
                 setLoadTeeSheetError('No Tee sheet is setup for this event, please create one');
               }
-          },
-           []);
+              setSortedTeeTimes(teeTimes)
+          ;
       }
 
       //Create a new teesheet
@@ -443,8 +463,14 @@ const [newTeeTime, setNewTeeTime] = useState({
 
       //onChange score
       const onChangeScore = (event) => {
-        const { value } = event.target;
+        const { name, value } = event.target;
         setScore(value);
+        setErrors((previousErrors) => {
+            return {
+              ...previousErrors,
+              [name]: undefined
+            };
+          });
       }
 
       //onChange edit fields
@@ -488,7 +514,8 @@ const [newTeeTime, setNewTeeTime] = useState({
                                 data-placement="left" 
                                 data-toggle="tooltip" 
                                 data-original-title="view"><i
-                                className="fa fa-eye"/>
+                                className="fa fa-eye"
+                                onClick={() => {console.log(`/event/${props.event.eventname}`)}}/>
                               </button>
                       </Link>
                     </div>
@@ -673,7 +700,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                             dialogClassName="modal-content-full modal-dialog-full"
                           >
                             <Modal.Header closeButton>
-                              <Modal.Title>Tee times for {props.event.eventname} on {formatDate}</Modal.Title>
+                              <Modal.Title><h3>Tee times for {props.event.eventname} on {formatDate}</h3></Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
                             <Table striped bordered hover>
@@ -684,21 +711,25 @@ const [newTeeTime, setNewTeeTime] = useState({
                                   <th scope="col">Player 2</th>
                                   <th scope="col">Player 3</th>
                                   <th scope="col">Player 4</th>
+                                  {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'EVENTADMIN' || props.loggedInUser.role === 'SUPERUSER') &&
+                                    <th scope="col">Actions</th>
+                                    }
                                 </tr>
                               </thead>
                               
-                              {teeTimes.map((teetime => 
+                              {sortedTeeTimes.map((teetime => 
                                 <tbody key={teetime.id}>
                                     <tr>
-                                    <th scope="col">{teetime.teetime}</th>
+                                    <th scope="col" className="col-2">{teetime.teetime}</th>
                                     <th scope="col">{teetime.player1}</th>
                                     <th scope="col">{teetime.player2}</th>
                                     <th scope="col">{teetime.player3}</th>
                                     <th scope="col">{teetime.player4}</th>
+                                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'EVENTADMIN' || props.loggedInUser.role === 'SUPERUSER') &&
                                     <th scope="col">
                                         <button className="btn btn-danger m-2" onClick={() => deleteTeeSheet(teetime.id)}>delete</button>
                                         <button className="btn btn-warning m-2" onClick={() => handleShowEditTeeTime(teetime.id)}>Update</button>
-                                    </th>
+                                    </th>}
                                     </tr>
                                 </tbody>
                               ))}   
@@ -734,7 +765,15 @@ const [newTeeTime, setNewTeeTime] = useState({
                             </thead>
                                 <tbody>
                                     <tr>
-                                    <th scope="col"><Input name="teetime" value={editTeeTime.teetime} onChange={onChangeEdit} /></th>
+                                    <th 
+                                      scope="col">
+                                      <Input 
+                                        name="teetime" 
+                                        type="time"
+                                        value={editTeeTime.teetime} 
+                                        onChange={onChangeEdit} 
+                                      />
+                                    </th>
                                     <th scope="col"><Input name="player1" value={editTeeTime.player1} onChange={onChangeEdit} /></th>
                                     <th scope="col"><Input name="player2" value={editTeeTime.player2} onChange={onChangeEdit} /></th>
                                     <th scope="col"><Input name="player3" value={editTeeTime.player3} onChange={onChangeEdit} /></th>
@@ -791,10 +830,13 @@ const [newTeeTime, setNewTeeTime] = useState({
                               <tr>
                                   <th scope="row">
                                       <Input
-                                        name="addnewTeeTime"
+                                        name="teetime"
+                                        type="time"
                                         placeholder="Tee time"
                                         value={newTeeTime.addnewTeeTime}
                                         onChange={onChange} 
+                                        hasError={errors.teetime && true}
+                                        error={errors.teetime}
                                       />
                                   </th>
                                   <th scope="row">

@@ -108,7 +108,7 @@ export const CourseList = (props) => {
         <div className="list-group list-group-flush" data-testid="coursegroup">
           <div className="row">
           {content.map((course) => (
-              <div key={course.id} className="col-xl-4 col-m-12 mb-4">
+              <div key={course.courseid} className="col-xl-4 col-m-12 mb-4">
               <CourseListItem  course={course}  />
               </div>
             ))}
