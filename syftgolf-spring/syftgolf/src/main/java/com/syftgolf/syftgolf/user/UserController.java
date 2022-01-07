@@ -220,33 +220,12 @@ public class UserController {
         return userRepository.findAllUsers(Sort.by("username"));
     }
 
-    //get List of members
-//    @CrossOrigin
-//    @GetMapping("/getListOfUser")
-//    List<User> users(){
-//        return userRepository.findAllUsers(Sort.by("username"));
-//    }
-
-
-
-    //Get page of members
-//    @CrossOrigin
-//    @GetMapping("/users")
-//    Page<UserVM> getUsers(Pageable page) {
-//        return userService.getUsers(page).map(UserVM::new);
-//    }
-
-
-
-
-
-
-
-
-
-
-
-
+    //create a random list of members who have entered an event
+    @CrossOrigin
+    @GetMapping("/users/random")
+    List<String> randomList(@RequestParam List<String> usernames) {
+        return userService.createRandomUserList(usernames);
+    }
 
 
 

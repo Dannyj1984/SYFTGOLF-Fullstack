@@ -24,10 +24,12 @@ const EventListItem = (props) => {
   //Check if member is in this event
   const [entered, setEntered] = useState(false);
   const [entrants, setEntrants] = useState([]);
+  const [randomEntrants, setRandomEntrants] = useState([]);
   //sorted entrants by score for leaderboard
   const [sortedEntrants, setSortedEntrants] = useState([]);
   const [showScore, setShowScore] = useState(false);
   const [score, setScore] = useState(0);
+  const [playerPerTee, setPlayerPerTee] = useState(0);
   const scoreArea = () => {
     setShowScore(true);
   }
@@ -56,11 +58,6 @@ const EventListItem = (props) => {
   const cancelScore = () => {
     setShowScore(false);
   }
- 
-
-  //useEffect loading data
-
-
   //Leadboard modal setup
   const [showModalLeader, setShowLeader] = useState(false);
   const [courseName, setCourseName] = useState("");
@@ -140,6 +137,7 @@ const [newTeeTime, setNewTeeTime] = useState({
   .getSingleTeesheet(teesheetid)
   .then((response) =>{
       setEditTeeTime(response.data)
+      setPendingApiCall(false)
   }
   )
   .catch((apiError) => {
@@ -157,8 +155,9 @@ const [newTeeTime, setNewTeeTime] = useState({
           buttons: [
             {
               label: 'Yes',
-              onClick: () => 
-                apiCalls.deleteEvent(props.event.id)
+              onClick: ()  => 
+                apiCalls
+                .deleteEvent(props.event.id)
                 .then ((response) => {
                     window.location.reload();
                 })
@@ -166,7 +165,6 @@ const [newTeeTime, setNewTeeTime] = useState({
                     if (apiError.response.data && apiError.response.data.validationErrors) {
                       setDeleteErrors(apiError.response.data.validationErrors);
                     }
-                    setPendingApiCall(false);
                   })
                 
             },
@@ -232,6 +230,107 @@ const [newTeeTime, setNewTeeTime] = useState({
           ]
         });
       };
+
+      //Get teesheet data for event when loading that modal
+      const getTeesheet = () =>  {
+        apiCalls
+          .getTeesheet(props.event.id)
+          .then((response) => {
+            setTeeTimes(response.data);
+            setPendingApiCall(false)
+            if(Object.entries(teeTimes).length === 0) {
+                setLoadTeeSheetError('No Tee sheet is setup for this event, please create one');
+              }
+          },
+           []);
+      }
+
+      //Get list of entrants and send to backend and receive the list back in a random order.
+      const roundRobin = () => {
+        const userList = []
+        //Get list of entrants usernames to pass to backend
+        for(let i =  0; i < entrants.length; i++){
+          userList.push(entrants[i].username);
+        }
+        //API call
+        apiCalls
+        .getRandomUserList(userList)
+        .then((response) => {
+          setRandomEntrants(response.data);
+          setPendingApiCall(false)
+        })
+        .catch((apiError) => {
+          if (apiError.response.data && apiError.response.data.validationErrors) {
+            setEditErrors(apiError.response.data.validationErrors);
+          }
+          setPendingApiCall(false);
+        });
+        //add new random entrants to tee sheet
+          let players = playerPerTee;
+          getTeesheet();
+        teeTimes.forEach(teetime => {
+            const teeSheetId = teetime.id;
+            let teeSheetUpdate = {
+              teetime: teetime.teetime,
+              player1: undefined,
+              player2: undefined,
+              player3: undefined,
+              player4: undefined
+            }
+          if(players === "2") {
+              teeSheetUpdate = {
+                ...teeSheetUpdate,
+                player1: randomEntrants[0],
+                player2: randomEntrants[1],
+                player3: '',
+                player4: ''
+            }
+            randomEntrants.shift();
+            randomEntrants.shift();
+          } else if (players === "3") {
+            //Set 3 players in teesheetupdate
+            teeSheetUpdate = {
+              ...teeSheetUpdate,
+              player1: randomEntrants[0],
+              player2: randomEntrants[1],
+              player3: randomEntrants[2],
+              player4: ''
+          }
+            randomEntrants.shift();
+            randomEntrants.shift();
+            randomEntrants.shift();
+          } else if (players === "4") {
+          //Set all 4 players in teesheetupdate
+          teeSheetUpdate = {
+            ...teeSheetUpdate,
+            player1: randomEntrants[0],
+            player2: randomEntrants[1],
+            player3: randomEntrants[2],
+            player4: randomEntrants[3]
+            }
+            randomEntrants.shift();
+            randomEntrants.shift();
+            randomEntrants.shift();
+            randomEntrants.shift();
+          }
+          
+          apiCalls
+          .updateTeeSheetCall(teeSheetId, teeSheetUpdate)
+          .then((response) => {
+            console.log(response.data.message)
+            setEditConfirm(response.data.message)
+            setTimeout(() => window.location.reload(), 2000)
+        })
+        .catch((apiError) => {
+            if (apiError.response.data && apiError.response.data.validationErrors) {
+              setEditErrors(apiError.response.data.validationErrors);
+            }
+            setPendingApiCall(false);
+          });
+        }
+      )
+        
+      }
 
       //Delete a teesheet
       const deleteTeeSheet = (teesheetid) => {
@@ -327,7 +426,6 @@ const [newTeeTime, setNewTeeTime] = useState({
             player3: editTeeTime.player3,
             player4: editTeeTime.player4
         }
-        setPendingApiCall(true)
         apiCalls
         .updateTeeSheetCall(teeSheetId, teeSheetUpdate)
         .then((response) => {
@@ -354,7 +452,6 @@ const [newTeeTime, setNewTeeTime] = useState({
               player3: newTeeTime.addplayer3,
               player4: newTeeTime.addplayer4
           }
-          setPendingApiCall(true)
           apiCalls
           .createTeeSheet(eventid, newTeeSheet)
           .then((response)=> {
@@ -379,17 +476,25 @@ const [newTeeTime, setNewTeeTime] = useState({
           .getCourseDetails(props.event.id)
           .then((response) => {
             setCourseName(response.data.course);
+            setPendingApiCall(false)
           }, []);
           //Get the entrants for this event
           apiCalls
           .getEntrants(eventid)
           .then((response) => {
+            setPendingApiCall(false)
             //if entrants exist, check if the currently logged in user id is present for this event
             if(response.data.length < 1){
               setEntered(false);
             } else {
               setEntrants(response.data)
-              setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
+              //Check if medal or stableford using score and sort by low to high for medal and high to low for stableford
+              if(response.data[0].score < 52) {
+                setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
+              }
+              if(response.data[0].score > 51) {
+                setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? 1 : -1));
+              }
               //Check if the username of logged in user is present in the array of entrants
               function userEntered(username) {
                 return entrants.some(function(el) {
@@ -404,20 +509,8 @@ const [newTeeTime, setNewTeeTime] = useState({
 
             }
           })
-      }, [entrants]);
 
-      //Get teesheet data for event when loading that modal
-      const getTeesheet = () =>  {
-        apiCalls
-          .getTeesheet(props.event.id)
-          .then((response) => {
-            setTeeTimes(response.data);
-            if(Object.entries(teeTimes).length === 0) {
-                setLoadTeeSheetError('No Tee sheet is setup for this event, please create one');
-              }
-          },
-           []);
-      }
+      }, [entrants]);
 
       //Create a new teesheet
       
@@ -445,6 +538,12 @@ const [newTeeTime, setNewTeeTime] = useState({
       const onChangeScore = (event) => {
         const { value } = event.target;
         setScore(value);
+      }
+
+      //onChange playerPerTee
+      const onChangePlayerPerTee = (event) => {
+        const { value } = event.target;
+        setPlayerPerTee(value);
       }
 
       //onChange edit fields
@@ -613,19 +712,40 @@ const [newTeeTime, setNewTeeTime] = useState({
                           <th scope="col">Member</th>
                         </tr>
                       </thead>
-                      {entrants.map((entrant => 
+                      {randomEntrants.length < 1 &&
+                      entrants.map((entrant => 
                         <tbody key={entrant.username}>
                           <tr>
                             <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
                           </tr>
                         </tbody>
                       ))}
+
+                      {randomEntrants.length > 0 && 
+                      randomEntrants.map((random => 
+                        <tbody key={random}>
+                          <tr>
+                            <th scope="row">{random}</th>
+                          </tr>
+                        </tbody>
+                        ))}
                       </Table>
                     </Modal.Body>
                     <Modal.Footer>
+                    <Input 
+                      label="Players per tee"
+                      name="players"
+                      value={playerPerTee}
+                      type="number"
+                      onChange={onChangePlayerPerTee} 
+                    />
                       <Button variant="secondary" onClick={handleCloseEntrants}>
                         Close
                       </Button>
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER' || props.loggedInUser.role === 'EVENTADMIN')  &&
+                      <Button variant="secondary" onClick={roundRobin}>
+                        Randomise
+                      </Button>}
                     </Modal.Footer>
                   </Modal>
               </>
@@ -769,7 +889,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                         </Modal>
                     </>
 
-                    {/* Add tee time modal */}
+                        {/* Add tee time modal */}
                     <>
                         
                         <Modal show={showAddTeeTime} onHide={handleCloseAddTeeTime} dialogClassName="modal-content-full modal-dialog-full" >

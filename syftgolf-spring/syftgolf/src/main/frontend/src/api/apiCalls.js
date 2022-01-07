@@ -83,6 +83,11 @@ export const changePassword = (userid, user) => {
   return axios.put(url + '/api/1.0/user/passwordChange/' + userid, user);
 }
 
+export const getRandomUserList = (userList) => {
+  const path = url + '/api/1.0/users/random?usernames=' + userList
+  return axios.get(path);
+}
+
 
 //course calls
 
@@ -145,6 +150,8 @@ export const listPreviousEvents = (id, param = { page: 0, size: 9 }) => {
 };
   
 export const getEvent = (eventname) => {
+  const path = url+ `/api/1.0/events/${eventname}`
+  console.log(path);
   return axios.get(url + `/api/1.0/events/${eventname}`);
 };
 
@@ -211,6 +218,15 @@ export const updateScore = (eventid, memberid, score) => {
   return axios.put(path);
 }
 
+//Get a list of previous events for a single entrant for profile card
+export const getPreviousEventsForEntrant = (memberid) => {
+  return axios.get(url + '/api/1.0/event/getPreviousEventsForEntrant/' + memberid);
+}
+
+//Get a list of future events for a single entrant for profile card
+export const getUpcomingEventsForEntrant = (memberid) => {
+  return axios.get(url + '/api/1.0/event/getUpcomingEventsForEntrant/' + memberid);
+}
 
 //Society calls
 

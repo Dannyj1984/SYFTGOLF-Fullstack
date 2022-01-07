@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -158,6 +158,33 @@ public class UserService {
     public Page<User> getFilteredUsers(String query, Pageable pageable, long id) {
         return userRepository.findByUsernameStartsWithAndSocietyId(query, pageable, id);
     }
+
+    public List<String> createRandomUserList(List<String> randomUsernames) {
+        List<String> users = new ArrayList<>();
+        List<String> randomUsersList = getRandomUsers(randomUsernames);
+        for (String randUsernames : randomUsersList) {
+            User u = userRepository.findByUsername(randUsernames);
+            users.add(u.getFirstname() + " " + u.getSurname() + " " + u.getHandicap());
+        }
+        return users;
+
+    }
+
+    //Create list of entrants IDs in random order for tee times.
+    public List<String> getRandomUsers(List<String> userIds) {
+        int size = userIds.size();
+        List<String> passedList = userIds;
+        List<String> entrants = new ArrayList<>();
+        Random rand = new Random();
+        for(int i = 0; i < size; i++) {
+            int randomIndex = rand.nextInt(passedList.size());
+            entrants.add(passedList.get(randomIndex));
+            passedList.remove(randomIndex);
+        }
+        return entrants;
+    }
+
+
 
 
 }

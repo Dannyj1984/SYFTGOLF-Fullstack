@@ -1,9 +1,11 @@
 package com.syftgolf.syftgolf.user;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.syftgolf.syftgolf.society.Society;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,7 @@ import java.util.*;
 //Entity maps object to database
 @Entity
 @NoArgsConstructor
+@ToString
 @Table(name = "member")
 public class User implements UserDetails, Serializable {
 
