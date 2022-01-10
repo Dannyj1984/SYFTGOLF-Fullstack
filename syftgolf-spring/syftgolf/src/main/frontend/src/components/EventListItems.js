@@ -12,6 +12,8 @@ import ButtonWithProgress from './ButtonWithProgress';
 
 const EventListItem = (props) => {
 
+  const thisEventType = props.event.eventtype;
+
   const [errors, setErrors] = useState({});
   const [editErrors, setEditErrors] = useState();
   const [editConfirm, setEditConfirm] = useState();
@@ -277,6 +279,8 @@ const [newTeeTime, setNewTeeTime] = useState({
               player3: undefined,
               player4: undefined
             }
+            //If 2 players per tee time, add the first two players to the first teesheet, then remove them from
+            //the array, send the teesheetupdate, then add the next two to the next tee sheet
           if(players === "2") {
               teeSheetUpdate = {
                 ...teeSheetUpdate,
@@ -287,6 +291,8 @@ const [newTeeTime, setNewTeeTime] = useState({
             }
             randomEntrants.shift();
             randomEntrants.shift();
+            //If 3 players per tee time, add the first three players to the first teesheet, then remove them from
+            //the array, send the teesheetupdate, then add the next three to the next tee sheet etc
           } else if (players === "3") {
             //Set 3 players in teesheetupdate
             teeSheetUpdate = {
@@ -300,7 +306,8 @@ const [newTeeTime, setNewTeeTime] = useState({
             randomEntrants.shift();
             randomEntrants.shift();
           } else if (players === "4") {
-          //Set all 4 players in teesheetupdate
+          //If 4 players per tee time, add the first four players to the first teesheet, then remove them from
+            //the array, send the teesheetupdate, then add the next four to the next tee sheet
           teeSheetUpdate = {
             ...teeSheetUpdate,
             player1: randomEntrants[0],
@@ -489,10 +496,10 @@ const [newTeeTime, setNewTeeTime] = useState({
             } else {
               setEntrants(response.data)
               //Check if medal or stableford using score and sort by low to high for medal and high to low for stableford
-              if(response.data[0].score < 52) {
+              if(thisEventType === 'medal') {
                 setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
               }
-              if(response.data[0].score > 51) {
+              if(thisEventType === 'Stableford') {
                 setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? 1 : -1));
               }
               //Check if the username of logged in user is present in the array of entrants

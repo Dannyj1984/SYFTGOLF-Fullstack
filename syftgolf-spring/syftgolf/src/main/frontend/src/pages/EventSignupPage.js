@@ -23,6 +23,7 @@ export const EventSignupPage = (props) => {
   const [pendingApiCall, setPendingApiCall] = useState(false);
   const [courseList, setCoursesList] = useState([]);
   const [courseSelected, setCourseSelected] = useState(false);
+  const [eventTypeSelected, setEventTypeSelected] = useState(false);
   
 
   useEffect(() => { 
@@ -43,6 +44,13 @@ export const EventSignupPage = (props) => {
     }
     if(value === ""){
       setCourseSelected(false);
+    }
+
+    if(name === "eventtype"){
+      setEventTypeSelected(true);
+    }
+    if(value === ""){
+      setEventTypeSelected(false);
     }
 
     setForm((previousForm) => {
@@ -122,7 +130,7 @@ export const EventSignupPage = (props) => {
                 error={errors.date}
               />
             </div>
-            <div className="col-12 mb-3">
+            {/* <div className="col-12 mb-3">
             <Input
                 name="eventtype"
                 label="Event type"
@@ -132,6 +140,21 @@ export const EventSignupPage = (props) => {
                 hasError={errors.eventtype && true}
                 error={errors.eventtype}
               />
+            </div> */}
+            <div className="col-12 mb-3">
+            <label>Event Type</label>
+              <select  name="eventtype" id="eventtype" className={`form-control ${eventTypeSelected ? "is-valid" : "is-invalid"} `} label="eventtype" placeholder="select" onChange={onChange} required>
+                <option selected disabled value="">Please select</option>
+                  <option>Stableford</option>
+                  <option>Medal</option>
+                  <option>4BBB - Stableford</option>
+                  <option>4BBB - Medal</option>
+                  <option>4 man team - Stableford</option>
+                  <option>4 man team - Medal</option>
+              </select>
+              <div id="eventtypeFeedback" className="invalid-feedback">
+                Please select a valid event type.
+              </div>
             </div>
             <div className="col-12 mb-3">
             <Input
@@ -148,7 +171,7 @@ export const EventSignupPage = (props) => {
             <Input
                 name="qualifier"
                 label="Qualifier (true / false)"
-                placeholder="qualifier"
+                placeholder="Qualifier"
                 value={form.qualifier}
                 onChange={onChange}
                 hasError={errors.qualifier && true}

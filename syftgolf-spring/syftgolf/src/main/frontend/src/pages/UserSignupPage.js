@@ -64,10 +64,12 @@ const onClickSignup = () => {
     props.actions
       .postSignup(user)
       .then((response) => {
+        console.log(response)
         setPendingApiCall(false);
         props.history.push('/members');
       })
       .catch((apiError) => {
+        console.log(apiError.response)
         if (apiError.response.data && apiError.response.data.validationErrors) {
           setErrors(apiError.response.data.validationErrors);
         }

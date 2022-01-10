@@ -30,6 +30,7 @@ const onClickLogin = () => {
       setPendingApiCall(false);
       props.history.push('/events');
     })
+    
     .catch((apiError) => {
       if (apiError.response) {
         setPendingApiCall(false);

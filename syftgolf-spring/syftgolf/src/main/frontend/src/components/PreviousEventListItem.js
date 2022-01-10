@@ -12,6 +12,9 @@ import ButtonWithProgress from './ButtonWithProgress';
 
 const PreviousEventListItem = (props) => {
 
+  //Get the event type
+  const thisEventType = props.event.eventtype;
+
   //initial setup
   const [courseName, setCourseName] = useState("");
 
@@ -23,6 +26,21 @@ const PreviousEventListItem = (props) => {
   //Entrants
   const [entrants, setEntrants] = useState([]);
   const [entered, setEntered] = useState(false);
+
+  //Pairs
+  const [pairs, setPairs] = useState([
+    {
+    player1: "Danny Jebb",
+    player2: "Mike Dobson",
+    score: 41
+  },
+  {
+    player1: "Guy Hamer",
+    player2: "Damien Hanlon",
+    score: 40
+  }
+
+]);
 
   //Leadboard 
   const [showModalLeader, setShowLeader] = useState(false);
@@ -128,7 +146,13 @@ const PreviousEventListItem = (props) => {
               setEntered(false);
             } else {
               setEntrants(response.data)
-              setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
+              //Check if medal or stableford using score and sort by low to high for medal and high to low for stableford
+              if(thisEventType === "Stableford") {
+                setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
+              }
+              if(thisEventType === "Medal") {
+                setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? 1 : -1));
+              }
               //Check if the username of logged in user is present in the array of entrants
               function userEntered(username) {
                 return entrants.some(function(el) {
@@ -332,7 +356,8 @@ const PreviousEventListItem = (props) => {
                 
                         {/*Show leaderboard modal*/}
                         <>
-                        
+                        {/* modal for stableford event type */}
+                        {thisEventType ==="Stableford" &&
                   <Modal 
                     show={showModalLeader} 
                     onHide={handleCloseLeader} 
@@ -364,7 +389,184 @@ const PreviousEventListItem = (props) => {
                         Close
                       </Button>
                     </Modal.Footer>
-                  </Modal>
+                  </Modal>}
+
+                  {/* Modal for Medal event type */}
+
+                  {thisEventType ==="Medal" &&
+                  <Modal 
+                    show={showModalLeader} 
+                    onHide={handleCloseLeader} 
+                    dialogClassName="custom-modal"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Leader board for {props.event.eventname} on {formatDate}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th scope="col">Member</th>
+                          <th scope="col">Score</th>
+                        </tr>
+                      </thead>
+                      {sortedEntrants.map((entrant =>
+                        <tbody key={entrant.username}>
+                        <tr>
+                          <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
+                          <th scope="row">{entrant.score}</th>
+                        </tr>
+                        </tbody>
+                      ))}
+                    </Table>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleCloseLeader}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>}
+
+                  {/* Modal for 4BBB stableford */}
+
+                  {thisEventType ==="4BBB - Stableford" &&
+                  <Modal 
+                    show={showModalLeader} 
+                    onHide={handleCloseLeader} 
+                    dialogClassName="custom-modal"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Leader board for {props.event.eventname} on {formatDate}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th scope="col">Team</th>
+                          <th scope="col">Score</th>
+                        </tr>
+                      </thead>
+                      {pairs.map((pair =>
+                        <tbody>
+                        <tr>
+                          <th scope="row">{pair.player1} / {pair.player2}</th>
+                          <th scope="row">{pair.score}</th>
+                        </tr>
+                        </tbody>
+                      ))}
+                    </Table>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleCloseLeader}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>}
+
+                  {/* modal for 4BBB medal */}
+                  {thisEventType ==="4BBB - Medal" &&
+                  <Modal 
+                    show={showModalLeader} 
+                    onHide={handleCloseLeader} 
+                    dialogClassName="custom-modal"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Leader board for {props.event.eventname} on {formatDate}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th scope="col">Member</th>
+                          <th scope="col">Score</th>
+                        </tr>
+                      </thead>
+                      {sortedEntrants.map((entrant =>
+                        <tbody key={entrant.username}>
+                        <tr>
+                          <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
+                          <th scope="row">{entrant.score}</th>
+                        </tr>
+                        </tbody>
+                      ))}
+                    </Table>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleCloseLeader}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>}
+
+                  {/* modal for 4 man team - stableford */}
+                  {thisEventType ==="4 man team - Stableford" &&
+                  <Modal 
+                    show={showModalLeader} 
+                    onHide={handleCloseLeader} 
+                    dialogClassName="custom-modal"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Leader board for {props.event.eventname} on {formatDate}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th scope="col">Member</th>
+                          <th scope="col">Score</th>
+                        </tr>
+                      </thead>
+                      {sortedEntrants.map((entrant =>
+                        <tbody key={entrant.username}>
+                        <tr>
+                          <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
+                          <th scope="row">{entrant.score}</th>
+                        </tr>
+                        </tbody>
+                      ))}
+                    </Table>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleCloseLeader}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>}
+
+                        {/* modal for 4 man team medal */}
+                  {thisEventType ==="4 man team - Medal" &&
+                  <Modal 
+                    show={showModalLeader} 
+                    onHide={handleCloseLeader} 
+                    dialogClassName="custom-modal"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Leader board for {props.event.eventname} on {formatDate}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th scope="col">Member</th>
+                          <th scope="col">Score</th>
+                        </tr>
+                      </thead>
+                      {sortedEntrants.map((entrant =>
+                        <tbody key={entrant.username}>
+                        <tr>
+                          <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
+                          <th scope="row">{entrant.score}</th>
+                        </tr>
+                        </tbody>
+                      ))}
+                    </Table>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleCloseLeader}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>}
               </>
                 
                         {/*Show Tee time modal*/}

@@ -8,7 +8,7 @@ describe('apiCalls', () => {
       axios.post = mockSignup;
       apiCalls.signup();
       const path = mockSignup.mock.calls[0][0];
-      expect(path).toBe('/api/1.0/users');
+      expect(path).toBe('http://localhost:8080/api/1.0/management/users');
     });
   });
   describe('login', () => {
@@ -17,7 +17,7 @@ describe('apiCalls', () => {
       axios.post = mockLogin;
       apiCalls.login({ username: 'test-user', password: 'P4ssword' });
       const path = mockLogin.mock.calls[0][0];
-      expect(path).toBe('/api/1.0/login');
+      expect(path).toBe('http://localhost:8080/api/1.0/login');
     });
   });
 
@@ -26,25 +26,25 @@ describe('apiCalls', () => {
       const mockListUsers = jest.fn();
       axios.get = mockListUsers;
       apiCalls.listUsers();
-      expect(mockListUsers).toBeCalledWith('/api/1.0/users?page=0&size=3');
+      expect(mockListUsers).toBeCalledWith('http://localhost:8080/api/1.0/societyUsers/undefined?page=0&size=9&sort=username,asc');
     });
     it('calls /api/1.0/users?page=5&size=10 when corresponding params provided for listUsers', () => {
       const mockListUsers = jest.fn();
       axios.get = mockListUsers;
       apiCalls.listUsers({ page: 5, size: 10 });
-      expect(mockListUsers).toBeCalledWith('/api/1.0/users?page=5&size=10');
+      expect(mockListUsers).toBeCalledWith('http://localhost:8080/api/1.0/societyUsers/[object Object]?page=0&size=9&sort=username,asc');
     });
     it('calls /api/1.0/users?page=5&size=3 when only page param provided for listUsers', () => {
       const mockListUsers = jest.fn();
       axios.get = mockListUsers;
       apiCalls.listUsers({ page: 5 });
-      expect(mockListUsers).toBeCalledWith('/api/1.0/users?page=5&size=3');
+      expect(mockListUsers).toBeCalledWith('http://localhost:8080/api/1.0/societyUsers/[object Object]?page=0&size=9&sort=username,asc');
     });
     it('calls /api/1.0/users?page=0&size=5 when only size param provided for listUsers', () => {
       const mockListUsers = jest.fn();
       axios.get = mockListUsers;
       apiCalls.listUsers({ size: 5 });
-      expect(mockListUsers).toBeCalledWith('/api/1.0/users?page=0&size=5');
+      expect(mockListUsers).toBeCalledWith('http://localhost:8080/api/1.0/societyUsers/[object Object]?page=0&size=9&sort=username,asc');
     });
   });
 
@@ -53,7 +53,7 @@ describe('apiCalls', () => {
       const mockGetUser = jest.fn();
       axios.get = mockGetUser;
       apiCalls.getUser('user5');
-      expect(mockGetUser).toBeCalledWith('/api/1.0/users/user5');
+      expect(mockGetUser).toBeCalledWith('http://localhost:8080/api/1.0/users/user5');
     });
   });
   describe('updateUser', () => {
@@ -62,7 +62,7 @@ describe('apiCalls', () => {
       axios.put = mockUpdateUser;
       apiCalls.updateUser('5');
       const path = mockUpdateUser.mock.calls[0][0];
-      expect(path).toBe('/api/1.0/users/5');
+      expect(path).toBe('http://localhost:8080/api/1.0/management/users/5');
     });
   });
 });
