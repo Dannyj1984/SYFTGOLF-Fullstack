@@ -1,7 +1,7 @@
 import axios from 'axios';
-//const url = 'https://glacial-sierra-91195.herokuapp.com';
+const url = 'https://glacial-sierra-91195.herokuapp.com';
 
-const url = 'http://localhost:8080';
+//const url = 'http://localhost:8080';
 
 //user calls
 
