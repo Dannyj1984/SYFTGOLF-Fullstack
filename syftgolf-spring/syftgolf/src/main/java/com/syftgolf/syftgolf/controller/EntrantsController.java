@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/1.0")
 public class EntrantsController {
@@ -99,10 +100,11 @@ public class EntrantsController {
      * @param scorecard the scorecard body to update with
      * @return a message that update successful
      */
-    @PutMapping("/event/entrants/scorecard/{eventId:[0-9]+}/{memberId:[0-9]+}")
     @CrossOrigin
-    GenericResponse updateScorecard(@PathVariable long eventId, @PathVariable long memberId, @Valid @RequestBody ScoreCardVM scorecard) {
-        scoreCardService.update(eventId, memberId, scorecard);
+    @PutMapping("/event/entrants/scorecard/{eventId:[0-9]+}/{memberId:[0-9]+}/{currentHole:[0-9]+}")
+    GenericResponse updateScorecard(@PathVariable long eventId, @PathVariable long memberId, @PathVariable int currentHole, @RequestBody ScoreCardVM scorecard) {
+        System.out.println(currentHole);
+        scoreCardService.update(eventId, memberId, currentHole, scorecard);
         return new GenericResponse("Scorecard updated");
     }
 

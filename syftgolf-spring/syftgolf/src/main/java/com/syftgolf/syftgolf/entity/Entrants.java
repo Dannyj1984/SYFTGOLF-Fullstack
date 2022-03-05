@@ -33,12 +33,17 @@ public class Entrants {
     @Column(name = "score")
     private double score = 0;
 
+    @NotNull
+    @Column(name = "current_hole")
+    private Integer currentHole = 0;
+
     public Entrants() {}
 
-    public Entrants(Member member, Event event, double score) {
+    public Entrants(Member member, Event event, double score, int currentHole) {
         this.member = member;
         this.event = event;
         this.score = score;
+        this.currentHole = currentHole;
     }
 
     @ManyToMany

@@ -11,27 +11,30 @@ import ButtonWithProgress from './ButtonWithProgress';
 
 const EventListItem = (props) => {
 
+  const [currentEntrant, setCurrentEntrant] = useState({})
+  
+
   const thisEventType = props.event.type;
   const [entrants, setEntrants] = useState([{}]);
   const [scoreCardObj, setScoreCardObj] = useState({
-    h1Score: null,
-    h2Score: null,
-    h3Score: null,
-    h4Score: null,
-    h5Score: null,
-    h6Score: null,
-    h7Score: null,
-    h8Score: null,
-    h9Score: null,
-    h10Score: null,
-    h11Score: null,
-    h12Score: null,
-    h13Score: null,
-    h14Score: null,
-    h15Score: null,
-    h16Score: null,
-    h17Score: null,
-    h18Score: null
+    h1Score: 0,
+    h2Score: 0,
+    h3Score: 0,
+    h4Score: 0,
+    h5Score: 0,
+    h6Score: 0,
+    h7Score: 0,
+    h8Score: 0,
+    h9Score: 0,
+    h10Score: 0,
+    h11Score: 0,
+    h12Score: 0,
+    h13Score: 0,
+    h14Score: 0,
+    h15Score: 0,
+    h16Score: 0,
+    h17Score: 0,
+    h18Score: 0
   });
 
   const [userScoreCard, setUserScoreCard] = useState({});
@@ -425,6 +428,11 @@ const [newTeeTime, setNewTeeTime] = useState({
           .then((response) => {
             setPendingApiCall(false)
             setEntrants(response.data)
+            response.data.forEach((curEnt) => {
+              if(curEnt.member.id === props.loggedInUser.id) {
+                setCurrentEntrant(curEnt);
+              }
+            })
             function getUserIndex() {
               try{
                response.data.forEach((e, index) => {
@@ -489,6 +497,7 @@ const [newTeeTime, setNewTeeTime] = useState({
            .catch((e) => {
              console.log(e)
            });
+           
       }, [props.event]);
 
       //Data change in edit tee sheet
@@ -566,13 +575,32 @@ const [newTeeTime, setNewTeeTime] = useState({
   const updateScoreCard = () => {
     const eventId = props.event.id;
     const memberId = props.loggedInUser.id;
+    console.log(scoreCardObj)
     setPendingApiCall(true)
     apiCalls
-    .updateScore(eventId, memberId, scoreCardObj)
+    .updateScore(eventId, memberId, holeIndex + 1, scoreCardObj)
     .then(
       setPendingApiCall(false),
-      alert('Score updated'),
-      setTimeout(window.location.reload(), 3000)
+    )
+    .catch((apiError) => {
+      if (apiError.response.data && apiError.response.data.validationErrors) {
+        setScoreCardUpdateErrors(apiError.response.data.validationErrors);
+      }
+      setPendingApiCall(false)
+    })
+    
+  }
+
+  const completeScoreCard = () => {
+    const eventId = props.event.id;
+    const memberId = props.loggedInUser.id;
+    console.log(scoreCardObj)
+    setPendingApiCall(true)
+    apiCalls
+    .updateScore(eventId, memberId, holeIndex + 1, scoreCardObj)
+    .then(
+      setPendingApiCall(false),
+      window.location.reload()
     )
     .catch((apiError) => {
       if (apiError.response.data && apiError.response.data.validationErrors) {
@@ -603,6 +631,8 @@ const [newTeeTime, setNewTeeTime] = useState({
 
       let yourDate = props.event.date;
       let formatDate = new Date(yourDate).toString().substring(0,15)
+
+      console.log(currentEntrant)
 
   return (
             <div className="card col-12" style={{height:"100%"}}>
@@ -820,7 +850,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                           <th >{entrant.member.firstName} {entrant.member.surname} ({Math.round(entrant.member.handicap/113*courseSlope)})</th>}
                           {props.event.ninetyFivePercent &&
                           <th >{entrant.member.firstName} {entrant.member.surname} ({Math.round(0.95*(entrant.member.handicap/113*courseSlope*0.95))})</th>}
-                          <th >{entrant.score}</th>
+                          <th >{entrant.score} {entrant.currentHole < 18 ? `(${entrant.currentHole})` : ''} </th>
                         </tr>
                         </tbody>
                       ))}
@@ -1103,7 +1133,8 @@ const [newTeeTime, setNewTeeTime] = useState({
                                     <div id='score-entry'>
                                       <h2 >Hole {holeIndex+1}</h2>
                                       <input name={`h${holeIndex+1}Score`} value={scoreCardObj[`h${holeIndex+1}Score`]}  onChange={onChangeScoreCard} type="number" min={"0"} max={"15"} style={{width:"8rem", height:"8rem",padding:"12px 20px", display:"inline-block", border:"1px solid #ccc", borderRadius: "4px", fontSize: "64px", textAlign:"center"}}></input>
-                                        <p style={{color:"red"}}>Please enter gross scores</p>
+                                        <p style={{color:"red", fontSize:"13px", width:"140%"}}>Please enter gross scores</p>
+                                        {/* <p>Current Score : {currentEntrant.score}</p> */}
                                     </div>
                                   </Col>
                                 </Row>
@@ -1114,7 +1145,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                                   </Col>
                                   <Col xs={6}>
                                     {holeIndex+1 !== 18 &&
-                                    <button onClick={toNextHole} style={{fontSize: "64px"}}>{'>'}</button>}
+                                    <button onClick={function(){ toNextHole(); updateScoreCard()}} style={{fontSize: "64px"}}>{'>'}</button>}
                                   </Col>
                                 </Row>
                               </Container>
@@ -1122,7 +1153,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                             </Modal.Body>}
                             <Modal.Footer>
                             {holeIndex+1 === 18 &&
-                              <Button variant='primary' onClick={updateScoreCard}>Submit</Button>}
+                              <Button variant='primary' onClick={completeScoreCard}>Submit</Button>}
                             </Modal.Footer>
                           </Modal>
                         </>
