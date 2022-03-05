@@ -40,7 +40,7 @@ const loadFilter = async (requestedPage = 0) => {
   let id = props.user.society.id 
   setPendingApiCall(true);
   await apiCalls
-    .listFilteredUsers({ page: requestedPage, size: 9 }, id, name.toLowerCase())
+     .listFilteredUsers({ page: requestedPage, size: 9 }, id, name.toLowerCase())
      .then ((response)  => {
       setPage(response.data);
       if(Object.entries(response.data.content).length === 0) {
@@ -67,9 +67,8 @@ const loadFilter = async (requestedPage = 0) => {
   };
 
   useEffect(() => {
-    //loadData();
     loadFilter();
-  }, [nameFilter]);
+  }, []);
 
   const onClickNext = () => {
     loadData(page.number + 1);
@@ -90,7 +89,7 @@ const loadFilter = async (requestedPage = 0) => {
         <div className="row">
           <div className="col-sm">
             <div className="row">
-              <Input name="nameFilter" value={nameFilter} type="text" placeholder="Search" onChange={onChange} />
+              <Input name="nameFilter" value={nameFilter} type="text" placeholder="Search by firstname" onChange={onChange} />
               <button className="btn btn-primary" onClick={clearFilter} >Clear</button>
             </div>
           </div>
@@ -106,9 +105,11 @@ const loadFilter = async (requestedPage = 0) => {
       
       <hr />
       {pendingApiCall &&
-      <div>
-        <span>Loading...</span>
-      </div>}
+        <div className="d-flex">
+          <div className="spinner-border text-black-50 m-auto">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>}
       {!pendingApiCall && 
       <div className="list-group list-group-flush" data-testid="usergroup">
         <div className="row">

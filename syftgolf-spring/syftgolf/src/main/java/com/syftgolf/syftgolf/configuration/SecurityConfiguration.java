@@ -1,10 +1,9 @@
 package com.syftgolf.syftgolf.configuration;
 
-import com.syftgolf.syftgolf.user.UserDetailsServiceImpl;
+import com.syftgolf.syftgolf.entity.member.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -26,6 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
     public UserDetailsService userDetailsService() {
         return new UserDetailsServiceImpl();
     }
+
     @Autowired
     AuthUserService authUserService;
 
@@ -33,14 +33,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
 
-        http.httpBasic().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+//        http.httpBasic().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+        http.httpBasic().authenticationEntryPoint(new BasicAuthenticationEntryPoint());
 
         http
-                .cors()
+                .cors()//Needed when using spring security, this processes CORS first.
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/login").permitAll()
-                    .antMatchers("/**").authenticated()
+                    .antMatchers("/**").permitAll()
+                    //.antMatchers("/**").authenticated()
                 .and()
                 .authorizeRequests().anyRequest().permitAll();
 

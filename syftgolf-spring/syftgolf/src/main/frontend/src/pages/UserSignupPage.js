@@ -43,17 +43,19 @@ const [form, setForm] = useState({
     });
   };
 
+ 
+
 const onClickSignup = () => {
 
   //Set the user details to be sent to the server
   const user = {
       username: form.username.toLowerCase(),
-      firstname: form.firstname,
+      firstName: form.firstname,
       surname: form.surname,
       handicap: form.handicap,
       email: form.email,
       cdh: form.cdh,
-      homeclub: form.homeclub,
+      homeClub: form.homeclub,
       mobile: form.mobile,
       password: form.password,
       society: {
@@ -64,12 +66,10 @@ const onClickSignup = () => {
     props.actions
       .postSignup(user)
       .then((response) => {
-        console.log(response)
         setPendingApiCall(false);
         props.history.push('/members');
       })
-      .catch((apiError) => {
-        console.log(apiError.response)
+      .catch((apiError) => {  
         if (apiError.response.data && apiError.response.data.validationErrors) {
           setErrors(apiError.response.data.validationErrors);
         }

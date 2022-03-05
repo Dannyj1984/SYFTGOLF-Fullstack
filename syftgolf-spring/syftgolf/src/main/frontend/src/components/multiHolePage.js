@@ -31,14 +31,14 @@ const MultiHolePage = (props) => {
   // Hole register form
   return (
     <div className="card">
-        <h3 className="text-center card-header">Create Hole for  </h3>
+        <h3 className="text-center card-header">Create Hole  </h3>
         <div className="card-body row">
           <div className="col-6 mb-3">
             <Input
-              name="hole"
+              name="holeNumber"
               label="Hole"
               placeholder="Hole"
-              value={form.hole}
+              value={form.holeNumber}
               onChange={onChange}
             />
           </div>
@@ -53,10 +53,10 @@ const MultiHolePage = (props) => {
           </div>
           <div className="col-6 mb-3">
             <Input
-              name="stroke"
-              label="Stroke"
-              placeholder="Stroke"
-              value={form.stroke}
+              name="strokeIndex"
+              label="Stroke Index"
+              placeholder="Stroke Index"
+              value={form.strokeIndex}
               onChange={onChange}
             />
           </div>

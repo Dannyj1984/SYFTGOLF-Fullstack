@@ -1,10 +1,9 @@
 import React from 'react';
 import Input from './Input';
 import ButtonWithProgress from './ButtonWithProgress';
-import moment from 'moment';
 
 const EventProfileCard = (props) => {
-  const { eventname, date, maxentrants, cost, eventtype, qualifier, winner, info} = props.event;
+  const { name, date, maxEntrants, cost, type, qualifier, winner, info, ninetyFivePercent} = props.event;
 
   const showEditButton = props.isEditable && !props.inEditMode;
 
@@ -16,40 +15,48 @@ const EventProfileCard = (props) => {
   if(winnerName === null) {
     winnerName = '';
   };
+  //Format date from backend to be DD-MM-YYYY
+
   let yourDate = date;
-      const formatDate = moment(yourDate).format('DD-MM-YYYY')
+  let formatDate = new Date(yourDate).toString().substring(0,15)
+  
+      let pHandicap = '100%';
+      if(ninetyFivePercent) {
+        pHandicap = "95%";
+      }
   
   return (
     <div className="card">
       <div className="card-body text-center">
       {!props.inEditMode && (
-      <h3>{`Event : ${eventname}`}</h3>)}
+      <h3>{`Event : ${name}`}</h3>)}
       <hr/>
       <h5>{`Date: ${formatDate}`}</h5>
-      <h5>{`Format: ${eventtype}`}</h5>
+      <h5>{`Format: ${type}`}</h5>
       <h5>{`Qualifier: ${qualifier}`}</h5>
-      <h5>{`Max Entrants: ${maxentrants}`}</h5>
+      <h5>{`Max Entrants: ${maxEntrants}`}</h5>
       <h5>{`Cost: £${cost}`}</h5>
       <h5>{`Event info: ${info}`}</h5>
+      <h5>{`Playing handicap: ${pHandicap}`}</h5>
       <h5>{`Winner: ${winner}` }</h5>
       
         {props.inEditMode && (
           <div className="mb-2">
           <hr/>
-          <h3>{`Amend ${eventname}`}</h3>
+          <h3>{`Amend ${name}`}</h3>
             <Input
-              name="eventname"
-              value={eventname}
-              label={`Change event name for ${eventname}`}
-              onChange={props.onChangeEventname}
-              haserror={props.errors.eventname && true}
-              error={props.errors.eventname}
+              name="name"
+              value={name}
+              label={`Change event name for ${name}`}
+              onChange={props.onChangename}
+              haserror={props.errors.name && true}
+              error={props.errors.name}
             />
             <Input
               name="date"
               type="date"
               value={date}
-              label={`Change date for ${eventname}`}
+              label={`Change date for ${name}`}
               onChange={props.onChangeDate}
               haserror={props.errors.date && true}
               error={props.errors.date}
@@ -57,31 +64,31 @@ const EventProfileCard = (props) => {
             <Input
               name="qualifier"
               value={qualifier}
-              label={`Change qualifier for ${eventname}`}
+              label={`Change qualifier for ${name}`}
               onChange={props.onChangeQualifier}
               haserror={props.errors.qualifier && true}
               error={props.errors.qualifier}
             />
             <Input
-              name="eventtype"
-              value={eventtype}
-              label={`Change event type for ${eventname}`}
+              name="type"
+              value={type}
+              label={`Change event type for ${name}`}
               onChange={props.onChangeEventtype}
-              haserror={props.errors.eventtype && true}
-              error={props.errors.eventtype}
+              haserror={props.errors.type && true}
+              error={props.errors.type}
             />
             <Input
-              name="maxentrants"
-              value={maxentrants}
-              label={`Change max entrants for ${eventname}`}
+              name="maxEntrants"
+              value={maxEntrants}
+              label={`Change max entrants for ${name}`}
               onChange={props.onChangeMaxentrants}
-              haserror={props.errors.maxentrants && true}
-              error={props.errors.maxentrants}
+              haserror={props.errors.maxEntrants && true}
+              error={props.errors.maxEntrants}
             />
             <Input
               name="info"
               value={info}
-              label={`Change info for ${eventname}`}
+              label={`Change info for ${name}`}
               onChange={props.onChangeInfo}
               haserror={props.errors.info && true}
               error={props.errors.info}
@@ -89,7 +96,7 @@ const EventProfileCard = (props) => {
             <Input
               name="cost"
               value={cost}
-              label={`Change cost for ${eventname}`}
+              label={`Change cost for ${name}`}
               onChange={props.onChangeCost}
               haserror={props.errors.info && true}
               error={props.errors.info}
@@ -97,11 +104,25 @@ const EventProfileCard = (props) => {
             <Input
               name="winner"
               value={winnerName}
-              label={`Change winner for ${eventname}`}
+              label={`Change winner for ${name}`}
               onChange={props.onChangeWinner}
               haserror={props.errors.winner && true}
               error={props.errors.winner}
             />
+            <div>
+              <label>Set playing handicap at 95% for this event</label>
+              <input 
+                className='form-control' 
+                type="checkbox" 
+                name="ninetyFivePercent"
+                onChange={props.onChangeNinetyFivePercent} 
+                defaultChecked={ninetyFivePercent}
+              />  
+              {props.hasError && (
+              <span className="invalid-feedback">{props.error}</span>
+              )}
+            </div>
+            
           </div>
         )}
         {showEditButton && (authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN' || authorityJSON.role === 'SUPERUSER') && (

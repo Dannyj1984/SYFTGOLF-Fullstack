@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="row">
               <div className="col-12 text-center">
                 <ul>
-                  Copyright SYFTGOLF 2021
+                  Copyright SYFTGOLF 2022
                 </ul>
               </div>
             </div>

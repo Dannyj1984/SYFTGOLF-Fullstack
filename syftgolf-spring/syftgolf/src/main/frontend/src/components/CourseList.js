@@ -41,8 +41,9 @@ export const CourseList = (props) => {
     let id = props.user.society.id 
     setPendingApiCall(true);
     await apiCalls
-      .listFilteredCourses({ page: requestedPage, size: 9 }, id, name.toLowerCase())
+      .listFilteredCourses({ page: requestedPage, size: 9 }, id, name)
        .then ((response)  => {
+        setPendingApiCall(false)
         setPage(response.data);
         if(Object.entries(response.data.content).length === 0) {
           setLoadError('No courses found');
@@ -50,8 +51,8 @@ export const CourseList = (props) => {
       })
       .catch((error) => {
         setLoadError("Course load failed" );
+        setPendingApiCall(false)
       });
-      setPendingApiCall(false);
   };
 
     
@@ -94,16 +95,18 @@ export const CourseList = (props) => {
             </div>
           </div>
           <div className="col-sm">
-            <h3 className="card-title m-auto text-center">Members</h3>
+            <h3 className="card-title m-auto text-center">Courses</h3>
           </div>
         </div>
       </div>
       
       <hr />
       {pendingApiCall &&
-      <div>
-        <span>Loading...</span>
-      </div>}
+        <div className="d-flex">
+          <div className="spinner-border text-black-50 m-auto">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>}
         <hr/>
         <div className="list-group list-group-flush" data-testid="coursegroup">
           <div className="row">

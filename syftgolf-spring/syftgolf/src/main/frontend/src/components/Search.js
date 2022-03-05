@@ -3,9 +3,7 @@ import Input from './Input';
 
 const Search = (props) => {
 
-    const click = () => {
-        alert('Coming soon!!');
-    }
+    
 
     return (
         <div className="row">

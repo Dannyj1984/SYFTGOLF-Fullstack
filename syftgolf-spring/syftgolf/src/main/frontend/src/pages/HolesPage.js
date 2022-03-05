@@ -12,13 +12,10 @@ const MultipleSignUp = (props) => {
     // we have array of form
     const [forms, setForms] = useState([
       {
-        hole: "",
+        holeNumber: "",
         par: "",
-        stroke: "",
-        yards: "",
-        course: {
-          courseid: newCourseid
-        }
+        strokeIndex: "",
+        yards: ""
       },
     ]);
     
@@ -36,9 +33,8 @@ const MultipleSignUp = (props) => {
     };
    
     const onClickSignup = () => {
-      // forms is containing the data you are looking for
       apiCalls
-      .addHoleDetails(forms)
+      .addHoleDetails(newCourseid, forms)
       .then((response) => {
         props.history.push('/courses');
       })
@@ -50,13 +46,10 @@ const MultipleSignUp = (props) => {
         return [
           ...previousForms,
           {
-            hole: "",
+            holeNumber: "",
             par: "",
-            stroke: "",
-            yards: "",
-            course: {
-              courseid: newCourseid
-            }
+            strokeIndex: "",
+            yards: ""
           },
         ];
       });

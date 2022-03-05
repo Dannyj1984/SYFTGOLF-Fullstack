@@ -1,14 +1,12 @@
 import React from 'react';
 import CourseList from '../components/CourseList';
 
-class CoursePage extends React.Component{
-    render() {
+const CoursePage = () => {
         return (
             <div data-testid="coursePage">
               <CourseList />
             </div>
           );
-    }
 }
 
 export default CoursePage;

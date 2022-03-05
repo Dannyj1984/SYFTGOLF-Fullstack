@@ -1,30 +1,54 @@
 package com.syftgolf.syftgolf;
 
-import com.syftgolf.syftgolf.user.User;
+import com.syftgolf.syftgolf.entity.*;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDate;
+import java.time.Month;
+
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@ActiveProfiles("test")
 public class TestUtil {
 
-    public static User createValidUser() {
-        User user = new User();
-        user.setPassword("P4ssword");
-        user.setUsername("test-user");
-        user.setEmail("test@email.com");
-        user.setFirstname("test");
-        user.setSurname("user");
-        user.setHandicap(10.0);
-        user.setMobile("07956356879");
-        user.setCdh("1013530000");
-        user.setSochcpred(1);
-        user.setHomeclub("Augusta");
-        user.setSochcp(5.2);
-        user.setWins(0);
-        user.setRole("USER");
-        return user;
+    public static Member createValidMember() {
+        Member member = new Member();
+        member.setPassword("P4ssword");
+        member.setUsername("test-user");
+        member.setEmail("test@email.com");
+        member.setFirstName("test");
+        member.setSurname("user");
+        member.setHandicap(10.0);
+        member.setMobile("07956356879");
+        member.setCdh("1013530000");
+        member.setSocHcpRed(1);
+        member.setHomeClub("Augusta");
+        member.setSocHcp(5.2);
+        member.setWins(0);
+        member.setRole("USER");
+        return member;
     }
 
-    public static User createValidUser(String username) {
-        User user = createValidUser();
-        user.setUsername(username);
-        return user;
+    public static Member createValidUser(String username) {
+        Member member = createValidMember();
+        member.setUsername(username);
+        return member;
     }
+
+    public static Society createValidSociety() {
+        return new Society("Test-Society");
+    }
+
+    public static Course createValidCourse() {
+        return new Course("Glen", 72, 69.2, 121);
+    }
+
+    public static Event createValidStablefordEvent() {
+        Event e = new Event("Test-event", LocalDate.of(2022, Month.OCTOBER, 1) , 156, "Stableford");
+        return e;
+    }
+
 }

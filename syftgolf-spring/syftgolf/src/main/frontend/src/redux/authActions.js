@@ -34,17 +34,17 @@ export const changePassword = (id, user) => {
 };
 
 //course sign up
-export const courseSignupHandler = (course) => {
+export const courseSignupHandler = (societyId, course) => {
   return async function(dispatch) {
-    await apiCalls.signupCourse(course);
+    await apiCalls.signupCourse(societyId, course);
   };
 };
 
 //event sign up
 
-export const eventSignupHandler = (event) => {
+export const eventSignupHandler = (event, societyId, courseId) => {
   return async function(dispatch) {
-    await apiCalls.signupEvent(event);
+    await apiCalls.signupEvent(event, societyId, courseId);
 
   };
 };

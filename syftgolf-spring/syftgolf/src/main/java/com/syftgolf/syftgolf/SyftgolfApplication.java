@@ -1,49 +1,28 @@
 package com.syftgolf.syftgolf;
 
-import com.syftgolf.syftgolf.course.Course;
-import com.syftgolf.syftgolf.course.CourseRepository;
-import com.syftgolf.syftgolf.course.CourseService;
-import com.syftgolf.syftgolf.event.Event;
-import com.syftgolf.syftgolf.event.EventRepository;
-import com.syftgolf.syftgolf.event.EventService;
-import com.syftgolf.syftgolf.society.Society;
-import com.syftgolf.syftgolf.society.SocietyRepository;
-import com.syftgolf.syftgolf.user.User;
-import com.syftgolf.syftgolf.user.UserRepository;
-import com.syftgolf.syftgolf.user.UserService;
+
+import com.syftgolf.syftgolf.repository.MemberRepo;
+import com.syftgolf.syftgolf.repository.SocietyRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.time.LocalDate;
-import java.util.Date;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class SyftgolfApplication {
 
 
 	@Autowired
-	UserRepository userRepository;
+	MemberRepo memberRepo;
 
 	@Autowired
-	EventRepository eventRepository;
-
-	@Autowired
-	CourseRepository courseRepository;
-
-	@Autowired
-	SocietyRepository societyRepository;
+	SocietyRepo societyRepo;
 
 
 	public static void main(String[] args) {
 		SpringApplication.run(SyftgolfApplication.class, args);
 	}
+
 //	@Bean
 //	@Profile("dev")
 //	CommandLineRunner run(UserService userService, CourseService courseService, EventService eventService) {
