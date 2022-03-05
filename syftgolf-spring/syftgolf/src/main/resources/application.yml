@@ -16,19 +16,17 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-#        format_sql: true
-#        show-sql: true
       javax:
         persistence:
           validation:
             mode: none
+            show-sql: false
     show-sql: true
   data:
     web:
       pageable:
         default-page-size: 10
         max-page-size: 100
-
 ---
 spring:
   config:
@@ -79,3 +77,79 @@ syftgolf:
 
 
 
+
+#spring:
+#  profiles:
+#    active:
+#      - test
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/testdb
+#    username: postgres
+#    password: admin
+#  jpa:
+#
+#
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#
+#      javax:
+#        persistence:
+#          validation:
+#            mode: none
+#    show-sql: false
+#  data:
+#    web:
+#      pageable:
+#        default-page-size: 10
+#        max-page-size: 100
+#  mvc:
+#    pathmatch:
+#      matching-strategy: ant_path_matcher
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: prod
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/proddb
+#    username: postgres
+#    password: admin
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#syftgolf:
+#  upload-path: uploads-prod
+#
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: dev
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/devdb
+#    username: postgres
+#    password: admin
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#syftgolf:
+#  upload-path: uploads-dev
+#
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: test
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/testdb
+#    username: postgres
+#    password: admin
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#
+#syftgolf:
+#  upload-path: uploads-test

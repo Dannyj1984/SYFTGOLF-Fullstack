@@ -4,42 +4,42 @@ import Input from './Input';
 import ButtonWithProgress from './ButtonWithProgress';
 import { Modal, Button, Table } from "react-bootstrap";
 import * as apiCalls from '../api/apiCalls';
+import { connect } from 'react-redux';
 
 const CourseProfileCard = (props) => {
 
-  const { courseName, par, courseRating, image, postcode, slopeRating, id } = props.course;
+  const { name, par, courseRating, image, slopeRating, id } = props.course;
+
+  const [pendingApiCall, setPendingApiCall] = useState(false)
 
   const [myDataObject, setmyDataObject] = useState({
     hole: [{
-      "hole": undefined,
+      "holeNumber": undefined,
       "par": undefined,
-      "stroke": undefined,
+      "strokeIndex": undefined,
       "yards": undefined
-    }]
+    }],
+    loadError: undefined
   });
 
   useEffect(() => {
-    loadData();
-  }, []);
-
-  
-
-  const loadData = () => {
+    setPendingApiCall(true)
     apiCalls
       .getCourseHoles(id)
       .then((response) => {
+        setPendingApiCall(false)
         setmyDataObject({ ...myDataObject, hole: response.data, loadError: undefined})
       })
       .catch((error) => {
+        setPendingApiCall(false)
         setmyDataObject({ ...myDataObject, loadError: "Hole load failed" });
       });
-  };
+  }, []);
 
 
   const showEditButton = props.isEditable && !props.inEditMode;
 
-  const userObj = localStorage.getItem('syft-auth');
-  const authorityJSON = JSON.parse(userObj);
+  
 
   //Hole modal setup
 
@@ -66,9 +66,8 @@ const CourseProfileCard = (props) => {
       </div>
       <div className="card-body text-center">
       {!props.inEditMode && 
-      <h4>{`${courseName}`}</h4>}
+      <h4>{`${name}`}</h4>}
       <h5>{`Par: ${par}`}</h5>
-      <h5>{`Postcode: ${postcode}`}</h5>
       <h5>{`Slope: ${slopeRating}`}</h5>
       <h5>{`Rating: ${courseRating}`}</h5>
       <button 
@@ -82,8 +81,8 @@ const CourseProfileCard = (props) => {
           <div className="mb-2">
             <Input
               name="courseName"
-              value={courseName}
-              label={`Change course name for ${courseName}`}
+              value={name}
+              label={`Change course name for ${name}`}
               onChange={props.onChangeCoursename}
               hasError={props.errors.courseName && true}
               error={props.errors.courseName}
@@ -91,7 +90,7 @@ const CourseProfileCard = (props) => {
             <Input
               name="par"
               value={par}
-              label={`Change par for ${courseName}`}
+              label={`Change par for ${name}`}
               onChange={props.onChangePar}
               hasError={props.errors.par && true}
               error={props.errors.par}
@@ -99,7 +98,7 @@ const CourseProfileCard = (props) => {
             <Input
               name="slopeRating"
               value={slopeRating}
-              label={`Change slope for ${courseName}`}
+              label={`Change slope for ${name}`}
               onChange={props.onChangeSlope}
               hasError={props.errors.slopeRating && true}
               error={props.errors.slope}
@@ -107,7 +106,7 @@ const CourseProfileCard = (props) => {
             <Input
               name="courseRating"
               value={courseRating}
-              label={`Change rating club for ${courseName}`}
+              label={`Change rating club for ${name}`}
               onChange={props.onChangeRating}
               hasError={props.errors.courseRating && true}
               error={props.errors.courseRating}
@@ -120,7 +119,7 @@ const CourseProfileCard = (props) => {
             />
           </div>
         )}
-        {showEditButton && (authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN' || authorityJSON.role === 'SUPERUSER') && (
+        {showEditButton && props.loggedInUser.role === 'ADMIN' && (
           <button
           className="btn btn-outline-success"
           onClick={props.onClickEdit}
@@ -157,38 +156,46 @@ const CourseProfileCard = (props) => {
       <>
         <Modal show={showModalHoles} onHide={handleCloseHoles} >
             <Modal.Header closeButton>
-              <Modal.Title>Holes for {courseName}</Modal.Title>
+              <Modal.Title>Holes for {name}</Modal.Title>
             </Modal.Header>
+            {pendingApiCall &&
               <Modal.Body>
-              
-                {myDataObject.hole.map((holes, index) => { 
-                  const { hole, par, stroke, yards} = holes
-                  return(
-                  <div className="container" key={index}>
-                  <Table striped bordered hover>
+                <div className="d-flex">
+                  <div className="spinner-border text-black-50 m-auto">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              </Modal.Body>
+                    }
+                    {!pendingApiCall &&
+                    <Modal.Body>
+                 
+                  <div className="container">
+                  <Table striped bordered hover responsive>
                       <thead>
                         <tr>
-                          <th scope="col">Hole</th>
-                          <th scope="col">Par</th>
-                          <th scope="col">Stroke</th>
-                          <th scope="col">Yards</th>
+                          <th >Hole</th>
+                          <th >Par</th>
+                          <th >Stroke</th>
+                          <th >Yards</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      {myDataObject.hole.map((holes, index) =>
+                      <tbody key={index}>
                         <tr>
-                          <th scope="row">{hole}</th>
-                          <td>{par}</td>
-                          <td>{stroke}</td>
-                          <td>{yards}</td>
+                          <td>{holes.holeNumber}</td>
+                          <td>{holes.par}</td>
+                          <td>{holes.strokeIndex}</td>
+                          <td>{holes.yards}</td>
                         </tr>
                       </tbody>
+                      )}
                     </Table>
                       <hr />
                   </div>
-                  )
-                })}
                 
-              </Modal.Body>
+                
+              </Modal.Body>}
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseHoles}>
                         Close
@@ -200,8 +207,14 @@ const CourseProfileCard = (props) => {
   );
 };
 
+const mapStateToProps = (state) => {
+  return {
+    loggedInUser: state
+  };
+};
+
 CourseProfileCard.defaultProps = {
   errors: {}
 };
 
-export default CourseProfileCard;
+export default connect(mapStateToProps)(CourseProfileCard);

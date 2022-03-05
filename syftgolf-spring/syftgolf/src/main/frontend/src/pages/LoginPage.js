@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 export const LoginPage = (props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [checkBox, setCheckbox] = useState(false);
+  const [checkBox, setCheckbox] = useState(true);
   const [apiError, setApiError] = useState();
   const [pendingApiCall, setPendingApiCall] = useState(false);
 

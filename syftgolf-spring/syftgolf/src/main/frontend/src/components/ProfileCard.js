@@ -10,7 +10,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const ProfileCard = (props) => {
-  const { username, firstname, surname, handicap, email, image, mobile, cdh, homeclub, wins } = props.user
+  const { username, firstName, surname, handicap, email, image, mobile, cdh, homeClub, wins } = props.user
   const [errors, setErrors] = useState({});
   const [pendingApiCall, setPendingApiCall] = useState(false);
 
@@ -118,12 +118,12 @@ const ProfileCard = (props) => {
       </div>
       <div className="card-body text-center">
       {!props.inEditMode && 
-      <h4>{`${firstname} ${surname}`}</h4>}
+      <h4>{`${firstName} ${surname}`}</h4>}
       <h5>{`Handicap: ${handicap}`}</h5>
       <h5>{`Email: ${email}`}</h5>
       <h5>{`Mobile: ${mobile}`}</h5>
       <h5>{`CDH: ${cdh}`}</h5>
-      <h5>{`Home club: ${homeclub}`}</h5>
+      <h5>{`Home club: ${homeClub}`}</h5>
       <h5>{`Wins: ${wins}`}</h5>
         {props.inEditMode && (
           <div className="mb-2">
@@ -149,11 +149,11 @@ const ProfileCard = (props) => {
               error={props.errors.email}
             />
             <Input
-              value={homeclub}
+              value={homeClub}
               label={`Change home club for ${username}`}
               onChange={props.onChangeHomeclub}
-              haserror={props.errors.homeclub && true}
-              error={props.errors.homeclub}
+              haserror={props.errors.homeClub && true}
+              error={props.errors.homeClub}
             />
             <Input
               value={mobile}

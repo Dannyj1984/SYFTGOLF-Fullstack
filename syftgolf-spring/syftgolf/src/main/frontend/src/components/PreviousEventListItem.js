@@ -13,7 +13,7 @@ import ButtonWithProgress from './ButtonWithProgress';
 const PreviousEventListItem = (props) => {
 
   //Get the event type
-  const thisEventType = props.event.eventtype;
+  const thisEventType = props.event.type;
 
   //initial setup
   const [courseName, setCourseName] = useState("");
@@ -128,6 +128,28 @@ const PreviousEventListItem = (props) => {
         });
       }
 
+      const completeEvent = () => {
+
+        confirmAlert({
+          title: 'Are you sure?',
+          message: 'this will complete this event',
+          buttons: [
+            {
+              label: 'Yes',
+              onClick: () => 
+                apiCalls.completeEvent(props.event.id)
+                .then((response) => {
+                  console.log(response)
+                }) (window.location.reload())
+            },
+            {
+              label: 'No',
+              onClick: () => ''
+            }
+          ]
+        });
+      }
+
       //load data
       useEffect(() => {
         const event = props.event;
@@ -147,10 +169,16 @@ const PreviousEventListItem = (props) => {
             } else {
               setEntrants(response.data)
               //Check if medal or stableford using score and sort by low to high for medal and high to low for stableford
-              if(thisEventType === "Stableford") {
+              if(thisEventType === 'medal') {
                 setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
               }
-              if(thisEventType === "Medal") {
+              if(thisEventType === 'Multi round event - Medal') {
+                setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
+              }
+              if(thisEventType === 'Stableford') {
+                setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? 1 : -1));
+              }
+              if(thisEventType === 'Multi round event - Stableford') {
                 setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? 1 : -1));
               }
               //Check if the username of logged in user is present in the array of entrants
@@ -200,7 +228,7 @@ const PreviousEventListItem = (props) => {
       //Format date from backend to be DD-MM-YYYY
 
       let yourDate = props.event.date;
-      const formatDate = moment(yourDate).format('DD-MM-YYYY')
+      let formatDate = new Date(yourDate).toString().substring(0,15)
 
       //onChange score
       const onChangeScore = (event) => {
@@ -208,15 +236,17 @@ const PreviousEventListItem = (props) => {
         setScore(value);
       }
 
+      console.log(props.event)
+
   return (
-            <div className="card col-12">
+            <div className="card col-12" style={{height:"100%"}}>
                 <div className="card-body">
                     <div className="col-12 card-title align-self-center mb-0">
-                        <h5>{props.event.eventname} </h5>
+                        <h5>{props.event.name} </h5>
                         <p className="m-0">Courses: {courseName}</p>
                         <p className="m-0">Date : {formatDate}</p>
-                        <p className="m-0">Entries : {props.event.currententrants} / {props.event.maxentrants}</p>
-                        <p className="m-0">Event Format : {props.event.eventtype}</p>
+                        <p className="m-0">Entries : {props.event.currentEntrants} / {props.event.maxEntrants}</p>
+                        <p className="m-0">Event Format : {props.event.type}</p>
                         <p className="m-0">Cost : £{props.event.cost}</p>
                         
                     </div>
@@ -226,7 +256,7 @@ const PreviousEventListItem = (props) => {
                 <div className="card-body">
                     <div className="float-left btn-group btn-group-m px-2 col-3">
                       <Link
-                          to={`/event/${props.event.eventname}`}>
+                          to={`/event/${props.event.name}`}>
                               <button  
                                 className="btn btn-primary tooltips float-left" 
                                 data-placement="left" 
@@ -269,7 +299,7 @@ const PreviousEventListItem = (props) => {
                       </button>
                     </div>
 
-                    {entered &&
+                    {(entered && props.event.status === 'open') &&
                     <div className="float-left btn-group btn-group-m p-2 col-6">
                             <button  
                                 className="btn btn-primary tooltips float-left" 
@@ -293,9 +323,23 @@ const PreviousEventListItem = (props) => {
                             </button>
                         }
                     </div>
+
+                        {props.event.status === 'open' &&
+                    <div className="float-left btn-group btn-group-m p-2">
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER' || props.loggedInUser.role === 'EVENTADMIN')  &&
+                            <button  
+                                className="btn btn-success tooltips" 
+                                onClick={completeEvent} 
+                                data-placement="top" 
+                                data-toggle="tooltip" 
+                                data-original-title="Complete">
+                                    <i className="fa fa-check"></i>
+                            </button>
+                        }
+                    </div>}
                     
                 </div>
-
+                        
                 {showScore &&
                     <div className="container row m-2">
                       <div className="col-4">

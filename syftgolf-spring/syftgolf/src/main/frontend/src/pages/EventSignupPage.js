@@ -8,15 +8,15 @@ import * as apiCalls from '../api/apiCalls';
 export const EventSignupPage = (props) => {
     //state = Json object to add fields to
     const [form, setForm] = useState({
-      eventname: '',
-      eventtype: '',
-      course_id: '',
+      name: '',
       date: '',
-      info: '',
-      maxentrants: '',
+      maxEntrants: '',
+      cost: 0.00,
       qualifier: '',
-      cost: 0.00
-    
+      type: '',
+      course_id: '',
+      info: '',
+      ninetyFivePercent: false
     });
 
   const [errors, setErrors] = useState([]);
@@ -24,6 +24,15 @@ export const EventSignupPage = (props) => {
   const [courseList, setCoursesList] = useState([]);
   const [courseSelected, setCourseSelected] = useState(false);
   const [eventTypeSelected, setEventTypeSelected] = useState(false);
+
+  const handleCheckChange= (event) => {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    setForm({
+      ...form,
+      ninetyFivePercent: value
+    })
+  }
   
 
   useEffect(() => { 
@@ -46,7 +55,7 @@ export const EventSignupPage = (props) => {
       setCourseSelected(false);
     }
 
-    if(name === "eventtype"){
+    if(name === "type"){
       setEventTypeSelected(true);
     }
     if(value === ""){
@@ -69,26 +78,24 @@ export const EventSignupPage = (props) => {
   };
 
       const onClickEventRegister = () => {
+
+        let courseId= form.course_id.split(" ")[0];
+        let societyId = props.user.society.id;
         const event = {
-          eventname: form.eventname,
-          eventtype: form.eventtype,
+          name: form.name,
+          type: form.type,
           date: form.date,
           info: form.info,
-          maxentrants: form.maxentrants,
+          maxEntrants: form.maxEntrants,
           currententrants: 0,
           qualifier: form.qualifier,
           cost: form.cost,
-          course: {
-            courseid: form.course_id.split(" ")[0]
-          },
-          society: {
-            id: props.user.society.id
-          }
+          ninetyFivePercent: form.ninetyFivePercent
       };
       
         setPendingApiCall(true);
           props.actions
-            .postSignupEvent(event)
+            .postSignupEvent(event, societyId, courseId)
             .then((response) => {
             setPendingApiCall(false);
           props.history.push('/events');
@@ -109,13 +116,13 @@ export const EventSignupPage = (props) => {
             </div>
             <div className="col-12 mb-3">
                 <Input
-                name="eventname"
+                name="name"
                 label="Event Name"
                 placeholder="Event name"
-                value={form.eventname}
+                value={form.name}
                 onChange={onChange}
-                hasError={errors.eventname && true}
-                error={errors.eventname}
+                hasError={errors.name && true}
+                error={errors.name}
               />
             </div>
             <div className="col-12 mb-3">
@@ -130,20 +137,9 @@ export const EventSignupPage = (props) => {
                 error={errors.date}
               />
             </div>
-            {/* <div className="col-12 mb-3">
-            <Input
-                name="eventtype"
-                label="Event type"
-                placeholder="Event Type"
-                value={form.eventtype}
-                onChange={onChange}
-                hasError={errors.eventtype && true}
-                error={errors.eventtype}
-              />
-            </div> */}
             <div className="col-12 mb-3">
             <label>Event Type</label>
-              <select  name="eventtype" id="eventtype" className={`form-control ${eventTypeSelected ? "is-valid" : "is-invalid"} `} label="eventtype" placeholder="select" onChange={onChange} required>
+              <select  name="type" id="type" className={`form-control ${eventTypeSelected ? "is-valid" : "is-invalid"} `} label="eventtype" placeholder="select" onChange={onChange} required>
                 <option selected disabled value="">Please select</option>
                   <option>Stableford</option>
                   <option>Medal</option>
@@ -151,6 +147,8 @@ export const EventSignupPage = (props) => {
                   <option>4BBB - Medal</option>
                   <option>4 man team - Stableford</option>
                   <option>4 man team - Medal</option>
+                  <option>Multi round event - Medal</option>
+                  <option>Multi round event - Stableford</option>
               </select>
               <div id="eventtypeFeedback" className="invalid-feedback">
                 Please select a valid event type.
@@ -158,13 +156,13 @@ export const EventSignupPage = (props) => {
             </div>
             <div className="col-12 mb-3">
             <Input
-                name="maxentrants"
+                name="maxEntrants"
                 label="Max entrants"
                 placeholder="Max entrants"
-                value={form.maxentrants}
+                value={form.maxEntrants}
                 onChange={onChange}
-                hasError={errors.maxentrants && true}
-                error={errors.maxentrants}
+                hasError={errors.maxEntrants && true}
+                error={errors.maxEntrants}
               />
             </div>
             <div className="col-12 mb-3">
@@ -207,12 +205,16 @@ export const EventSignupPage = (props) => {
               <select  name="course_id" id="course_id" className={`form-control ${courseSelected ? "is-valid" : "is-invalid"} `}  label="Course" placeholder="select" onChange={onChange} required>
                 <option selected disabled value="">Please select</option>
                 {courseList.map((courses) => (
-                  <option key={courses.courseid}> {courses.courseid} - {courses.courseName} </option>
+                  <option key={courses.id}> {courses.id} - {courses.name} </option>
                 ))}
               </select>
               <div id="course_idFeedback" className="invalid-feedback">
                 Please select a valid course.
               </div>
+            </div>
+            <div className="col-12 mb-3">
+              <label>Set playing handicap at 95% for this event</label>
+              <input type="checkbox" onChange={handleCheckChange} name="ninetyfivepercent" id='ninefivepercent' style={{marginLeft:"2rem"}}></input>
             </div>
             
             <div className="text-center">
@@ -252,7 +254,7 @@ export const EventSignupPage = (props) => {
         const mapDispatchToProps = (dispatch) => {
             return {
               actions: {
-                postSignupEvent: (event) => dispatch(authActions.eventSignupHandler(event))
+                postSignupEvent: (event, societyId, courseId) => dispatch(authActions.eventSignupHandler(event, societyId, courseId))
               }
             };
           };

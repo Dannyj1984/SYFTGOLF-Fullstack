@@ -4,6 +4,7 @@ import CourseImageWithDefault from '../components/CourseImageWithDefault';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import * as apiCalls from '../api/apiCalls';
+import { connect } from 'react-redux';
 
 const CourseListItem = (props) => {
 
@@ -30,8 +31,7 @@ const CourseListItem = (props) => {
 
      
 
-      const userObj = localStorage.getItem('syft-auth');
-      const authorityJSON = JSON.parse(userObj);
+      
 
   return (
             <div className="card col-12">
@@ -46,7 +46,7 @@ const CourseListItem = (props) => {
                         />                    
                     </div>
                     <div className="col-12 card-title align-self-center mb-0">
-                        <h5>{props.course.courseName} </h5>
+                        <h5>{props.course.name} </h5>
                         <p className="m-0">Par : {props.course.par}</p>
                         <p className="m-0">Slope : {props.course.slopeRating}</p>
                         <p className="m-0">Rating : {props.course.courseRating}</p>
@@ -59,12 +59,12 @@ const CourseListItem = (props) => {
                 <div className="card-body">
                     <div className="float-left btn-group btn-group-sm">
                     <Link
-                        to={`/course/${props.course.courseName}`}>
+                        to={`/course/${props.course.name}`}>
                             <button  className="btn btn-primary tooltips float-left" data-placement="left" data-toggle="tooltip" data-original-title="view"><i className="fa fa-eye"/> </button>
                     </Link>
                     </div>
 
-                    {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'EVENTADMIN' || authorityJSON.role === 'SUPERUSER') &&
+                    {props.loggedInUser.role === 'ADMIN' &&
 
                     <div className="float-left btn-group btn-group-m pl-2">
                       <Link
@@ -86,7 +86,7 @@ const CourseListItem = (props) => {
                     </div>}
 
                     <div className="float-right btn-group btn-group-m">
-                      {(authorityJSON.role === 'ADMIN' || authorityJSON.role === 'SUPERUSER')  &&
+                      {props.loggedInUser.role === 'ADMIN'  &&
                             <button  
                                 className="btn btn-secondary tooltips" 
                                 onClick={submit} 
@@ -106,4 +106,10 @@ const CourseListItem = (props) => {
   );
 };
 
-export default CourseListItem;
+const mapStateToProps = (state) => {
+  return {
+    loggedInUser: state
+  };
+};
+
+export default connect(mapStateToProps)(CourseListItem);

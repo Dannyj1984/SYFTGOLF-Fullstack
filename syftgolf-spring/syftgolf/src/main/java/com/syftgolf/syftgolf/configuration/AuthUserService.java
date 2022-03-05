@@ -1,24 +1,23 @@
 package com.syftgolf.syftgolf.configuration;
 
+import com.syftgolf.syftgolf.entity.Member;
+import com.syftgolf.syftgolf.repository.MemberRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.syftgolf.syftgolf.user.User;
-import com.syftgolf.syftgolf.user.UserRepository;
-
 
 @Service
 public class AuthUserService implements UserDetailsService {
 
     @Autowired
-    UserRepository userRepository;
+    MemberRepo memberRepo;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
+        Member user = memberRepo.findMemberByUsername(username);
         if(user == null) {
             throw new UsernameNotFoundException("User not found");
         }

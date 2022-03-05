@@ -8,6 +8,7 @@ export const PreviousEventList = (props) => {
 
     const [event, setEvent] = useState();
     const [events, setEvents] = useState();
+    const [pendingApiCall, setPendingApiCall] = useState(false)
 
     const [page, setPage] = useState({
         content: [],
@@ -23,13 +24,16 @@ export const PreviousEventList = (props) => {
 
   const loadData = (requestedPage = 0) => {
     let id = props.user.society.id;
+    setPendingApiCall(true)
     apiCalls
       .listPreviousEvents(id, { page: requestedPage, size: 9 })
       .then((response) => {
         setPage(response.data);
+        setPendingApiCall(false)
       })
       .catch((error) => {
         setLoadError("Event load failed" );
+        setPendingApiCall(false);
       });
   };
 
@@ -43,9 +47,12 @@ export const PreviousEventList = (props) => {
 
     const { content, first, last } = page;
 
+    console.log(content)
+
   return (
           <div >
             <h3 className="card-title m-auto text-center">Past Events</h3>
+            
             <Link
                   to={`/events`}>
                     <button  
@@ -56,6 +63,20 @@ export const PreviousEventList = (props) => {
                     </button>
             </Link>
             <hr/>
+            {pendingApiCall &&
+            
+            <div className="d-flex">
+              <div className="spinner-border text-black-50 m-auto">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </div>}
+
+            {content.length === 0 && 
+            <div>
+              <h3 className="card-title m-auto text-center text-danger">No previous events</h3>
+            </div>
+          }
+          {!pendingApiCall &&
             <div className="list-group list-group-flush" data-testid="eventgroup">
               <div className="row">
               {content.map((event) => (
@@ -65,7 +86,7 @@ export const PreviousEventList = (props) => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div>}
             <div className="clearfix">
               {!first && (
                 <span

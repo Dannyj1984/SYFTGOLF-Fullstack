@@ -5,9 +5,8 @@ import java.util.Base64;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import com.syftgolf.syftgolf.service.file.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.syftgolf.syftgolf.file.FileService;
 
 public class ProfileImageValidator implements ConstraintValidator<ProfileImage, String>{
 

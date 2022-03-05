@@ -15,6 +15,7 @@ class EventInfoPage extends React.Component{
         originalEventtype: undefined,
         originalMaxentrants: undefined,
         originalQualifier: undefined,
+        originalNinetyFive: undefined,
         originalCost: undefined,
         originalInfo: undefined,
         pendingUpdateCall: false,
@@ -29,7 +30,8 @@ class EventInfoPage extends React.Component{
             this.loadEvent();
           }
         }
-
+        
+          
         loadEvent = () => {
           const eventname = this.props.match.params.eventname;
           if (!eventname) {
@@ -58,14 +60,15 @@ class EventInfoPage extends React.Component{
         onClickCancel = () => {
           const event = { ...this.state.event };
         if (this.state.originalEventname !== undefined) {
-          event.eventname = this.state.originalEventname;
+          event.name = this.state.originalEventname;
           event.date = this.state.originalDate;
           event.cost = this.state.originalCost;
-          event.eventtype = this.state.originalEventtype;
+          event.type = this.state.originalEventtype;
           event.info = this.state.originalInfo;
           event.qualifier = this.state.originalQualifier;
-          event.maxentrants = this.state.originalMaxentrants;
+          event.maxEntrants = this.state.originalMaxentrants;
           event.winner = this.state.originalWinner;
+          event.ninetyFivePercent = this.state.originalNinetyFive
           
         }
           this.setState({
@@ -79,6 +82,7 @@ class EventInfoPage extends React.Component{
             originalQualifier: undefined,
             originalCost: undefined,
             originalInfo: undefined,
+            originalNinetyFive: undefined,
             inEditMode: false
             
           });
@@ -88,14 +92,15 @@ class EventInfoPage extends React.Component{
           const event = { ...this.state.event };
           const eventId = event.id;
           const eventUpdate = {
-            eventname: event.eventname,
+            name: event.name,
             date: event.date,
             winner: event.winner,
-            eventtype: event.eventtype,
-            maxentrants: event.maxentrants,
+            type: event.type,
+            maxEntrants: event.maxEntrants,
             qualifier: event.qualifier,
             cost: event.cost,
-            info: event.info
+            info: event.info,
+            ninetyFivePercent: event.ninetyFivePercent
           };
           this.setState({ pendingUpdateCall: true });
         apiCalls
@@ -113,6 +118,7 @@ class EventInfoPage extends React.Component{
                 originalQualifier: undefined,
                 originalCost: undefined,
                 originalInfo: undefined,
+                originalNinetyFive: undefined,
                 pendingUpdateCall: false,
                 event
               },
@@ -141,11 +147,11 @@ class EventInfoPage extends React.Component{
           const event = { ...this.state.event };
           let originalEventName = this.state.originalEventname;
         if (originalEventName === undefined) {
-            originalEventName = event.eventname;
+            originalEventName = event.name;
         }
-          event.eventname = e.target.value;
+          event.name = e.target.value;
           const errors = { ...this.state.errors };
-          errors.eventname = undefined;
+          errors.name = undefined;
           this.setState({ event, originalEventName, errors });
         };
 
@@ -177,9 +183,9 @@ class EventInfoPage extends React.Component{
           const event = { ...this.state.event };
           let originalEventtype = this.state.originalEventtype;
         if (originalEventtype === undefined) {
-          originalEventtype = event.eventtype;
+          originalEventtype = event.type;
         }
-          event.eventtype = e.target.value;
+          event.type = e.target.value;
           const errors = { ...this.state.errors };
           errors.Eventtype = undefined;
           this.setState({ event, originalEventtype, errors });
@@ -201,11 +207,11 @@ class EventInfoPage extends React.Component{
           const event = { ...this.state.event };
           let originalMaxentrants = this.state.originalMaxentrants;
         if (originalMaxentrants === undefined) {
-          originalMaxentrants = event.maxentrants;
+          originalMaxentrants = event.maxEntrants;
         }
-          event.maxentrants = e.target.value;
+          event.maxEntrants = e.target.value;
           const errors = { ...this.state.errors };
-          errors.maxentrants = undefined;
+          errors.maxEntrants = undefined;
           this.setState({ event, originalMaxentrants, errors });
         };
 
@@ -231,6 +237,19 @@ class EventInfoPage extends React.Component{
           const errors = { ...this.state.errors };
           errors.cost = undefined;
           this.setState({ event, originalCost, errors });
+        };
+
+        onChangeNinetyFivePercent = (e) => {
+          const event = { ...this.state.event };
+          let originalNinetyFive = this.state.originalNinetyFive;
+        if (originalNinetyFive === undefined) {
+          originalNinetyFive = event.ninetyFivePercent;
+        }
+          const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+          event.ninetyFivePercent = value;
+          const errors = { ...this.state.errors };  
+          errors.originalNinetyFive = undefined;
+          this.setState({ event, originalNinetyFive, errors });
         };
         
     
@@ -266,12 +285,13 @@ class EventInfoPage extends React.Component{
                 onClickEdit={this.onClickEdit}
                 onClickCancel={this.onClickCancel}
                 onClickSave={this.onClickSave}
-                onChangeEventname={this.onChangeEventname}
+                onChangename={this.onChangeEventname}
                 onChangeDate = {this.onChangeDate}
                 onChangeWinner = {this.onChangeWinner}
                 onChangeEventtype = {this.onChangeEventtype}
                 onChangeMaxentrants = {this.onChangeMaxentrants}
                 onChangeQualifier = {this.onChangeQualifier}
+                onChangeNinetyFivePercent = {this.onChangeNinetyFivePercent}
                 onChangeCost = {this.onChangeCost}
                 onChangeInfo = {this.onChangeInfo}
                 pendingUpdateCall={this.state.pendingUpdateCall}

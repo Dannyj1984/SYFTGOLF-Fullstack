@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import * as apiCalls from '../api/apiCalls';
-import { Modal, Button, Table, NavItem } from "react-bootstrap";
-import moment from 'moment';
+import { Modal, Button, Table, Container, Row, Col } from "react-bootstrap";
 import * as authActions from '../redux/authActions';
 import { connect } from 'react-redux';
 import Input from './Input';
@@ -12,7 +11,30 @@ import ButtonWithProgress from './ButtonWithProgress';
 
 const EventListItem = (props) => {
 
-  const thisEventType = props.event.eventtype;
+  const thisEventType = props.event.type;
+  const [entrants, setEntrants] = useState([{}]);
+  const [scoreCardObj, setScoreCardObj] = useState({
+    h1Score: null,
+    h2Score: null,
+    h3Score: null,
+    h4Score: null,
+    h5Score: null,
+    h6Score: null,
+    h7Score: null,
+    h8Score: null,
+    h9Score: null,
+    h10Score: null,
+    h11Score: null,
+    h12Score: null,
+    h13Score: null,
+    h14Score: null,
+    h15Score: null,
+    h16Score: null,
+    h17Score: null,
+    h18Score: null
+  });
+
+  const [userScoreCard, setUserScoreCard] = useState({});
 
   const [errors, setErrors] = useState({});
   const [editErrors, setEditErrors] = useState();
@@ -21,39 +43,18 @@ const EventListItem = (props) => {
 
   const [pendingApiCall, setPendingApiCall] = useState(false);
 
-  const [loadTeeSheetError, setLoadTeeSheetError] = useState('')
-
   //Check if member is in this event
   const [entered, setEntered] = useState(false);
-  const [entrants, setEntrants] = useState([]);
-  const [randomEntrants, setRandomEntrants] = useState([]);
+  
+  
   //sorted entrants by score for leaderboard
-  const [sortedEntrants, setSortedEntrants] = useState([]);
+  const [sortedEntrants, setSortedEntrants] = useState([]); //For stableford scores
+  const [medalEntrants, setMedalEntrants] = useState([]); //for Medal scores
   const [showScore, setShowScore] = useState(false);
   const [score, setScore] = useState(0);
   const [playerPerTee, setPlayerPerTee] = useState(0);
   const scoreArea = () => {
     setShowScore(true);
-  }
-  const updateScore = () => {
-   const eventid = props.event.id;
-   const id = props.loggedInUser.id;
-   apiCalls
-   .updateScore(eventid, id, score)
-   .then((response) => {
-     setShowScore(false);
-     confirmAlert({
-       title: 'Thanks for updating your score',
-       message: 'Please see the leaderboard for other scores',
-       buttons: [
-         {
-         label: 'OK',
-         onClick: () =>
-         (window.location.reload())
-         }
-       ]
-     })
-   })
   }
 
   //cancel score
@@ -63,6 +64,7 @@ const EventListItem = (props) => {
   //Leadboard modal setup
   const [showModalLeader, setShowLeader] = useState(false);
   const [courseName, setCourseName] = useState("");
+  const [courseSlope, setCourseSlope] = useState("");
 
   const handleCloseLeader = () => setShowLeader(false);
   const handleShowLeader = () => setShowLeader(true);
@@ -87,10 +89,15 @@ const EventListItem = (props) => {
     setShowTeeTime(true);
 }
 
+
+const handleCloseScoreEntry = () => setShowScore(false);
+
 //Add tee time modal setup
 const [showAddTeeTime, setShowAddTeeTime] = useState(false);
 
-  const handleCloseAddTeeTime = () => setShowAddTeeTime(false);
+  const handleCloseAddTeeTime = () => {
+      setShowAddTeeTime(false);
+  }
   const handleShowAddTeeTime = () => {
       //Check if device is in portrait and if so, warn that using in Landscape is advisable for this task
     if(window.innerHeight > window.innerWidth){
@@ -103,21 +110,14 @@ const [showAddTeeTime, setShowAddTeeTime] = useState(false);
 const [newTeeTime, setNewTeeTime] = useState({
     
         addnewTeeTime: '',
-        addplayer1: '',
-        addplayer2: '',
-        addplayer3: '',
-        addplayer4: ''
-    
+        noOfSlots: 4
 })
 
 //Edit tee time inputs
   const [editTeeTime, setEditTeeTime] = useState({
       id: '',
       teetime: '',
-      player1: '',
-      player2: '',
-      player3: '',
-      player4: ''
+      noOfSlots: 4
       }
   )
 
@@ -134,21 +134,22 @@ const [newTeeTime, setNewTeeTime] = useState({
     //Check if device is in portrait and if so, warn that using in Landscape is advisable for this task
     if(window.innerHeight > window.innerWidth){
       alert("Please use Landscape mode when editing tee times!");
-  }
-  apiCalls
-  .getSingleTeesheet(teesheetid)
-  .then((response) =>{
-      setEditTeeTime(response.data)
-      setPendingApiCall(false)
-  }
-  )
-  .catch((apiError) => {
-    setPendingApiCall(false);
-  });
+    }
+    apiCalls
+    .getSingleTeesheet(teesheetid)
+    .then((response) =>{
+        setEditTeeTime(response.data)
+        setPendingApiCall(false)
+    }
+    )
+    .catch((apiError) => {
+      setPendingApiCall(false);
+    });
 
-    setShowEditTeeTime(true);
+      setShowEditTeeTime(true);
   }
 
+  //Delete an event
     const deleteEvent = () => {
 
         confirmAlert({
@@ -178,9 +179,31 @@ const [newTeeTime, setNewTeeTime] = useState({
         });
       }
 
+      const completeEvent = () => {
+
+        confirmAlert({
+          title: 'Are you sure?',
+          message: 'this will complete this event',
+          buttons: [
+            {
+              label: 'Yes',
+              onClick: () => 
+                apiCalls.completeEvent(props.event.id)
+                .then((response) => {
+                  console.log(response)
+                }) (window.location.reload())
+            },
+            {
+              label: 'No',
+              onClick: () => ''
+            }
+          ]
+        });
+      }
+
       //Enter currently logged in user into an event
 
-      const enterEvent = () => {
+    const enterEvent = () => {
         const event = {...props.event}
         const eventid = event.id;
         const memberid = props.loggedInUser.id;
@@ -209,11 +232,11 @@ const [newTeeTime, setNewTeeTime] = useState({
                   });
                 }))
                 .catch((apiError) => {
-                  //If error returned because member is already in this event, tell them this
+                  //If error returned because the course has no holes set up yet
                   if (apiError.response.status === 500) {
                     confirmAlert({
-                      title: 'You are already in this event?',
-                      message: 'Please speak to the event organiser if you think there is a problem',
+                      title: 'Oops, looks like this event isnt ready for entry yet.',
+                      message: 'Please speak to the event organiser',
                       buttons: [
                         {
                           label: 'ok',
@@ -232,112 +255,6 @@ const [newTeeTime, setNewTeeTime] = useState({
           ]
         });
       };
-
-      //Get teesheet data for event when loading that modal
-      const getTeesheet = () =>  {
-        apiCalls
-          .getTeesheet(props.event.id)
-          .then((response) => {
-            setTeeTimes(response.data);
-            setPendingApiCall(false)
-            if(Object.entries(teeTimes).length === 0) {
-                setLoadTeeSheetError('No Tee sheet is setup for this event, please create one');
-              }
-          },
-           []);
-      }
-
-      //Get list of entrants and send to backend and receive the list back in a random order.
-      const roundRobin = () => {
-        const userList = []
-        //Get list of entrants usernames to pass to backend
-        for(let i =  0; i < entrants.length; i++){
-          userList.push(entrants[i].username);
-        }
-        //API call
-        apiCalls
-        .getRandomUserList(userList)
-        .then((response) => {
-          setRandomEntrants(response.data);
-          setPendingApiCall(false)
-        })
-        .catch((apiError) => {
-          if (apiError.response.data && apiError.response.data.validationErrors) {
-            setEditErrors(apiError.response.data.validationErrors);
-          }
-          setPendingApiCall(false);
-        });
-        //add new random entrants to tee sheet
-          let players = playerPerTee;
-          getTeesheet();
-        teeTimes.forEach(teetime => {
-            const teeSheetId = teetime.id;
-            let teeSheetUpdate = {
-              teetime: teetime.teetime,
-              player1: undefined,
-              player2: undefined,
-              player3: undefined,
-              player4: undefined
-            }
-            //If 2 players per tee time, add the first two players to the first teesheet, then remove them from
-            //the array, send the teesheetupdate, then add the next two to the next tee sheet
-          if(players === "2") {
-              teeSheetUpdate = {
-                ...teeSheetUpdate,
-                player1: randomEntrants[0],
-                player2: randomEntrants[1],
-                player3: '',
-                player4: ''
-            }
-            randomEntrants.shift();
-            randomEntrants.shift();
-            //If 3 players per tee time, add the first three players to the first teesheet, then remove them from
-            //the array, send the teesheetupdate, then add the next three to the next tee sheet etc
-          } else if (players === "3") {
-            //Set 3 players in teesheetupdate
-            teeSheetUpdate = {
-              ...teeSheetUpdate,
-              player1: randomEntrants[0],
-              player2: randomEntrants[1],
-              player3: randomEntrants[2],
-              player4: ''
-          }
-            randomEntrants.shift();
-            randomEntrants.shift();
-            randomEntrants.shift();
-          } else if (players === "4") {
-          //If 4 players per tee time, add the first four players to the first teesheet, then remove them from
-            //the array, send the teesheetupdate, then add the next four to the next tee sheet
-          teeSheetUpdate = {
-            ...teeSheetUpdate,
-            player1: randomEntrants[0],
-            player2: randomEntrants[1],
-            player3: randomEntrants[2],
-            player4: randomEntrants[3]
-            }
-            randomEntrants.shift();
-            randomEntrants.shift();
-            randomEntrants.shift();
-            randomEntrants.shift();
-          }
-          
-          apiCalls
-          .updateTeeSheetCall(teeSheetId, teeSheetUpdate)
-          .then((response) => {
-            console.log(response.data.message)
-            setEditConfirm(response.data.message)
-            setTimeout(() => window.location.reload(), 2000)
-        })
-        .catch((apiError) => {
-            if (apiError.response.data && apiError.response.data.validationErrors) {
-              setEditErrors(apiError.response.data.validationErrors);
-            }
-            setPendingApiCall(false);
-          });
-        }
-      )
-        
-      }
 
       //Delete a teesheet
       const deleteTeeSheet = (teesheetid) => {
@@ -385,7 +302,7 @@ const [newTeeTime, setNewTeeTime] = useState({
         const event = {...props.event}
         const eventid = event.id;
         const memberid = props.loggedInUser.id;
-
+        setPendingApiCall(true);
         confirmAlert({
           title: 'Do you want to be removed from this event?',
           message: 'This will remove you from this event',
@@ -395,6 +312,7 @@ const [newTeeTime, setNewTeeTime] = useState({
               onClick: () => 
                 apiCalls.removeEntrant(eventid, memberid)
                 .then ((response => {
+                  setPendingApiCall(false);
                   //Confirm entry with member
                   confirmAlert({
                     title: 'You have been successfully removed from this event',
@@ -408,8 +326,8 @@ const [newTeeTime, setNewTeeTime] = useState({
                   });
                 }))
                 .catch((apiError) => {
-                  
-                  setPendingApiCall(false);
+                  console.log(apiError)
+                  setPendingApiCall(false)
                 })
             },
             {
@@ -433,6 +351,7 @@ const [newTeeTime, setNewTeeTime] = useState({
             player3: editTeeTime.player3,
             player4: editTeeTime.player4
         }
+        setPendingApiCall(true)
         apiCalls
         .updateTeeSheetCall(teeSheetId, teeSheetUpdate)
         .then((response) => {
@@ -453,19 +372,17 @@ const [newTeeTime, setNewTeeTime] = useState({
       const addTeeTime = () => {
           const eventid = props.event.id
           const newTeeSheet = {
-              teetime: newTeeTime.addnewTeeTime,
-              player1: newTeeTime.addplayer1,
-              player2: newTeeTime.addplayer2,
-              player3: newTeeTime.addplayer3,
-              player4: newTeeTime.addplayer4
+              teeTime: newTeeTime.addnewTeeTime,
+              noOfSlots: newTeeTime.noOfSlots
           }
+          setPendingApiCall(true)
           apiCalls
           .createTeeSheet(eventid, newTeeSheet)
           .then((response)=> {
               setPendingApiCall(false)
               window.location.reload();
               setNewTeeTime({});
-              handleCloseAddTeeTime();
+              handleCloseAddTeeTime()
           })
           .catch((apiError) => {
             if (apiError.response.data && apiError.response.data.validationErrors) {
@@ -475,52 +392,104 @@ const [newTeeTime, setNewTeeTime] = useState({
           });
       }
 
+
+      const checkIfUserEntered =(username) => {
+            for(let i = 0; i < props.event.entrants.length; i++) {
+              if(props.event.entrants[i].member.username === username) {
+                setEntered(true)
+              }
+          }
+      }
+
+      
+
       //load data - get Course details of the event, and check if the logged in user has already entered the event
       useEffect(() => {
         const event = props.event;
         const eventid = event.id;
-          apiCalls
-          .getCourseDetails(props.event.id)
+        const username = props.loggedInUser.username
+        setPendingApiCall(true)
+        apiCalls
+          .getCourseDetails(eventid)
           .then((response) => {
             setCourseName(response.data.course);
+            setCourseSlope(response.data.courseSlope)
             setPendingApiCall(false)
-          }, []);
-          //Get the entrants for this event
-          apiCalls
-          .getEntrants(eventid)
+          })
+          .catch((e) => {
+            console.log(e)
+          })
+          let entrantIndex = null;
+          setPendingApiCall(true)
+          apiCalls.getEntrants(eventid)
           .then((response) => {
             setPendingApiCall(false)
-            //if entrants exist, check if the currently logged in user id is present for this event
-            if(response.data.length < 1){
-              setEntered(false);
-            } else {
-              setEntrants(response.data)
-              //Check if medal or stableford using score and sort by low to high for medal and high to low for stableford
-              if(thisEventType === 'medal') {
-                setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? -1 : 1));
-              }
-              if(thisEventType === 'Stableford') {
-                setSortedEntrants(entrants.sort((a, b) => (a.score > b.score) ? 1 : -1));
-              }
-              //Check if the username of logged in user is present in the array of entrants
-              function userEntered(username) {
-                return entrants.some(function(el) {
-                  return el.username === username;
-                }); 
-              }
-              if(userEntered(props.loggedInUser.username)) {
-                setEntered(true);
-              } else {
-                setEntered(false);
-              }
-
-            }
+            setEntrants(response.data)
+            function getUserIndex() {
+              try{
+               response.data.forEach((e, index) => {
+               if(e.member.username === props.loggedInUser.username) {
+                 entrantIndex = index;
+                   } 
+                 })
+               }catch(e) {}
+             }
+            getUserIndex();
+            try{
+              setUserScoreCard(response.data[entrantIndex].scoreCard)
+              const {h1Score, h2Score, h3Score, h4Score, h5Score, h6Score, h7Score, h8Score, h9Score, h10Score, h11Score, h12Score, h13Score, h14Score, h15Score, h16Score, h17Score, h18Score} = response.data[entrantIndex].scoreCard;
+          setScoreCardObj({
+            ...scoreCardObj,
+            h1Score: h1Score,
+            h2Score: h2Score,
+            h3Score: h3Score,
+            h4Score: h4Score,
+            h5Score: h5Score,
+            h6Score: h6Score,
+            h7Score: h7Score,
+            h8Score: h8Score,
+            h9Score: h9Score,
+            h10Score: h10Score,
+            h11Score: h11Score,
+            h12Score: h12Score,
+            h13Score: h13Score,
+            h14Score: h14Score,
+            h15Score: h15Score,
+            h16Score: h16Score,
+            h17Score: h17Score,
+            h18Score: h18Score
           })
-
-      }, [entrants]);
-
-      //Create a new teesheet
-      
+                }catch(e) {}
+          })    
+          .catch((e) => {
+            console.log(e)
+          })
+        checkIfUserEntered(username)
+              //Check if medal or stableford using score and sort by low to high for medal and high to low for stableford
+      if(thisEventType === 'Medal') {
+        setSortedEntrants(props.event.entrants.sort((a, b) => (a.score < b.score) ? -1 : 1));
+      }
+      if(thisEventType === 'Multi round event - Medal') { 
+        setSortedEntrants(props.event.entrants.sort((a, b) => (a.score < b.score) ? -1 : 1));
+      }
+      if(thisEventType === 'Stableford') {
+        setSortedEntrants(props.event.entrants.sort((a, b) => (a.score < b.score) ? 1 : -1));
+      }
+      if(thisEventType === 'Multi round event - Stableford') {
+        setSortedEntrants(props.event.entrants.sort((a, b) => (a.score < b.score) ? 1 : -1));
+      }
+      setPendingApiCall(true)
+        apiCalls
+          .getTeesheet(props.event.id)
+          .then((response) => {
+            setTeeTimes(response.data)
+            setPendingApiCall(false)
+          },
+           [])
+           .catch((e) => {
+             console.log(e)
+           });
+      }, [props.event]);
 
       //Data change in edit tee sheet
       const onChange = (event) => {
@@ -541,12 +510,6 @@ const [newTeeTime, setNewTeeTime] = useState({
         });
       };
 
-      //onChange score
-      const onChangeScore = (event) => {
-        const { value } = event.target;
-        setScore(value);
-      }
-
       //onChange playerPerTee
       const onChangePlayerPerTee = (event) => {
         const { value } = event.target;
@@ -563,24 +526,95 @@ const [newTeeTime, setNewTeeTime] = useState({
               [name]: value
             };
           });
+          
       }
+
+      //Randomise entrants
+      const randomiseEntrants = () => {
+        const eventId = props.event.id;
+        setPendingApiCall(true)
+        apiCalls
+        .randomiseEntrants(eventId, playerPerTee)
+        .then((response) => {
+          setPendingApiCall(false)
+          alert('Tee sheet updated');
+          setTimeout( window.location.reload(), 3000)
+        })
+        .catch = (e) => {
+          console.log(e)
+          setPendingApiCall(false)
+        }
+      }
+
+      //Scorecard object for submitting to backend
+
+  const [holeIndex, setHoleIndex] = useState(0);
+
+  const [scoreCardUpdateErrors, setScoreCardUpdateErrors] = useState({})
+
+  const toNextHole = () => {
+    if(holeIndex+1 < 18){
+    setHoleIndex(holeIndex+1)
+    }
+  }
+  const toPrevHole = () => {
+    if(holeIndex+1 > 1){
+    setHoleIndex(holeIndex-1)
+    }
+  }
+
+  const updateScoreCard = () => {
+    const eventId = props.event.id;
+    const memberId = props.loggedInUser.id;
+    setPendingApiCall(true)
+    apiCalls
+    .updateScore(eventId, memberId, scoreCardObj)
+    .then(
+      setPendingApiCall(false),
+      alert('Score updated'),
+      setTimeout(window.location.reload(), 3000)
+    )
+    .catch((apiError) => {
+      if (apiError.response.data && apiError.response.data.validationErrors) {
+        setScoreCardUpdateErrors(apiError.response.data.validationErrors);
+      }
+      setPendingApiCall(false)
+    })
+    
+  }
+
+  const onChangeScoreCard = (e) => {
+    const { value, name } = e.target;
+    setScoreCardObj((previousScoreCardObj) => {
+      return {
+        ...previousScoreCardObj,
+        [name]: value
+      };
+    });
+    setErrors((previousErrors) => {
+      return {
+        ...previousErrors,
+        [name]: undefined
+      };
+    });
+  }
 
       //Format date from backend to be DD-MM-YYYY
 
       let yourDate = props.event.date;
-      const formatDate = moment(yourDate).format('DD-MM-YYYY')
+      let formatDate = new Date(yourDate).toString().substring(0,15)
 
   return (
-            <div className="card col-12">
+            <div className="card col-12" style={{height:"100%"}}>
                 <div className="card-body">
                     <div className="col-12 card-title align-self-center mb-0">
-                        <h5>{props.event.eventname} </h5>
+                        <h5>{props.event.name} </h5>
                         <p className="m-0">Course: {courseName}</p>
                         <p className="m-0">Date : {formatDate}</p>
-                        <p className="m-0">Entries : {props.event.currententrants} / {props.event.maxentrants}</p>
-                        <p className="m-0">Event Format : {props.event.eventtype}</p>
+                        <p className="m-0">Entries : {props.event.currentEntrants} / {props.event.maxEntrants}</p>
+                        <p className="m-0">Event Format : {props.event.type}</p>
                         <p className="m-0">Cost : £{props.event.cost}</p>
-                        
+                        <p className="m-0">Playing handicap : {props.event.ninetyFivePercent ? '95%' : '100%'}</p>
                     </div>
                 </div>
                 <hr/>
@@ -588,7 +622,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                 <div className="card-body">
                     <div className="float-left btn-group btn-group-m px-2 col-3">
                       <Link
-                          to={`/event/${props.event.eventname}`}>
+                          to={`/event/${props.event.name}`}>
                               <button  
                                 className="btn btn-primary tooltips float-left" 
                                 data-placement="left" 
@@ -624,7 +658,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                       <button  
                           className="btn btn-primary tooltips float-left" 
                           data-placement="left" 
-                          onClick={()=>{ handleShowTeeTime(); getTeesheet() }}
+                          onClick={()=>{ handleShowTeeTime() }}
                           data-toggle="tooltip" 
                           data-original-title="view"><i
                           className="fa fa-clock"/>
@@ -654,33 +688,20 @@ const [newTeeTime, setNewTeeTime] = useState({
                             </button>
                         }
                     </div>
-                  </div>
 
-                    {showScore &&
-                    <div className="container row m-2">
-                      <div className="col-4">
-                        <Input 
-                          name="score"
-                          value={score}
-                          type="number"
-                          onChange={onChangeScore} 
-                        />
-                      </div>
-                      <div className="col-3">
-                        <ButtonWithProgress
-                          className="btn btn-primary"
-                          onClick={updateScore}
-                          text="Update"
-                        />
-                      </div>
-                      <div className="col-3">
-                        <ButtonWithProgress
-                          className="btn btn-danger"
-                          onClick={cancelScore}
-                          text="Cancel"
-                        />
-                      </div>
-                    </div>}
+                    <div className="float-left btn-group btn-group-m p-2">
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
+                            <button  
+                                className="btn btn-success tooltips" 
+                                onClick={completeEvent} 
+                                data-placement="top" 
+                                data-toggle="tooltip" 
+                                data-original-title="Complete">
+                                    <i className="fa fa-check"></i>
+                            </button>
+                        }
+                    </div>
+                  </div>
 
                         {!entered &&
                 <div className="float-right btn-group btn-group-m">
@@ -697,7 +718,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                     {entered &&
                 <div className="float-right btn-group btn-group-m">
                             <button  
-                                className="btn btn-success tooltips" 
+                                className="btn btn-success tooltips m-2" 
                                 onClick={removeEntrant} 
                                 data-placement="top" 
                                 data-toggle="tooltip" 
@@ -708,89 +729,160 @@ const [newTeeTime, setNewTeeTime] = useState({
                         {/*Show entrants modal*/}
                 <>
                         
+                   
                   <Modal show={showModalEntrants} onHide={handleCloseEntrants}>
                     <Modal.Header closeButton>
-                      <Modal.Title>Entrants for {props.event.eventname} on {formatDate}</Modal.Title>
+                      <Modal.Title>Entrants for {props.event.name} on {formatDate}</Modal.Title>
                     </Modal.Header>
+                    {pendingApiCall && 
                     <Modal.Body>
-                      <Table striped bordered hover>
+                    <div className="d-flex">
+                      <div className="spinner-border text-black-50 m-auto">
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                    </Modal.Body>
+                    }
+                    {!pendingApiCall &&
+                    <Modal.Body>
+                    
+                      <Table striped bordered hover responsive>
                       <thead>
                         <tr>
-                          <th scope="col">Member</th>
+                          <th >Member</th>
                         </tr>
                       </thead>
-                      {randomEntrants.length < 1 &&
-                      entrants.map((entrant => 
-                        <tbody key={entrant.username}>
-                          <tr>
-                            <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
-                          </tr>
-                        </tbody>
-                      ))}
 
-                      {randomEntrants.length > 0 && 
-                      randomEntrants.map((random => 
-                        <tbody key={random}>
+                      {entrants.map((entrant) => 
+                       entrant.member && 
+                        <tbody key={entrant.member.id}>
                           <tr>
-                            <th scope="row">{random}</th>
+                            <th >{entrant.member.firstName} {entrant.member.surname} ({entrant.member.handicap})</th>
                           </tr>
-                        </tbody>
-                        ))}
+                        </tbody>  
+                      )}
                       </Table>
-                    </Modal.Body>
+                    </Modal.Body>}
                     <Modal.Footer>
+                    {/* Set the number of players per tee */}
+                    {props.loggedInUser.role === 'ADMIN' &&
                     <Input 
                       label="Players per tee"
                       name="players"
                       value={playerPerTee}
                       type="number"
                       onChange={onChangePlayerPerTee} 
-                    />
+                    />}
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER' || props.loggedInUser.role === 'EVENTADMIN')  &&
+                      <Button variant="secondary" onClick={randomiseEntrants} >
+                        Randomise
+                      </Button>}
                       <Button variant="secondary" onClick={handleCloseEntrants}>
                         Close
                       </Button>
-                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER' || props.loggedInUser.role === 'EVENTADMIN')  &&
-                      <Button variant="secondary" onClick={roundRobin}>
-                        Randomise
-                      </Button>}
                     </Modal.Footer>
                   </Modal>
               </>
                         {/*Show leaderboard modal*/}
-                <>
-                        
+                        <>
+                        {/* modal for stableford event type */}
+                        {thisEventType ==="Stableford" &&
                   <Modal 
                     show={showModalLeader} 
                     onHide={handleCloseLeader} 
                     dialogClassName="custom-modal"
                   >
                     <Modal.Header closeButton>
-                      <Modal.Title>Leader board for {props.event.eventname} on {formatDate}</Modal.Title>
+                      <Modal.Title>Leader board for {props.event.name} on {formatDate}</Modal.Title>
                     </Modal.Header>
+                    {pendingApiCall && 
                     <Modal.Body>
-                    <Table striped bordered hover>
+                    <div className="d-flex">
+                      <div className="spinner-border text-black-50 m-auto">
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                    </Modal.Body>
+                    }
+                    {!pendingApiCall &&
+                    <Modal.Body>
+                    <Table striped bordered hover responsive>
                       <thead>
                         <tr>
-                          <th scope="col">Member</th>
-                          <th scope="col">Score</th>
+                          <th >Member (playing handicap)</th>
+                          <th >Score</th>
                         </tr>
                       </thead>
                       {sortedEntrants.map((entrant =>
-                        <tbody key={entrant.username}>
+                        <tbody key={entrant.member.id}>
                         <tr>
-                          <th scope="row">{entrant.firstname} {entrant.surname} ({entrant.handicap})</th>
-                          <th scope="row">{entrant.score}</th>
+                          {!props.event.ninetyFivePercent &&
+                          <th >{entrant.member.firstName} {entrant.member.surname} ({Math.round(entrant.member.handicap/113*courseSlope)})</th>}
+                          {props.event.ninetyFivePercent &&
+                          <th >{entrant.member.firstName} {entrant.member.surname} ({Math.round(0.95*(entrant.member.handicap/113*courseSlope*0.95))})</th>}
+                          <th >{entrant.score}</th>
                         </tr>
                         </tbody>
                       ))}
                     </Table>
-                    </Modal.Body>
+                    </Modal.Body>}
                     <Modal.Footer>
                       <Button variant="secondary" onClick={handleCloseLeader}>
                         Close
                       </Button>
                     </Modal.Footer>
-                  </Modal>
+                  </Modal>}
+
+                  {/* Modal for Medal event type */}
+
+                  {thisEventType ==="Medal" &&
+                  <Modal 
+                    show={showModalLeader} 
+                    onHide={handleCloseLeader} 
+                    dialogClassName="custom-modal"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Leader board for {props.event.name} on {formatDate}</Modal.Title>
+                    </Modal.Header>
+                    {pendingApiCall && 
+                    <Modal.Body>
+                    <div className="d-flex">
+                      <div className="spinner-border text-black-50 m-auto">
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                    </Modal.Body>
+                    }
+                    {!pendingApiCall &&
+                    <Modal.Body>
+                    <Table striped bordered hover responsive>
+                      <thead>
+                        <tr>
+                          <th >Member</th>
+                          <th >Score</th>
+                        </tr>
+                      </thead>
+                      {sortedEntrants.map((entrant =>
+                        <tbody key={entrant.member.id}>
+                        <tr>
+                          {!props.event.ninetyFivePercent &&
+                          <th >{entrant.member.firstName} {entrant.member.surname} ({Math.round(entrant.member.handicap/113*courseSlope)})</th>}
+                          {props.event.ninetyFivePercent &&
+                          <th >{entrant.member.firstName} {entrant.member.surname} ({Math.round(0.95*(entrant.member.handicap/113*courseSlope))})</th>}
+                          <th >{entrant.score}</th>
+                        </tr>
+                        </tbody>
+                      ))}
+                    </Table>
+                    </Modal.Body>}
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleCloseLeader}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>}
+
+                  
               </>
                         {/*Show Tee time modal*/}
                         <>
@@ -798,39 +890,56 @@ const [newTeeTime, setNewTeeTime] = useState({
                             show={showTeeTime} 
                             onHide={handleCloseTeeTime} 
                             dialogClassName="modal-content-full modal-dialog-full"
+                            size="xl"
+                            centered
                           >
                             <Modal.Header closeButton>
-                              <Modal.Title>Tee times for {props.event.eventname} on {formatDate}</Modal.Title>
+                              <Modal.Title>Tee times for {props.event.name} on {formatDate}</Modal.Title>
                             </Modal.Header>
+                            {pendingApiCall &&
                             <Modal.Body>
-                            <Table striped bordered hover>
+                            <div className="d-flex">
+                              <div className="spinner-border text-black-50 m-auto">
+                                <span className="sr-only">Loading...</span>
+                              </div>
+                            </div>
+                            </Modal.Body>
+                            }
+                            {!pendingApiCall &&
+                            <Modal.Body>
+                            
+                            
+                            <Table striped bordered hover responsive>
                               <thead>
                                 <tr>
-                                  <th scope="col">Tee time</th>
-                                  <th scope="col">Player 1</th>
-                                  <th scope="col">Player 2</th>
-                                  <th scope="col">Player 3</th>
-                                  <th scope="col">Player 4</th>
+                                  <th >Tee time</th>
+                                  <th >Player 1</th>
+                                  <th>Player 2</th>
+                                  <th>Player 3</th>
+                                  {teeTimes[0] !== undefined && teeTimes[0].noOfSlots === 4 &&
+                                  <th>Player 4</th>}
+                                  {props.loggedInUser.role === 'ADMIN' &&
+                                  <th id='admin'>Admin</th>}
                                 </tr>
                               </thead>
                               
                               {teeTimes.map((teetime => 
                                 <tbody key={teetime.id}>
                                     <tr>
-                                    <th scope="col">{teetime.teetime}</th>
-                                    <th scope="col">{teetime.player1}</th>
-                                    <th scope="col">{teetime.player2}</th>
-                                    <th scope="col">{teetime.player3}</th>
-                                    <th scope="col">{teetime.player4}</th>
-                                    <th scope="col">
+                                    <td>{teetime.teeTime}</td>
+                                    {teetime.entrants.map((entrant) => 
+                                      <td>{entrant.member['firstName']} {entrant.member['surname']} ({entrant.member['handicap']})</td>
+                                    )}
+                                    {props.loggedInUser.role === 'ADMIN' &&
+                                    <td headers='admin'>
                                         <button className="btn btn-danger m-2" onClick={() => deleteTeeSheet(teetime.id)}>delete</button>
                                         <button className="btn btn-warning m-2" onClick={() => handleShowEditTeeTime(teetime.id)}>Update</button>
-                                    </th>
+                                    </td>}
                                     </tr>
                                 </tbody>
                               ))}   
                             </Table>
-                            </Modal.Body>
+                            </Modal.Body>}
                             <Modal.Footer>
                               {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'EVENTADMIN' || props.loggedInUser.role === 'SUPERUSER') &&
                               <Button variant="success" disabled={pendingApiCall} onClick={handleShowAddTeeTime}>Add New Tee Time</Button>}
@@ -846,27 +955,37 @@ const [newTeeTime, setNewTeeTime] = useState({
                         
                         <Modal show={showEditTeeTime} onHide={handleCloseEditTeeTime} dialogClassName="modal-content-full modal-dialog-full" >
                           <Modal.Header closeButton>
-                            <Modal.Title>Edit Tee times for {props.event.eventname} on {formatDate}</Modal.Title>
+                            <Modal.Title>Edit Tee times for {props.event.name} on {formatDate}</Modal.Title>
                           </Modal.Header>
+                          {pendingApiCall && 
                           <Modal.Body>
-                          <Table striped bordered hover>
+                          <div className="d-flex">
+                            <div className="spinner-border text-black-50 m-auto">
+                              <span className="sr-only">Loading...</span>
+                            </div>
+                          </div>
+                          </Modal.Body>
+                          }
+                          {!pendingApiCall &&
+                          <Modal.Body>
+                          <Table striped bordered hover responsive>
                             <thead>
                                 <tr>
-                                  <th scope="col">Tee teetime</th>
-                                  <th scope="col">Player 1</th>
-                                  <th scope="col">Player 2</th>
-                                  <th scope="col">Player 3</th>
-                                  <th scope="col">Player 4</th>
+                                  <th >Tee teetime</th>
+                                  <th >Player 1</th>
+                                  <th >Player 2</th>
+                                  <th >Player 3</th>
+                                  <th >Player 4</th>
                                 </tr>
                             </thead>
                                 <tbody>
                                     <tr>
-                                    <th scope="col"><Input name="teetime" value={editTeeTime.teetime} onChange={onChangeEdit} /></th>
-                                    <th scope="col"><Input name="player1" value={editTeeTime.player1} onChange={onChangeEdit} /></th>
-                                    <th scope="col"><Input name="player2" value={editTeeTime.player2} onChange={onChangeEdit} /></th>
-                                    <th scope="col"><Input name="player3" value={editTeeTime.player3} onChange={onChangeEdit} /></th>
-                                    <th scope="col"><Input name="player4" value={editTeeTime.player4} onChange={onChangeEdit} /></th>
-                                    <th scope="col">
+                                    <th ><Input name="teetime" value={editTeeTime.teetime} onChange={onChangeEdit} /></th>
+                                    <th ><Input name="player1" value={editTeeTime.player1} onChange={onChangeEdit} /></th>
+                                    <th ><Input name="player2" value={editTeeTime.player2} onChange={onChangeEdit} /></th>
+                                    <th ><Input name="player3" value={editTeeTime.player3} onChange={onChangeEdit} /></th>
+                                    <th ><Input name="player4" value={editTeeTime.player4} onChange={onChangeEdit} /></th>
+                                    <th >
                                         <ButtonWithProgress
                                             onClick={() => onClickUpdateTee(editTeeTime.id)} 
                                             className="btn btn-warning m-2"
@@ -887,7 +1006,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                           <div className="text-centre text-danger">
                               <span>{editErrors}</span>
                           </div>}
-                          </Modal.Body>
+                          </Modal.Body>}
                           <Modal.Footer>
                             <Button variant="secondary" onClick={handleCloseEditTeeTime}>
                               Close
@@ -901,22 +1020,29 @@ const [newTeeTime, setNewTeeTime] = useState({
                         
                         <Modal show={showAddTeeTime} onHide={handleCloseAddTeeTime} dialogClassName="modal-content-full modal-dialog-full" >
                           <Modal.Header closeButton>
-                            <Modal.Title>Add Tee time for {props.event.eventname} on {formatDate}</Modal.Title>
+                            <Modal.Title>Add Tee time for {props.event.name} on {formatDate}</Modal.Title>
                           </Modal.Header>
+                          {pendingApiCall && 
                           <Modal.Body>
-                          <Table striped bordered hover>
+                          <div className="d-flex">
+                            <div className="spinner-border text-black-50 m-auto">
+                              <span className="sr-only">Loading...</span>
+                            </div>
+                          </div>
+                          </Modal.Body>
+                          }
+                          {!pendingApiCall &&
+                          <Modal.Body>
+                          <Table striped bordered hover responsive>
                           <thead>
                             <tr>
-                              <th scope="col">Time</th>
-                              <th scope="col">Player 1</th>
-                              <th scope="col">Player 2</th>
-                              <th scope="col">Player 3</th>
-                              <th scope="col">Player 4</th>
+                              <th >Time</th>
+                              <th >Number of slots</th>
                             </tr>
                           </thead>
                           <tbody>
                               <tr>
-                                  <th scope="row">
+                                  <th >
                                       <Input
                                         name="addnewTeeTime"
                                         placeholder="Tee time"
@@ -924,42 +1050,17 @@ const [newTeeTime, setNewTeeTime] = useState({
                                         onChange={onChange} 
                                       />
                                   </th>
-                                  <th scope="row">
+                                  <th >
                                       <Input
-                                        name="addplayer1"
-                                        placeholder="Player 1"
-                                        value={newTeeTime.addplayer1}
-                                        onChange={onChange} 
-                                      />
-                                  </th>
-                                  <th scope="row">
-                                      <Input
-                                        name="addplayer2"
-                                        placeholder="Player 2"
-                                        value={newTeeTime.addplayer2}
-                                        onChange={onChange} 
-                                      />
-                                  </th>
-                                  <th scope="row">
-                                      <Input
-                                        name="addplayer3"
-                                        placeholder="Player 3"
-                                        value={newTeeTime.addplayer3}
-                                        onChange={onChange} 
-                                      />
-                                  </th>
-                                  <th scope="row">
-                                      <Input
-                                        name="addplayer4"
-                                        placeholder="Player 4"
-                                        value={newTeeTime.addplayer4}
+                                        name="noOfSlots"
+                                        value={newTeeTime.noOfSlots}
                                         onChange={onChange} 
                                       />
                                   </th>
                               </tr>
                           </tbody>
                           </Table>
-                          </Modal.Body>
+                          </Modal.Body>}
                           <Modal.Footer>
                             <Button variant="success" disabled={pendingApiCall} onClick={addTeeTime}>Add</Button>
                             <Button variant="secondary" onClick={handleCloseAddTeeTime}>
@@ -968,6 +1069,63 @@ const [newTeeTime, setNewTeeTime] = useState({
                           </Modal.Footer>
                         </Modal>
                     </>
+                    
+                    {/*Show Score entry modal*/}
+                    <>
+                          <Modal 
+                            show={showScore} 
+                            onHide={handleCloseScoreEntry} 
+                            dialogClassName="modal-content-full modal-dialog-full"
+                            size="m"
+                            centered
+                          >
+                            <Modal.Header closeButton>
+                              <Modal.Title id='scoreEntryModal'>
+                                <Container>
+                                Score Entry for {props.event.name} for player {props.loggedInUser.username}
+                               </Container>
+                              </Modal.Title>
+                            </Modal.Header>
+                            {pendingApiCall && 
+                            <Modal.Body>
+                            <div className="d-flex">
+                              <div className="spinner-border text-black-50 m-auto">
+                                <span className="sr-only">Loading...</span>
+                              </div>
+                            </div>
+                            </Modal.Body>
+                            }
+                            {!pendingApiCall &&
+                            <Modal.Body>
+                              <Container>
+                                <Row style={{margin:"auto", width:"50%"}}>
+                                  <Col xs={12}>
+                                    <div id='score-entry'>
+                                      <h2 >Hole {holeIndex+1}</h2>
+                                      <input name={`h${holeIndex+1}Score`} value={scoreCardObj[`h${holeIndex+1}Score`]}  onChange={onChangeScoreCard} type="number" min={"0"} max={"15"} style={{width:"8rem", height:"8rem",padding:"12px 20px", display:"inline-block", border:"1px solid #ccc", borderRadius: "4px", fontSize: "64px", textAlign:"center"}}></input>
+                                        <p style={{color:"red"}}>Please enter gross scores</p>
+                                    </div>
+                                  </Col>
+                                </Row>
+                                <Row style={{margin:"auto", width:"50%"}}>
+                                  <Col xs={6}>
+                                    {holeIndex+1 !== 1 &&
+                                    <button onClick={toPrevHole} style={{fontSize: "64px"}}>{'<'}</button>}
+                                  </Col>
+                                  <Col xs={6}>
+                                    {holeIndex+1 !== 18 &&
+                                    <button onClick={toNextHole} style={{fontSize: "64px"}}>{'>'}</button>}
+                                  </Col>
+                                </Row>
+                              </Container>
+                            
+                            </Modal.Body>}
+                            <Modal.Footer>
+                            {holeIndex+1 === 18 &&
+                              <Button variant='primary' onClick={updateScoreCard}>Submit</Button>}
+                            </Modal.Footer>
+                          </Modal>
+                        </>
           </div>
   );
 };
