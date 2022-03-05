@@ -33,6 +33,10 @@ public class Entrants {
     @Column(name = "score")
     private double score = 0;
 
+    @NotNull
+    @Column(name = "current_hole")
+    private double current_hole = 0;
+
     public Entrants() {}
 
     public Entrants(Member member, Event event, double score) {

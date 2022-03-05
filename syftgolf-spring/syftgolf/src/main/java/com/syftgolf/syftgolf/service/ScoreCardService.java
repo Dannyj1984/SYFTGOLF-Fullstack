@@ -51,7 +51,7 @@ public class ScoreCardService {
      * @param scorecard scorecard object to update with
      */
     //TODO make this more efficient
-    public void update(long eventId, long memberId, ScoreCardVM scorecard) {
+    public void update(long eventId, long memberId, int currentHole, ScoreCardVM scorecard) {
         Event e = eventRepo.findEventById(eventId);
         Member m = memberRepo.findMemberById(memberId);
         double courseHandicapDouble = m.getHandicap()/113*e.getCourse().getSlopeRating();
@@ -70,6 +70,7 @@ public class ScoreCardService {
                 //Hole 1
                 //Set the entrants score to the value of hole1 score on the scorecard
                 ent.getScoreCard().setH1Score(scorecard.getH1Score());
+                ent.setCurrent_hole(currentHole);
                 //If the players course handicap is more than or equal to the stroke index for the hole, set nett score to score -1
                 if(courseHcp >= e.getCourse().getHoles().get(0).getStrokeIndex()) {
                     ent.getScoreCard().setH1NettScore(scorecard.getH1Score() - 1);
@@ -86,6 +87,7 @@ public class ScoreCardService {
 
                 //Hole 2
                 ent.getScoreCard().setH2Score(scorecard.getH2Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(1).getStrokeIndex()) {
                     ent.getScoreCard().setH2NettScore(scorecard.getH2Score() - 1);
                     ent.getScoreCard().setH2Points(setPoints(ent.getScoreCard().getH2NettScore(), e.getCourse().getHoles().get(1).getPar()));
@@ -99,6 +101,7 @@ public class ScoreCardService {
 
                 //Hole 3
                 ent.getScoreCard().setH3Score(scorecard.getH3Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(2).getStrokeIndex()) {
                     ent.getScoreCard().setH3NettScore(scorecard.getH3Score() - 1);
                     ent.getScoreCard().setH3Points(setPoints(ent.getScoreCard().getH3NettScore(), e.getCourse().getHoles().get(2).getPar()));
@@ -112,6 +115,7 @@ public class ScoreCardService {
 
                 //Hole 4
                 ent.getScoreCard().setH4Score(scorecard.getH4Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(3).getStrokeIndex()) {
                     ent.getScoreCard().setH4NettScore(scorecard.getH3Score() - 1);
                     ent.getScoreCard().setH4Points(setPoints(ent.getScoreCard().getH4NettScore(), e.getCourse().getHoles().get(3).getPar()));
@@ -125,6 +129,7 @@ public class ScoreCardService {
 
                 //Hole 5
                 ent.getScoreCard().setH5Score(scorecard.getH5Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(4).getStrokeIndex()) {
                     ent.getScoreCard().setH5NettScore(scorecard.getH5Score() - 1);
                     ent.getScoreCard().setH5Points(setPoints(ent.getScoreCard().getH5NettScore(), e.getCourse().getHoles().get(4).getPar()));
@@ -138,6 +143,7 @@ public class ScoreCardService {
 
                 //Hole 6
                 ent.getScoreCard().setH6Score(scorecard.getH6Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(5).getStrokeIndex()) {
                     ent.getScoreCard().setH6NettScore(scorecard.getH6Score() - 1);
                     ent.getScoreCard().setH6Points(setPoints(ent.getScoreCard().getH6NettScore(), e.getCourse().getHoles().get(5).getPar()));
@@ -151,6 +157,7 @@ public class ScoreCardService {
 
                 //Hole 7
                 ent.getScoreCard().setH7Score(scorecard.getH7Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(6).getStrokeIndex()) {
                     ent.getScoreCard().setH7NettScore(scorecard.getH7Score() - 1);
                     ent.getScoreCard().setH7Points(setPoints(ent.getScoreCard().getH7NettScore(), e.getCourse().getHoles().get(6).getPar()));
@@ -164,6 +171,7 @@ public class ScoreCardService {
 
                 //Hole 8
                 ent.getScoreCard().setH8Score(scorecard.getH8Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(7).getStrokeIndex()) {
                     ent.getScoreCard().setH8NettScore(scorecard.getH8Score() - 1);
                     ent.getScoreCard().setH8Points(setPoints(ent.getScoreCard().getH8NettScore(), e.getCourse().getHoles().get(7).getPar()));
@@ -177,6 +185,7 @@ public class ScoreCardService {
 
                 //Hole 9
                 ent.getScoreCard().setH9Score(scorecard.getH9Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(8).getStrokeIndex()) {
                     ent.getScoreCard().setH9NettScore(scorecard.getH9Score() - 1);
                     ent.getScoreCard().setH9Points(setPoints(ent.getScoreCard().getH9NettScore(), e.getCourse().getHoles().get(8).getPar()));
@@ -190,6 +199,7 @@ public class ScoreCardService {
 
                 //Hole 10
                 ent.getScoreCard().setH10Score(scorecard.getH10Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(9).getStrokeIndex()) {
                     ent.getScoreCard().setH10NettScore(scorecard.getH10Score() - 1);
                     ent.getScoreCard().setH10Points(setPoints(ent.getScoreCard().getH10NettScore(), e.getCourse().getHoles().get(9).getPar()));
@@ -203,6 +213,7 @@ public class ScoreCardService {
 
                 //Hole 11
                 ent.getScoreCard().setH11Score(scorecard.getH11Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(10).getStrokeIndex()) {
                     ent.getScoreCard().setH11NettScore(scorecard.getH11Score() - 1);
                     ent.getScoreCard().setH11Points(setPoints(ent.getScoreCard().getH11NettScore(), e.getCourse().getHoles().get(10).getPar()));
@@ -216,6 +227,7 @@ public class ScoreCardService {
 
                 //Hole 12
                 ent.getScoreCard().setH12Score(scorecard.getH12Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(11).getStrokeIndex()) {
                     ent.getScoreCard().setH12NettScore(scorecard.getH12Score() - 1);
                     ent.getScoreCard().setH12Points(setPoints(ent.getScoreCard().getH12NettScore(), e.getCourse().getHoles().get(11).getPar()));
@@ -229,6 +241,7 @@ public class ScoreCardService {
 
                 //Hole 13
                 ent.getScoreCard().setH13Score(scorecard.getH13Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(12).getStrokeIndex()) {
                     ent.getScoreCard().setH13NettScore(scorecard.getH13Score() - 1);
                     ent.getScoreCard().setH13Points(setPoints(ent.getScoreCard().getH13NettScore(), e.getCourse().getHoles().get(12).getPar()));
@@ -242,6 +255,7 @@ public class ScoreCardService {
 
                 //Hole 14
                 ent.getScoreCard().setH14Score(scorecard.getH14Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(13).getStrokeIndex()) {
                     ent.getScoreCard().setH14NettScore(scorecard.getH14Score() - 1);
                     ent.getScoreCard().setH14Points(setPoints(ent.getScoreCard().getH14NettScore(), e.getCourse().getHoles().get(13).getPar()));
@@ -255,6 +269,7 @@ public class ScoreCardService {
 
                 //Hole 15
                 ent.getScoreCard().setH15Score(scorecard.getH15Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(14).getStrokeIndex()) {
                     ent.getScoreCard().setH15NettScore(scorecard.getH15Score() - 1);
                     ent.getScoreCard().setH15Points(setPoints(ent.getScoreCard().getH15NettScore(), e.getCourse().getHoles().get(14).getPar()));
@@ -268,6 +283,7 @@ public class ScoreCardService {
 
                 //Hole 16
                 ent.getScoreCard().setH16Score(scorecard.getH16Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(15).getStrokeIndex()) {
                     ent.getScoreCard().setH16NettScore(scorecard.getH16Score() - 1);
                     ent.getScoreCard().setH16Points(setPoints(ent.getScoreCard().getH16NettScore(), e.getCourse().getHoles().get(15).getPar()));
@@ -281,6 +297,7 @@ public class ScoreCardService {
 
                 //Hole 17
                 ent.getScoreCard().setH17Score(scorecard.getH17Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(16).getStrokeIndex()) {
                     ent.getScoreCard().setH17NettScore(scorecard.getH17Score() - 1);
                     ent.getScoreCard().setH17Points(setPoints(ent.getScoreCard().getH17NettScore(), e.getCourse().getHoles().get(16).getPar()));
@@ -294,6 +311,7 @@ public class ScoreCardService {
 
                 //Hole 18
                 ent.getScoreCard().setH18Score(scorecard.getH18Score());
+                ent.setCurrent_hole(currentHole);
                 if(courseHcp >= e.getCourse().getHoles().get(17).getStrokeIndex()) {
                     ent.getScoreCard().setH18NettScore(scorecard.getH18Score() - 1);
                     ent.getScoreCard().setH18Points(setPoints(ent.getScoreCard().getH18NettScore(), e.getCourse().getHoles().get(17).getPar()));
