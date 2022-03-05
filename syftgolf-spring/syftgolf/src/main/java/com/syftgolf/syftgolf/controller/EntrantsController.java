@@ -101,8 +101,8 @@ public class EntrantsController {
      */
     @PutMapping("/event/entrants/scorecard/{eventId:[0-9]+}/{memberId:[0-9]+}")
     @CrossOrigin
-    GenericResponse updateScorecard(@PathVariable long eventId, @PathVariable long memberId, @Valid @RequestBody ScoreCardVM scorecard) {
-        scoreCardService.update(eventId, memberId, scorecard);
+    GenericResponse updateScorecard(@PathVariable long eventId, @PathVariable long memberId, @RequestBody int currentHole, @Valid @RequestBody ScoreCardVM scorecard) {
+        scoreCardService.update(eventId, memberId, currentHole, scorecard);
         return new GenericResponse("Scorecard updated");
     }
 
