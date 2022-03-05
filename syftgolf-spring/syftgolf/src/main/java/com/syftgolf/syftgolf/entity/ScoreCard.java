@@ -81,7 +81,7 @@ public class ScoreCard {
 
     private int totalMedalScore = 0;
     private int totalStablefordScore = 0;
-    private int totalNettScore;
+    private int totalNettScore = 0;
 
     /**
      * Link a list of entrants to a scorecard

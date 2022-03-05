@@ -1,7 +1,7 @@
 import axios from 'axios';
-const url = 'https://glacial-sierra-91195.herokuapp.com';
+//const url = 'https://glacial-sierra-91195.herokuapp.com';
 
-//const url = 'http://localhost:8080';
+const url = 'http://localhost:8080';
 
 //user calls
 
@@ -228,8 +228,9 @@ export const removeEntrant = (eventid, memberid) => {
 }
 
 //Update an entrants score
-export const updateScore = (eventid, memberid, score) => {
-  const path = url + `/api/1.0/event/entrants/scorecard/${eventid}/${memberid}`;
+export const updateScore = (eventid, memberid, currentHole, score) => {
+  const path = url + `/api/1.0/event/entrants/scorecard/${eventid}/${memberid}/${currentHole}`;
+  console.log(path)
   return axios.put(path, score);
 }
 

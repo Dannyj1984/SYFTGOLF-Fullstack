@@ -46,7 +46,7 @@ public class EntrantsService {
         GenericResponse gr = new GenericResponse();
         Event e = eventRepo.findEventById(eventId);
         Member m = memberRepo.getOne(memberId);
-        Entrants en = new Entrants(m, e, 0);
+        Entrants en = new Entrants(m, e, 0, 0);
         //Update the current entrants entered in an event by 1
         e.setCurrentEntrants(e.getCurrentEntrants() + 1);
         eventRepo.save(e);

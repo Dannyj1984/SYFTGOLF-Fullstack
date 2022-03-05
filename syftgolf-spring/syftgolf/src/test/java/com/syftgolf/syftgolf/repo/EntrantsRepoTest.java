@@ -47,7 +47,7 @@ public class EntrantsRepoTest {
         testEntityManager.persist(new Course("Glen", 72, 69.2, 121));
         testEntityManager.persist(new Event("Glen", LocalDate.of(2022, Month.OCTOBER, 1) , 156, "Stableford", "Some info", 20.00, true,true, courseRepo.findCourseByName("Glen")));
         testEntityManager.persist(TestUtil.createValidMember());
-        Entrants en = new Entrants(memberRepo.findMemberByUsername("test-user"), eventRepo.findEventByName("Glen"), 0);
+        Entrants en = new Entrants(memberRepo.findMemberByUsername("test-user"), eventRepo.findEventByName("Glen"), 0, 0);
         List<Entrants> len = new ArrayList<>();
         len.add(en);
         Event ev = eventRepo.findEventByName("Glen");
@@ -62,7 +62,7 @@ public class EntrantsRepoTest {
         testEntityManager.persist(new Course("Glen", 72, 69.2, 121));
         testEntityManager.persist(new Event("Glen", LocalDate.of(2022, Month.OCTOBER, 1) , 156, "Stableford", "Some info", 20.00, true,true, courseRepo.findCourseByName("Glen")));
         testEntityManager.persist(TestUtil.createValidMember());
-        Entrants en = new Entrants(memberRepo.findMemberByUsername("test-user"), eventRepo.findEventByName("Glen"), 0);
+        Entrants en = new Entrants(memberRepo.findMemberByUsername("test-user"), eventRepo.findEventByName("Glen"), 0, 0);
         List<Entrants> len = new ArrayList<>();
         len.add(en);
         Event ev = eventRepo.findEventByName("Glen");
@@ -79,7 +79,7 @@ public class EntrantsRepoTest {
         testEntityManager.persist(new Course("Glen", 72, 69.2, 121));
         testEntityManager.persist(new Event("Glen", LocalDate.of(2022, Month.OCTOBER, 1) , 156, "Stableford", "Some info", 20.00, true, true, courseRepo.findCourseByName("Glen")));
         testEntityManager.persist(TestUtil.createValidMember());
-        Entrants en = new Entrants(memberRepo.findMemberByUsername("test-user"), eventRepo.findEventByName("Glen"), 0);
+        Entrants en = new Entrants(memberRepo.findMemberByUsername("test-user"), eventRepo.findEventByName("Glen"), 0, 0);
         List<Entrants> len = new ArrayList<>();
         len.add(en);
         Event ev = eventRepo.findEventByName("Glen");
