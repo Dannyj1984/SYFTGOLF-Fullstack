@@ -69,6 +69,7 @@ public class ScoreCardService {
             if (ent.getMember().equals(m)) {
                 //Hole 1
                 //Set the entrants score to the value of hole1 score on the scorecard
+
                 if(scorecard.getH1Score() > 0) {
                     ent.getScoreCard().setH1Score(scorecard.getH1Score());
                     ent.setCurrentHole(currentHole);
@@ -98,6 +99,7 @@ public class ScoreCardService {
                 }
 
                 //Hole 2
+
                 if(scorecard.getH2Score() > 0) {
                     ent.getScoreCard().setH2Score(scorecard.getH2Score());
                     ent.setCurrentHole(currentHole);
@@ -106,6 +108,7 @@ public class ScoreCardService {
                     } else {
                         ent.getScoreCard().setH2NettScore(scorecard.getH2Score());
                     }
+
                     ent.getScoreCard().setH2Points(setPoints(ent.getScoreCard().getH2NettScore(), e.getCourse().getHoles().get(1).getPar()));
                     medalTotal += ent.getScoreCard().getH2Score();
                     stableFordTotal += ent.getScoreCard().getH2Points();
@@ -122,6 +125,7 @@ public class ScoreCardService {
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
                 }
+
 
                     //Hole 3
                     if(scorecard.getH3Score() > 0) {
@@ -148,9 +152,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 4
+
                 if(scorecard.getH4Score() > 0) {
                     ent.getScoreCard().setH4Score(scorecard.getH4Score());
                     ent.setCurrentHole(currentHole);
@@ -175,9 +181,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 5
+
                 if(scorecard.getH5Score() > 0) {
                     ent.getScoreCard().setH5Score(scorecard.getH5Score());
                     ent.setCurrentHole(currentHole);
@@ -202,9 +210,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 6
+
                 if(scorecard.getH6Score() > 0) {
                     ent.getScoreCard().setH6Score(scorecard.getH6Score());
                     ent.setCurrentHole(currentHole);
@@ -229,9 +239,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 7
+
                 if(scorecard.getH7Score() > 0) {
                     ent.getScoreCard().setH7Score(scorecard.getH7Score());
                     ent.setCurrentHole(currentHole);
@@ -256,9 +268,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 8
+
                 if(scorecard.getH8Score() > 0) {
                     ent.getScoreCard().setH8Score(scorecard.getH8Score());
                     ent.setCurrentHole(currentHole);
@@ -283,9 +297,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 9
+
                 if(scorecard.getH9Score() > 0) {
                     ent.getScoreCard().setH9Score(scorecard.getH9Score());
                     ent.setCurrentHole(currentHole);
@@ -310,9 +326,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 10
+
                 if(scorecard.getH10Score() > 0) {
                     ent.getScoreCard().setH10Score(scorecard.getH10Score());
                     ent.setCurrentHole(currentHole);
@@ -337,9 +355,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 11
+
                 if(scorecard.getH11Score() > 0) {
                     ent.getScoreCard().setH11Score(scorecard.getH11Score());
                     ent.setCurrentHole(currentHole);
@@ -364,9 +384,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 12
+
                 if(scorecard.getH12Score() > 0) {
                     ent.getScoreCard().setH12Score(scorecard.getH12Score());
                     ent.setCurrentHole(currentHole);
@@ -391,9 +413,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 13
+
                 if(scorecard.getH13Score() > 0) {
                     ent.getScoreCard().setH13Score(scorecard.getH13Score());
                     ent.setCurrentHole(currentHole);
@@ -418,9 +442,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 14
+
                 if(scorecard.getH14Score() > 0) {
                     ent.getScoreCard().setH14Score(scorecard.getH14Score());
                     ent.setCurrentHole(currentHole);
@@ -445,6 +471,7 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 15
@@ -472,9 +499,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 16
+
                 if(scorecard.getH16Score() > 0) {
                     ent.getScoreCard().setH16Score(scorecard.getH16Score());
                     ent.setCurrentHole(currentHole);
@@ -499,9 +528,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 17
+
                 if(scorecard.getH17Score() > 0) {
                     ent.getScoreCard().setH17Score(scorecard.getH17Score());
                     ent.setCurrentHole(currentHole);
@@ -526,9 +557,11 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
                 //Hole 18
+
                 if(scorecard.getH18Score() > 0) {
                     ent.getScoreCard().setH18Score(scorecard.getH18Score());
                     ent.setCurrentHole(currentHole);
@@ -553,6 +586,7 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
+
                 }
 
 
