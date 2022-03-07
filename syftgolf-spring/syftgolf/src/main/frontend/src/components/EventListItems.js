@@ -193,8 +193,8 @@ const [newTeeTime, setNewTeeTime] = useState({
               onClick: () => 
                 apiCalls.completeEvent(props.event.id)
                 .then((response) => {
-                  console.log(response)
-                }) (window.location.reload())
+                  window.location.reload()
+                }) 
             },
             {
               label: 'No',
@@ -575,7 +575,6 @@ const [newTeeTime, setNewTeeTime] = useState({
   const updateScoreCard = () => {
     const eventId = props.event.id;
     const memberId = props.loggedInUser.id;
-    console.log(scoreCardObj)
     setPendingApiCall(true)
     apiCalls
     .updateScore(eventId, memberId, holeIndex + 1, scoreCardObj)
@@ -594,7 +593,6 @@ const [newTeeTime, setNewTeeTime] = useState({
   const completeScoreCard = () => {
     const eventId = props.event.id;
     const memberId = props.loggedInUser.id;
-    console.log(scoreCardObj)
     setPendingApiCall(true)
     apiCalls
     .updateScore(eventId, memberId, holeIndex + 1, scoreCardObj)
@@ -632,8 +630,6 @@ const [newTeeTime, setNewTeeTime] = useState({
       let yourDate = props.event.date;
       let formatDate = new Date(yourDate).toString().substring(0,15)
 
-      console.log(currentEntrant)
-
   return (
             <div className="card col-12" style={{height:"100%"}}>
                 <div className="card-body">
@@ -645,6 +641,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                         <p className="m-0">Event Format : {props.event.type}</p>
                         <p className="m-0">Cost : £{props.event.cost}</p>
                         <p className="m-0">Playing handicap : {props.event.ninetyFivePercent ? '95%' : '100%'}</p>
+                        <p className="m-0">Status : {props.event.status === 'open' ? 'Open' : 'Complete'}</p>
                     </div>
                 </div>
                 <hr/>
@@ -657,6 +654,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                                 className="btn btn-primary tooltips float-left" 
                                 data-placement="left" 
                                 data-toggle="tooltip" 
+                                title="view event"
                                 data-original-title="view"><i
                                 className="fa fa-eye"/>
                               </button>
@@ -668,6 +666,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                           data-placement="left" 
                           onClick={handleShowLeader}
                           data-toggle="tooltip" 
+                          title="view leaderboard"
                           data-original-title="view"><i
                           className="fa fa-trophy"/>
                       </button>
@@ -679,6 +678,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                           data-placement="left" 
                           onClick={handleShowEntrants}
                           data-toggle="tooltip" 
+                          title="view entrants"
                           data-original-title="view"><i
                           className="fa fa-users"/>
                       </button>
@@ -690,6 +690,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                           data-placement="left" 
                           onClick={()=>{ handleShowTeeTime() }}
                           data-toggle="tooltip" 
+                          title="view tee times"
                           data-original-title="view"><i
                           className="fa fa-clock"/>
                       </button>
@@ -720,12 +721,13 @@ const [newTeeTime, setNewTeeTime] = useState({
                     </div>
 
                     <div className="float-left btn-group btn-group-m p-2">
-                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  && (props.event.status === 'open') &&
                             <button  
                                 className="btn btn-success tooltips" 
                                 onClick={completeEvent} 
                                 data-placement="top" 
                                 data-toggle="tooltip" 
+                                title="complete event"
                                 data-original-title="Complete">
                                     <i className="fa fa-check"></i>
                             </button>
@@ -740,19 +742,31 @@ const [newTeeTime, setNewTeeTime] = useState({
                                 onClick={enterEvent} 
                                 data-placement="top" 
                                 data-toggle="tooltip" 
-                                data-original-title="Delete">
+                                data-original-title="enter">
                                 Enter
                             </button>
                     </div>}
 
-                    {entered &&
+                    {entered && props.event.currentEntrants === props.event.maxEntrants &&
+                <div className="float-right btn-group btn-group-m">
+                            <button  
+                                className="btn btn-success tooltips m-2" 
+                                onClick={function(){ alert('Event is full')}} 
+                                data-placement="top" 
+                                data-toggle="tooltip" 
+                                data-original-title="full">
+                                Full
+                            </button>
+                    </div>}
+
+                    {entered && props.event.currentEntrants !== props.event.maxEntrants &&
                 <div className="float-right btn-group btn-group-m">
                             <button  
                                 className="btn btn-success tooltips m-2" 
                                 onClick={removeEntrant} 
                                 data-placement="top" 
                                 data-toggle="tooltip" 
-                                data-original-title="Delete">
+                                data-original-title="remove">
                                 Remove
                             </button>
                     </div>}

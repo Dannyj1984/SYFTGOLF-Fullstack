@@ -48,8 +48,6 @@ export const EventList = (props) => {
 
     const { content, first, last } = page;
 
-    console.log(pendingApiCall)
-
     
   return (
           <div >

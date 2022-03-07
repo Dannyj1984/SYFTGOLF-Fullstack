@@ -47,8 +47,6 @@ export const PreviousEventList = (props) => {
 
     const { content, first, last } = page;
 
-    console.log(content)
-
   return (
           <div >
             <h3 className="card-title m-auto text-center">Past Events</h3>

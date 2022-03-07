@@ -46,7 +46,11 @@ const UserListItem = (props) => {
             .updateHandicap(id, handicapUpdate)
             .then((response) => {
                 setPendingUpdateCall(false);
-                window.location.reload();
+                setTimeout(window.location.reload(), 3000)
+            })
+            .catch((apiError) => {
+              console.log(apiError);
+              setPendingUpdateCall(false)
             })
     };
 
@@ -273,6 +277,7 @@ const UserListItem = (props) => {
                             <button  className="btn btn-warning tooltips float-left"
                                      data-placement="left"
                                      data-toggle="tooltip"
+                                     title="view member"
                                      data-original-title="view">
                                 <i
                                     className="fa fa-eye"/>
@@ -294,12 +299,13 @@ const UserListItem = (props) => {
                     </div>
                     {/*Button to view edit handicap modal*/}
                     <div className="float-right btn-group btn-group-m">
-                    {props.loggedInUser.role === 'HANDICAPADMIN'  && 
+                    {props.loggedInUser.role === 'ADMIN'  && 
                             <button  
                                 className="btn btn-secondary tooltips"  
                                 onClick={handleShow}
                                 data-placement="top" 
                                 data-toggle="tooltip" 
+                                title="update handicap"
                                 data-original-title="Edit">
                                 <i className="fa fa-edit"/>
                             </button>
@@ -313,18 +319,18 @@ const UserListItem = (props) => {
                         <Modal.Title>handicaps</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <p>Edit handicap for {props.user.firstname} {props.user.surname} </p>
+                        <p>Edit handicap for {props.user.firstName} {props.user.surname} </p>
                         <div className="mb-2">
                             <Input
                             value={userHcpDetails.originalHandicap}
-                            label={`Change handicap for ${props.user.firstname}`}
+                            label={`Change handicap for ${props.user.firstName}`}
                             onChange={onChangeHandicap}
                             //hasError={props.errors.handicap && true}
                             //error={props.errors.handicap}
                             />
                             <Input
                             value={userHcpDetails.originalSochcpred}
-                            label={`Change handicap reduction for ${props.user.firstname}`}
+                            label={`Change handicap reduction for ${props.user.firstName}`}
                             onChange={onChangeHandicapReduction}
                             //hasError={props.errors.sochcpred && true}
                             //error={props.errors.sochcpred}
