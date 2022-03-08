@@ -30,9 +30,8 @@ const CourseListItem = (props) => {
       }
 
      
-
+let pending = props.pendingApiCall;
       
-
   return (
             <div className="card col-12">
                 <div className="card-body">

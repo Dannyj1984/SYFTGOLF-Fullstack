@@ -1,7 +1,7 @@
 import axios from 'axios';
-const url = 'https://glacial-sierra-91195.herokuapp.com';
+//const url = 'https://glacial-sierra-91195.herokuapp.com';
 
-//const url = 'http://localhost:8080';
+const url = 'http://localhost:8080';
 
 //user calls
 
@@ -42,6 +42,10 @@ export const getUser = (username) => {
   return axios.get(url + `/api/1.0/member/${username}`);
 };
 
+export const getListOfMembers = (societyId) => {
+  return axios.get(url + `/api/1.0/getMembers/${societyId}`);
+};
+
 export const updateUser = (userId, body) => {
   return axios.put(url + '/api/1.0/updateMember/' + userId, body);
 };
@@ -54,8 +58,8 @@ export const makeAdmin = (userid) => {
   return axios.put(url + '/api/1.0/management/users/admin/' + userid);
 };
 
-export const makeHcpAdmin = (userid) => {
-  return axios.put(url + '/api/1.0/management/users/HcpAdmin/' + userid);
+export const makeScorer = (userid) => {
+  return axios.put(url + '/api/1.0/management/users/scorer/' + userid);
 };
 
 export const makeEventAdmin = (userid) => {
@@ -115,7 +119,7 @@ export const getCourses = (id) => {
 //Showing page of courses on course page
 export const listCourses = (id, param = { page: 0, size: 9 }) => {
   //id = JSON.parse(localStorage.getItem('syft-auth')).society.id;
-  const path = url + `/api/1.0/getCourses/${id}?page=${param.page || 0}&size=${param.size || 9}&sort=courseName,asc`;
+  const path = url + `/api/1.0/getCourses/${id}?page=${param.page || 0}&size=${param.size || 9}&sort=name,asc`;
   return axios.get(path);
 };
 

@@ -2,6 +2,7 @@ import React from 'react';
 import * as apiCalls from '../api/apiCalls';
 import CourseProfileCard from '../components/CourseProfileCard';
 import { connect } from 'react-redux';
+import Spinner from '../components/Spinner';
 
 class CourseInfoPage extends React.Component{
     state = {
@@ -191,11 +192,7 @@ class CourseInfoPage extends React.Component{
     let pageContent;
     if (this.state.isLoadingCourse) {
       pageContent = (
-        <div className="d-flex">
-          <div className="spinner-border text-black-50 m-auto">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
+        <Spinner></Spinner>
       );
     } else if (this.state.courseNotFound) {
       pageContent = (

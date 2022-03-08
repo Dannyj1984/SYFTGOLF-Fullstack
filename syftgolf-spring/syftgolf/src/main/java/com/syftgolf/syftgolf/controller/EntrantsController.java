@@ -87,7 +87,7 @@ public class EntrantsController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN') || #memberId == principal.id")
-    @DeleteMapping("/event/entrants/{eventId:[0-9]+}/{memberId:[0-9]+}")
+    @DeleteMapping("/event/entrants/{eventId:[0-9]+}/{memberId:[0-9]+}")    
     @CrossOrigin
     GenericResponse delete(@PathVariable long memberId, @PathVariable long eventId) {
         return entrantsService.deleteEntrant(memberId, eventId);

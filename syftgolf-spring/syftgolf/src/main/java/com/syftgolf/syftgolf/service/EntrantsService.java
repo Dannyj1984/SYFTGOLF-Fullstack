@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class EntrantsService {
@@ -43,52 +44,65 @@ public class EntrantsService {
      * @param memberId id of the member to enter
      */
     public GenericResponse save(long eventId, long memberId) {
-        GenericResponse gr = new GenericResponse();
+        GenericResponse gr = new GenericResponse("This member is already entered in this event");
         Event e = eventRepo.findEventById(eventId);
-        Member m = memberRepo.getOne(memberId);
+        Member m = memberRepo.findMemberById(memberId);
         Entrants en = new Entrants(m, e, 0, 0);
         //Update the current entrants entered in an event by 1
         e.setCurrentEntrants(e.getCurrentEntrants() + 1);
         eventRepo.save(e);
+        boolean entered = false;
         //Get the current list of entrants for this event
         List<Entrants> entrants = e.getEntrants();
-        //Add the current entrant to the list of entrants for this event.
-        entrants.add(en);
-        entrantsRepo.save(en);
-        ScoreCard sc = new ScoreCard();
-        //Ensure holes are sorted by hole number
-        List<Hole> holes = e.getCourse().getHoles();
-        System.out.println(holes);
-        holes.sort(Comparator.comparingInt(Hole::getHoleNumber));
-        try {
-            sc.setH1Index(holes.get(0).getStrokeIndex());
-            sc.setH2Index(holes.get(1).getStrokeIndex());
-            sc.setH3Index(holes.get(2).getStrokeIndex());
-            sc.setH4Index(holes.get(3).getStrokeIndex());
-            sc.setH5Index(holes.get(4).getStrokeIndex());
-            sc.setH6Index(holes.get(5).getStrokeIndex());
-            sc.setH7Index(holes.get(6).getStrokeIndex());
-            sc.setH8Index(holes.get(7).getStrokeIndex());
-            sc.setH9Index(holes.get(8).getStrokeIndex());
-            sc.setH10Index(holes.get(9).getStrokeIndex());
-            sc.setH11Index(holes.get(10).getStrokeIndex());
-            sc.setH12Index(holes.get(11).getStrokeIndex());
-            sc.setH13Index(holes.get(12).getStrokeIndex());
-            sc.setH14Index(holes.get(13).getStrokeIndex());
-            sc.setH15Index(holes.get(14).getStrokeIndex());
-            sc.setH16Index(holes.get(15).getStrokeIndex());
-            sc.setH17Index(holes.get(16).getStrokeIndex());
-            sc.setH18Index(holes.get(17).getStrokeIndex());
-        } catch (Error error) {
-            GenericResponse errorResponse = new GenericResponse("Entrant not saved. Please ensure all holes exist for this course");
-            gr = errorResponse;
+
+        //Check if member is already entered in this event
+        for(Entrants entrants1 : entrants) {
+            System.out.println(entrants1.getMember().getUsername());
+            System.out.println(m.getUsername());
+            if (entrants1.getMember().getUsername().equals(m.getUsername())) {
+                entered = true;
+                break;
+            }
         }
-            sc.setEntrants(en);
-            en.setScoreCard(sc);
-            scoreCardRepo.save(sc);
-            entrantsRepo.save(en);
-            GenericResponse completeResponse = new GenericResponse("Entered");
-            gr = completeResponse;
+            if(!entered) {
+                //Add the current entrant to the list of entrants for this event.
+                entrants.add(en);
+                entrantsRepo.save(en);
+                ScoreCard sc = new ScoreCard();
+                //Ensure holes are sorted by hole number
+                List<Hole> holes = e.getCourse().getHoles();
+                System.out.println(holes);
+                holes.sort(Comparator.comparingInt(Hole::getHoleNumber));
+                try {
+                    sc.setH1Index(holes.get(0).getStrokeIndex());
+                    sc.setH2Index(holes.get(1).getStrokeIndex());
+                    sc.setH3Index(holes.get(2).getStrokeIndex());
+                    sc.setH4Index(holes.get(3).getStrokeIndex());
+                    sc.setH5Index(holes.get(4).getStrokeIndex());
+                    sc.setH6Index(holes.get(5).getStrokeIndex());
+                    sc.setH7Index(holes.get(6).getStrokeIndex());
+                    sc.setH8Index(holes.get(7).getStrokeIndex());
+                    sc.setH9Index(holes.get(8).getStrokeIndex());
+                    sc.setH10Index(holes.get(9).getStrokeIndex());
+                    sc.setH11Index(holes.get(10).getStrokeIndex());
+                    sc.setH12Index(holes.get(11).getStrokeIndex());
+                    sc.setH13Index(holes.get(12).getStrokeIndex());
+                    sc.setH14Index(holes.get(13).getStrokeIndex());
+                    sc.setH15Index(holes.get(14).getStrokeIndex());
+                    sc.setH16Index(holes.get(15).getStrokeIndex());
+                    sc.setH17Index(holes.get(16).getStrokeIndex());
+                    sc.setH18Index(holes.get(17).getStrokeIndex());
+                } catch (Error error) {
+                    GenericResponse errorResponse = new GenericResponse("Entrant not saved. Please ensure all holes exist for this course");
+                    gr = errorResponse;
+                }
+                sc.setEntrants(en);
+                en.setScoreCard(sc);
+                scoreCardRepo.save(sc);
+                entrantsRepo.save(en);
+                GenericResponse completeResponse = new GenericResponse("Entered");
+                gr = completeResponse;
+            }
 
         return gr;
     }
@@ -125,10 +139,28 @@ public class EntrantsService {
      * @return a message of successful removal
      */
     public GenericResponse deleteEntrant(long memberId, long eventId) {
+        GenericResponse gr = new GenericResponse("This member is not in this event");
         Event e = eventRepo.getById(eventId);
         Member m = memberRepo.getById(memberId);
-        entrantsRepo.deleteByMemberAndEvent(m, e);
-        return new GenericResponse("Entrant removed");
+        List<Entrants> entrants = e.getEntrants();
+        boolean entered = false;
+        //Check if member is already entered in this event
+        for(Entrants entrants1 : entrants) {
+            System.out.println(entrants1.getMember().getUsername());
+            System.out.println(m.getUsername());
+            if (entrants1.getMember().getUsername().equals(m.getUsername())) {
+                entered = true;
+                gr = new GenericResponse("Member not entered");
+                break;
+            }
+        }
+        if(entered) {
+            e.setCurrentEntrants(e.getCurrentEntrants() - 1);
+            eventRepo.save(e);
+            entrantsRepo.deleteByMemberAndEvent(m, e);
+            gr = new GenericResponse("Member Removed");
+        }
+        return gr;
     }
 
 

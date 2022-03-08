@@ -5,6 +5,7 @@ import ButtonWithProgress from './ButtonWithProgress';
 import { Modal, Button, Table } from "react-bootstrap";
 import * as apiCalls from '../api/apiCalls';
 import { connect } from 'react-redux';
+import Spinner from './Spinner';
 
 const CourseProfileCard = (props) => {
 
@@ -160,11 +161,7 @@ const CourseProfileCard = (props) => {
             </Modal.Header>
             {pendingApiCall &&
               <Modal.Body>
-                <div className="d-flex">
-                  <div className="spinner-border text-black-50 m-auto">
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                </div>
+                <Spinner></Spinner>
               </Modal.Body>
                     }
                     {!pendingApiCall &&

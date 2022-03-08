@@ -3,6 +3,7 @@ import * as apiCalls from '../api/apiCalls';
 import PreviousEventListItem from './PreviousEventListItem';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import Spinner from './Spinner';
 
 export const PreviousEventList = (props) => {
 
@@ -22,10 +23,10 @@ export const PreviousEventList = (props) => {
     loadData();
   }, []);
 
-  const loadData = (requestedPage = 0) => {
+  const loadData = async (requestedPage = 0) => {
     let id = props.user.society.id;
     setPendingApiCall(true)
-    apiCalls
+    await apiCalls
       .listPreviousEvents(id, { page: requestedPage, size: 9 })
       .then((response) => {
         setPage(response.data);
@@ -62,19 +63,16 @@ export const PreviousEventList = (props) => {
             </Link>
             <hr/>
             {pendingApiCall &&
-            
-            <div className="d-flex">
-              <div className="spinner-border text-black-50 m-auto">
-                <span className="sr-only">Loading...</span>
-              </div>
-            </div>}
+            <Spinner></Spinner>}
 
-            {content.length === 0 && 
+            
+          {!pendingApiCall &&
+          <div>
+          {content.length === 0 && 
             <div>
               <h3 className="card-title m-auto text-center text-danger">No previous events</h3>
             </div>
           }
-          {!pendingApiCall &&
             <div className="list-group list-group-flush" data-testid="eventgroup">
               <div className="row">
               {content.map((event) => (
@@ -84,7 +82,7 @@ export const PreviousEventList = (props) => {
                   </div>
                 ))}
               </div>
-            </div>}
+            </div>
             <div className="clearfix">
               {!first && (
                 <span
@@ -103,6 +101,7 @@ export const PreviousEventList = (props) => {
                 </span>
               )}
             </div>
+            </div>}
             {loadError && (
               <span className="text-center text-danger">
                 {loadError}

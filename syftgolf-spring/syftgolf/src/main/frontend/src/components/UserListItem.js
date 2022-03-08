@@ -133,16 +133,16 @@ const UserListItem = (props) => {
       };
 
     //Change current member to Handicap Admin
-    const submitHcpAdmin = () => {
+    const submitScorer = () => {
 
         confirmAlert({
           title: 'Are you sure?',
-          message: 'this will make this member a Handicap admin',
+          message: 'this will make this member a Scorer for events',
           buttons: [
             {
               label: 'Yes',
               onClick: () => 
-                apiCalls.makeHcpAdmin(props.user.id)
+                apiCalls.makeScorer(props.user.id)
                 .then (response => window.location.reload())
                 
             },
@@ -241,7 +241,7 @@ const UserListItem = (props) => {
 
 
    return (
-            <div className="card col-12">
+            <div className="card col-12" style={{height:"100%", backgroundColor: "#e3e3e3"}}>
                 <div className="card-body">
                     <div className="col-4">
                     <ProfileImageWithDefault
@@ -254,13 +254,15 @@ const UserListItem = (props) => {
                     </div>
                     <div className="col-12 card-title align-self-center mb-0">
                         <h5>{props.user.firstName} {props.user.surname}</h5>
+                        {props.loggedInUser.role === 'ADMIN' &&
+                        <p className="m-0">ID : {props.user.id}</p>}
                         <p className="m-0">WHS : {props.user.handicap}</p>
                         <p className="m-0">Society Handicap : {Number(props.user.handicap - props.user.socHcpRed).toFixed(1)}</p> {/*Show society handicap to 1dp*/}
                         <p className="m-0">Home club : {props.user.homeClub}</p>
                         <p className="m-0">Role : {props.user.role}</p>
                         <p className="m-0">Wins : {props.user.wins}</p> 
-                        {(props.loggedInUser.role === 'EVENTADMIN' && <button className="btn btn-outline-success" onClick={addWin}>+</button> )} 
-                        {(props.loggedInUser.role === 'EVENTADMIN' && <button className="btn btn-outline-danger" onClick={takeWin}>-</button> )}
+                        {(props.loggedInUser.role === 'ADMIN' && <button className="btn btn-outline-success" onClick={addWin}>+</button> )} 
+                        {(props.loggedInUser.role === 'ADMIN' && <button className="btn btn-outline-danger" onClick={takeWin}>-</button> )}
                     </div>
                 </div>
                 <div>
@@ -375,11 +377,11 @@ const UserListItem = (props) => {
                     {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
                             <button  
                                 className="btn btn-primary tooltips m-2"  
-                                onClick={submitHcpAdmin}
+                                onClick={submitScorer}
                                 data-placement="top" 
                                 data-toggle="tooltip" 
                                 data-original-title="hcpAdmin">
-                                Make HANDICAPADMIN
+                                Make SCORER
                             </button>
                             
                         }

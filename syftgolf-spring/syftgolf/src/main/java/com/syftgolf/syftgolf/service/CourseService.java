@@ -16,6 +16,7 @@ public class CourseService {
 
     /**
      * Save a course
+     * Get a page of courses
      * Update a course
      * Delete a course
      */
@@ -39,6 +40,11 @@ public class CourseService {
         Society sInDb = societyRepo.getOne(id);
         course.setSociety(sInDb);
         return courseRepo.save(course);
+    }
+
+    //Get a page of events
+    public Page<Course> getCourses(Pageable pageable, long id) {
+        return courseRepo.findCourseBySocietyId(pageable, id);
     }
 
     /**

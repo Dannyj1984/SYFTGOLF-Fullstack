@@ -4,6 +4,7 @@ import UserListItem from './UserListItem';
 import { connect } from 'react-redux';
 import ExportCSV from "./ExportCSV";
 import Input from './Input';
+import Spinner from './Spinner';
 
 export const UserList = (props) => {
   const [page, setPage] = useState({
@@ -55,14 +56,17 @@ const loadFilter = async (requestedPage = 0) => {
 
   const loadData = (requestedPage = 0) => {
     let id = props.user.society.id  
+    setPendingApiCall(true)
     apiCalls
       .listUsers(id, { page: requestedPage, size: 9 })
       .then((response) => {
         setPage(response.data);
         setLoadError();
+        setPendingApiCall(false)
       })
       .catch((error) => {
         setLoadError("User load failed" );
+        setPendingApiCall(false)
       });
   };
 
@@ -105,40 +109,38 @@ const loadFilter = async (requestedPage = 0) => {
       
       <hr />
       {pendingApiCall &&
-        <div className="d-flex">
-          <div className="spinner-border text-black-50 m-auto">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>}
+        <Spinner></Spinner>}
       {!pendingApiCall && 
-      <div className="list-group list-group-flush" data-testid="usergroup">
-        <div className="row">
-          {content.map((user) => (
-            <div key={user.id} className="col-xl-4 col-m-12 mb-4">
-              <UserListItem
-                user={user}
-                onClickDeleteMember={() => {
-                  apiCalls.deleteMember(user.id);
-                }}
-              />
-            </div>
-          ))}
+      <div>
+        <div className="list-group list-group-flush" data-testid="usergroup">
+          <div className="row">
+            {content.map((user) => (
+              <div key={user.id} className="col-xl-4 col-m-12 mb-4">
+                <UserListItem
+                  user={user}
+                  onClickDeleteMember={() => {
+                    apiCalls.deleteMember(user.id);
+                  }}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>}
-      
-      <div className="clearfix">
-        {!first && (
-          <span className="badge badge-light float-left" style={{ cursor: "pointer" }} onClick={onClickPrevious}>
-            <button className="btn btn-primary">Previous</button>
-          </span>
-        )}
-        {!last && (
-          <span className="badge badge-light float-right" style={{ cursor: "pointer" }} onClick={onClickNext}>
-            <button className="btn btn-primary">Next</button>
-          </span>
-        )}
-      </div>
-      {loadError && <span className="text-center text-danger">{loadError}</span>}
+        
+        <div className="clearfix">
+          {!first && (
+            <span className="badge badge-light float-left" style={{ cursor: "pointer" }} onClick={onClickPrevious}>
+              <button className="btn btn-primary">Previous</button>
+            </span>
+          )}
+          {!last && (
+            <span className="badge badge-light float-right" style={{ cursor: "pointer" }} onClick={onClickNext}>
+              <button className="btn btn-primary">Next</button>
+            </span>
+          )}
+        </div>
+        {loadError && <span className="text-center text-danger">{loadError}</span>}
+    </div>}
     </div>
   );
 };

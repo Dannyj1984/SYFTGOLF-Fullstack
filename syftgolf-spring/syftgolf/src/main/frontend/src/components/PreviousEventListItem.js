@@ -8,6 +8,7 @@ import * as authActions from '../redux/authActions';
 import { connect } from 'react-redux';
 import Input from './Input';
 import ButtonWithProgress from './ButtonWithProgress';
+import Spinner from './Spinner';
 
 const PreviousEventListItem = (props) => {
 
@@ -631,7 +632,7 @@ const [newTeeTime, setNewTeeTime] = useState({
       let formatDate = new Date(yourDate).toString().substring(0,15)
 
   return (
-            <div className="card col-12" style={{height:"100%"}}>
+            <div className="card col-12" style={{height:"100%", backgroundColor: "#e3e3e3"}}>
                 <div className="card-body">
                     <div className="col-12 card-title align-self-center mb-0">
                         <h5>{props.event.name} </h5>
@@ -735,41 +736,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                     </div>
                   </div>
 
-                        {!entered &&
-                <div className="float-right btn-group btn-group-m">
-                            <button  
-                                className="btn btn-success tooltips" 
-                                onClick={enterEvent} 
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="Delete">
-                                Enter
-                            </button>
-                    </div>}
-
-                    {entered && props.event.currentEntrants === props.event.maxEntrants &&
-                <div className="float-right btn-group btn-group-m">
-                            <button  
-                                className="btn btn-success tooltips m-2" 
-                                onClick={function(){ alert('Event is full')}} 
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="Delete">
-                                Full
-                            </button>
-                    </div>}
-
-                    {entered && props.event.currentEntrants !== props.event.maxEntrants &&
-                <div className="float-right btn-group btn-group-m">
-                            <button  
-                                className="btn btn-success tooltips m-2" 
-                                onClick={removeEntrant} 
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="Delete">
-                                Remove
-                            </button>
-                    </div>}
+                    
                         {/*Show entrants modal*/}
                 <>
                         
@@ -780,11 +747,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                     </Modal.Header>
                     {pendingApiCall && 
                     <Modal.Body>
-                    <div className="d-flex">
-                      <div className="spinner-border text-black-50 m-auto">
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
+                    <Spinner></Spinner>
                     </Modal.Body>
                     }
                     {!pendingApiCall &&
@@ -841,11 +804,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                     </Modal.Header>
                     {pendingApiCall && 
                     <Modal.Body>
-                    <div className="d-flex">
-                      <div className="spinner-border text-black-50 m-auto">
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
+                    <Spinner></Spinner>
                     </Modal.Body>
                     }
                     {!pendingApiCall &&
@@ -890,11 +849,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                     </Modal.Header>
                     {pendingApiCall && 
                     <Modal.Body>
-                    <div className="d-flex">
-                      <div className="spinner-border text-black-50 m-auto">
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
+                    <Spinner></Spinner>
                     </Modal.Body>
                     }
                     {!pendingApiCall &&
@@ -942,11 +897,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                             </Modal.Header>
                             {pendingApiCall &&
                             <Modal.Body>
-                            <div className="d-flex">
-                              <div className="spinner-border text-black-50 m-auto">
-                                <span className="sr-only">Loading...</span>
-                              </div>
-                            </div>
+                            <Spinner></Spinner>
                             </Modal.Body>
                             }
                             {!pendingApiCall &&
@@ -1003,11 +954,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                           </Modal.Header>
                           {pendingApiCall && 
                           <Modal.Body>
-                          <div className="d-flex">
-                            <div className="spinner-border text-black-50 m-auto">
-                              <span className="sr-only">Loading...</span>
-                            </div>
-                          </div>
+                          <Spinner></Spinner>
                           </Modal.Body>
                           }
                           {!pendingApiCall &&
@@ -1068,11 +1015,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                           </Modal.Header>
                           {pendingApiCall && 
                           <Modal.Body>
-                          <div className="d-flex">
-                            <div className="spinner-border text-black-50 m-auto">
-                              <span className="sr-only">Loading...</span>
-                            </div>
-                          </div>
+                          <Spinner></Spinner>
                           </Modal.Body>
                           }
                           {!pendingApiCall &&
@@ -1132,11 +1075,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                             </Modal.Header>
                             {pendingApiCall && 
                             <Modal.Body>
-                            <div className="d-flex">
-                              <div className="spinner-border text-black-50 m-auto">
-                                <span className="sr-only">Loading...</span>
-                              </div>
-                            </div>
+                            <Spinner></Spinner>
                             </Modal.Body>
                             }
                             {!pendingApiCall &&

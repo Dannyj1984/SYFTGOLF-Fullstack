@@ -208,9 +208,9 @@ public class MemberService {
         return memberRepo.save(inDB);
     }
 
-    public Member updateHcpAdmin(long id){
+    public Member updateScorer(long id){
         Member inDB = memberRepo.getById(id);
-        inDB.setRole("HANDICAPADMIN");
+        inDB.setRole("SCORER");
 
         return memberRepo.save(inDB);
     }

@@ -1,6 +1,7 @@
 package com.syftgolf.syftgolf.controller;
 
 import com.syftgolf.syftgolf.entity.Course;
+import com.syftgolf.syftgolf.entity.vm.course.CourseVM;
 import com.syftgolf.syftgolf.error.ApiError;
 import com.syftgolf.syftgolf.repository.CourseRepo;
 import com.syftgolf.syftgolf.service.CourseService;
@@ -50,9 +51,9 @@ public class CourseController {
 //    }
 
     @GetMapping("/getCourses/{id:[0-9]+}")
-    List<Course> getCourses(@PathVariable long id) {
+    Page<CourseVM> getCourses(Pageable page, @PathVariable long id) {
         List<Course> courses;
-        return courseRepo.findAllBySocietyIdOrderByNameAsc(id);
+        return courseService.getCourses(page, id).map(CourseVM::new);
     }
     @GetMapping("/societyFilteredCourses/{id:[0-9]+}")
     Page<Course> getFilteredCourses(Pageable page, @PathVariable long id, @RequestParam String query) {
