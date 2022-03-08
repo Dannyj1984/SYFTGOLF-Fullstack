@@ -21,4 +21,6 @@ public interface CourseRepo extends JpaRepository<Course, Long> {
     List<Course> findAllBySocietyIdOrderByNameAsc(long id);
 
     Course findCourseById(long id);
+
+    Page<Course> findCourseBySocietyId(Pageable pageable, long id);
 }

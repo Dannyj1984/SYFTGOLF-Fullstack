@@ -2,6 +2,7 @@ import React from 'react';
 import * as apiCalls from '../api/apiCalls';
 import EventProfileCard from '../components/EventProfileCard';
 import { connect } from 'react-redux';
+import Spinner from '../components/Spinner';
 
 class EventInfoPage extends React.Component{
     state = {
@@ -257,11 +258,7 @@ class EventInfoPage extends React.Component{
           let pageContent;
           if (this.state.isLoadingEvent) {
             pageContent = (
-              <div className="d-flex">
-                <div className="spinner-border text-black-50 m-auto">
-                  <span className="sr-only">Loading...</span>
-                </div>
-              </div>
+              <Spinner></Spinner>
             );
           } else if (this.state.eventNotFound) {
             pageContent = (

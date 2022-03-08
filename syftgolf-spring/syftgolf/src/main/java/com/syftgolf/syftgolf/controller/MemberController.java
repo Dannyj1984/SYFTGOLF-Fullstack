@@ -67,6 +67,11 @@ public class MemberController {
         return new GenericResponse("member saved");
     }
 
+    @GetMapping("/getMembers/{societyId:[0-9]+}")
+    public List<Member> getListOfMembers(@PathVariable long societyId) {
+        return memberRepo.findAllBySocietyIdOrderByUsernameAsc(societyId);
+    }
+
     
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN') || #memberId == principal.id")
     @PutMapping("/updateMember/{memberId:[0-9]+}")
@@ -172,9 +177,9 @@ public class MemberController {
     }
 
     //Make member handicap admin
-    @PutMapping("/management/users/HcpAdmin/{id:[0-9]+}")
+    @PutMapping("/management/users/scorer/{id:[0-9]+}")
     MemberVM makeHcpAdmin(@PathVariable long id) {
-        Member memberUpdated = memberService.updateHcpAdmin(id);
+        Member memberUpdated = memberService.updateScorer(id);
         return new MemberVM(memberUpdated);
     }
 

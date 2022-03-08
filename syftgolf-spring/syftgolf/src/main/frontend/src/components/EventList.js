@@ -3,6 +3,7 @@ import * as apiCalls from '../api/apiCalls';
 import EventListItems from './EventListItems';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import Spinner from './Spinner';
 
 export const EventList = (props) => {
 
@@ -24,7 +25,7 @@ export const EventList = (props) => {
   }, []);
 
   const loadData = (requestedPage = 0) => {
-    let id = props.user.society.id
+    let id = props.loggedInUser.society.id
     setPendingApiCall(true)
     apiCalls
       .listEvents(id,{ page: requestedPage, size: 9 })
@@ -52,12 +53,19 @@ export const EventList = (props) => {
   return (
           <div >
             <h3 className="card-title m-auto text-center">Events</h3>
-            {content.length === 0 && 
+            
+            
+            <hr/>
+          {pendingApiCall &&
+            <Spinner></Spinner>}
+          {!pendingApiCall &&
+          <div>
+          {content.length === 0 && 
             <div>
               <h3 className="card-title m-auto text-center text-danger">No upcoming events</h3>
             </div>
           }
-            <Link
+          <Link
                   to={`/previousEvent`}>
                     <button  
                       className="btn btn-primary tooltips float" 
@@ -66,23 +74,15 @@ export const EventList = (props) => {
                       data-original-title="view"> Previous events
                     </button>
             </Link>
-            <hr/>
-          {pendingApiCall &&
-            <div className="d-flex">
-              <div className="spinner-border text-black-50 m-auto">
-                <span className="sr-only">Loading...</span>
-              </div>
-            </div>}
-          {!pendingApiCall &&
             <div className="list-group list-group-flush" data-testid="eventgroup">
               <div className="row">
-              {content.map((event) => (
-                  <div key={event.id} className="col-xl-4 col-m-12 mb-4">
-                  <EventListItems event={event} events={events} />
+              {content.map((event, index) => (
+                  <div className="col-xl-4 col-m-12 mb-4">
+                  <EventListItems key={index} event={event} events={events} />
                   </div>
                 ))}
               </div>
-            </div>}
+            </div>
             <div className="clearfix">
               {!first && (
                 <span
@@ -101,6 +101,7 @@ export const EventList = (props) => {
                 </span>
               )}
             </div>
+            </div>}
             {loadError && (
               <span className="text-center text-danger">
                 {loadError}
@@ -112,7 +113,7 @@ export const EventList = (props) => {
 
       const mapStateToProps = (state) => {
         return {
-          user: state
+          loggedInUser: state
         };
       };
 

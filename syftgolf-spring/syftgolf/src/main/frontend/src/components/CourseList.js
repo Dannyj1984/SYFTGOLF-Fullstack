@@ -3,6 +3,7 @@ import * as apiCalls from '../api/apiCalls';
 import CourseListItem from './CourseListItem';
 import Input from './Input';
 import { connect } from 'react-redux';
+import Spinner from './Spinner';
 
 export const CourseList = (props) => {
 
@@ -41,7 +42,7 @@ export const CourseList = (props) => {
     let id = props.user.society.id 
     setPendingApiCall(true);
     await apiCalls
-      .listFilteredCourses({ page: requestedPage, size: 9 }, id, name)
+      .listFilteredCourses({ page: requestedPage, size: 12 }, id, name)
        .then ((response)  => {
         setPendingApiCall(false)
         setPage(response.data);
@@ -57,22 +58,25 @@ export const CourseList = (props) => {
 
     
 
-    const loadData = (requestedPage = 0) => {
+    const loadData = async (requestedPage = 0) => {
       let id = props.user.society.id
-        apiCalls
-            .listCourses(id, { page: requestedPage, size: 9 })
+      setPendingApiCall(true)
+        await apiCalls
+            .listCourses(id, { page: requestedPage, size: 12 })
             .then((response) => {
                 setPage(response.data);
                 setLoadError();
+                setPendingApiCall(false)
             })
             .catch((error) => {
                 setLoadError("Course load failed" );
+                setPendingApiCall(false)
             });
     };
 
     useEffect(() => {
         loadFilter();
-    }, [nameFilter]);
+    }, []);
 
     const onClickNext = () => {
         loadData(page.number + 1);
@@ -95,24 +99,22 @@ export const CourseList = (props) => {
             </div>
           </div>
           <div className="col-sm">
-            <h3 className="card-title m-auto text-center">Courses</h3>
+            <h3 className="card-title m-auto">Courses</h3>
           </div>
         </div>
       </div>
       
       <hr />
       {pendingApiCall &&
-        <div className="d-flex">
-          <div className="spinner-border text-black-50 m-auto">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>}
+        <Spinner></Spinner>}
         <hr/>
+        {!pendingApiCall &&
+        <div>
         <div className="list-group list-group-flush" data-testid="coursegroup">
           <div className="row">
-          {content.map((course) => (
-              <div key={course.id} className="col-xl-4 col-m-12 mb-4">
-              <CourseListItem  course={course}  />
+          {content.map((course, index) => (
+              <div key={index} className="col-xl-4 col-m-12 mb-4">
+              <CourseListItem  course={course} pendingApiCall={pendingApiCall}  />
               </div>
             ))}
           </div>
@@ -135,6 +137,7 @@ export const CourseList = (props) => {
             </span>
           )}
         </div>
+        </div>}
         {loadError && (
           <span className="text-center text-danger">
             {loadError}
@@ -152,84 +155,3 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(CourseList);
 
-// class CourseList extends React.Component {
-//   state = {
-//     page: {
-//       content: [],
-//       number: 0,
-//       size: 9
-//     }
-//   };
-//
-//
-//   componentDidMount() {
-//     this.loadData();
-//   }
-//
-//   loadData = (requestedPage = 0) => {
-//     apiCalls
-//       .listCourses({ page: requestedPage, size: this.state.page.size })
-//       .then((response) => {
-//         this.setState({
-//           page: response.data,
-//           loadError: undefined
-//         });
-//       })
-//       .catch((error) => {
-//         this.setState({ loadError: 'Course load failed' });
-//       });
-//
-//       };
-//
-//
-//     onClickNext = () => {
-//       this.loadData(this.state.page.number + 1);
-//     };
-//
-//     onClickPrevious = () => {
-//       this.loadData(this.state.page.number - 1);
-//     };
-//
-//   render() {
-//     return (
-//       <div >
-//         <h3 className="card-title m-auto text-center">Courses</h3>
-//         <hr></hr>
-//         <div className="list-group list-group-flush" data-testid="coursegroup">
-//           <div className="row">
-//           {this.state.page.content.map((course) => (
-//               <div key={course.id} className="col-xl-4 col-m-12 mb-4">
-//               <CourseListItem  course={course}  />
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//         <div className="clearfix">
-//           {!this.state.page.first && (
-//             <span
-//               className="badge badge-light float-left"
-//               style={{ cursor: 'pointer' }}
-//               onClick={this.onClickPrevious}
-//             ><button className="btn btn-primary">Previous</button></span>
-//           )}
-//           {!this.state.page.last && (
-//             <span
-//               className="badge badge-light float-right"
-//               style={{ cursor: 'pointer' }}
-//               onClick={this.onClickNext}
-//             >
-//               <button className="btn btn-primary">Next</button>
-//             </span>
-//           )}
-//         </div>
-//         {this.state.loadError && (
-//           <span className="text-center text-danger">
-//             {this.state.loadError}
-//           </span>
-//         )}
-//       </div>
-//     );
-//   }
-// }
-//
-// export default CourseList;

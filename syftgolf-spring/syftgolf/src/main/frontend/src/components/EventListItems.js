@@ -8,12 +8,18 @@ import * as authActions from '../redux/authActions';
 import { connect } from 'react-redux';
 import Input from './Input';
 import ButtonWithProgress from './ButtonWithProgress';
+import Spinner from './Spinner';
 
 const EventListItem = (props) => {
 
-  const [currentEntrant, setCurrentEntrant] = useState({})
-  
+  const [currentEntrant, setCurrentEntrant] = useState({});
 
+  const [members, setMembers] = useState([{}]);
+  const [membersId, setMembersId] = useState({})
+
+  
+  
+  const [entryError, setEntryError] = useState(null);
   const thisEventType = props.event.type;
   const [entrants, setEntrants] = useState([{}]);
   const [scoreCardObj, setScoreCardObj] = useState({
@@ -43,6 +49,8 @@ const EventListItem = (props) => {
   const [editErrors, setEditErrors] = useState();
   const [editConfirm, setEditConfirm] = useState();
   const [deleteErrors, setDeleteErrors] = useState();
+  const [adminEnterUser, setAdminEnterUser] = useState(false);
+  const [memberSelected, setMemberSelected] = useState(false);
 
   const [pendingApiCall, setPendingApiCall] = useState(false);
 
@@ -54,15 +62,11 @@ const EventListItem = (props) => {
   const [sortedEntrants, setSortedEntrants] = useState([]); //For stableford scores
   const [medalEntrants, setMedalEntrants] = useState([]); //for Medal scores
   const [showScore, setShowScore] = useState(false);
+  const [showAdminScore, setAdminShowScore] = useState(false);
   const [score, setScore] = useState(0);
   const [playerPerTee, setPlayerPerTee] = useState(0);
   const scoreArea = () => {
     setShowScore(true);
-  }
-
-  //cancel score
-  const cancelScore = () => {
-    setShowScore(false);
   }
   //Leadboard modal setup
   const [showModalLeader, setShowLeader] = useState(false);
@@ -71,7 +75,6 @@ const EventListItem = (props) => {
 
   const handleCloseLeader = () => setShowLeader(false);
   const handleShowLeader = () => setShowLeader(true);
-
   //Entrants modal setup
 
   const [showModalEntrants, setShowEntrants] = useState(false);
@@ -123,6 +126,25 @@ const [newTeeTime, setNewTeeTime] = useState({
       noOfSlots: 4
       }
   )
+
+  //Open the admin user panel for entering a user to an event
+  const HandleOpenEnterUser = () => {
+    setAdminEnterUser(true)
+    
+  }
+
+  const handleOpenAdminScore = () => {
+    setAdminShowScore(true)
+    
+  }
+
+  const handleCloseEnterUser = () => {
+    setAdminEnterUser(false)
+  }
+
+  const handleCloseAdminScoreEntry = () => {
+    setAdminShowScore(false);
+  }
 
   //Tee times array
   const [teeTimes, setTeeTimes] = useState([]);
@@ -182,6 +204,7 @@ const [newTeeTime, setNewTeeTime] = useState({
         });
       }
 
+      //Complete event
       const completeEvent = () => {
 
         confirmAlert({
@@ -258,6 +281,31 @@ const [newTeeTime, setNewTeeTime] = useState({
           ]
         });
       };
+
+      //Admin enter a member
+      const adminAddMember = () => {
+        if(Object.keys(membersId).length === 0){
+          alert('Choose a member to add');
+        } else {
+        const event = {...props.event}
+        const eventid = event.id;
+        setPendingApiCall(true)
+        //Enter event
+          apiCalls.addEntrant(eventid, membersId.split(" ")[0])
+          .then ((response => {
+            setPendingApiCall(false)
+            if(response.data.message === 'This member is already entered in this event') {
+            alert(response.data.message)
+            } else {
+              alert('member entered') 
+              setTimeout(window.location.reload(), 5000)
+            }
+          }))
+          .catch((apiError) => {
+            setPendingApiCall(false);
+          })
+        }
+        };
 
       //Delete a teesheet
       const deleteTeeSheet = (teesheetid) => {
@@ -342,6 +390,30 @@ const [newTeeTime, setNewTeeTime] = useState({
         
       };
 
+      //Admin remove user from event
+      const adminRemoveEntrant = () => {
+        if(Object.keys(membersId).length === 0){
+          alert('Choose a member to remove');
+        } else {
+        const event = {...props.event}
+        const eventid = event.id;
+        setPendingApiCall(true);
+          apiCalls.removeEntrant(eventid, membersId.split(" ")[0])
+          .then ((response => {
+            setPendingApiCall(false)
+            if(response.data.message === 'Member not entered') {
+            alert(response.data.message)
+            } else {
+              alert('member removed') 
+              setTimeout(window.location.reload(), 5000)
+            }
+          }))
+          .catch((apiError) => {
+            setPendingApiCall(false);
+          })
+        }
+        };
+
       //update tee times, if success, show confirm message and reload window after 2 seconds
       //If fail, show error message
 
@@ -422,6 +494,16 @@ const [newTeeTime, setNewTeeTime] = useState({
           .catch((e) => {
             console.log(e)
           })
+          apiCalls
+          .getListOfMembers(props.loggedInUser.society.id)
+          .then((response) => {
+            setMembers(response.data)
+            setPendingApiCall(false)
+          })
+          .catch = (e) => {
+            console.log(e)
+            setPendingApiCall(false)
+          }
           let entrantIndex = null;
           setPendingApiCall(true)
           apiCalls.getEntrants(eventid)
@@ -590,6 +672,24 @@ const [newTeeTime, setNewTeeTime] = useState({
     
   }
 
+  //ADmin updating scorecard
+  const adminUpdateScorecard = () => {
+    const eventId = props.event.id;
+    setPendingApiCall(true)
+    apiCalls
+    .updateScore(eventId, membersId.split(" ")[0], holeIndex + 1, scoreCardObj)
+    .then(
+      setPendingApiCall(false),
+    )
+    .catch((apiError) => {
+      if (apiError.response.data && apiError.response.data.validationErrors) {
+        setScoreCardUpdateErrors(apiError.response.data.validationErrors);
+      }
+      setPendingApiCall(false)
+    })
+    
+  }
+
   const completeScoreCard = () => {
     const eventId = props.event.id;
     const memberId = props.loggedInUser.id;
@@ -625,16 +725,39 @@ const [newTeeTime, setNewTeeTime] = useState({
     });
   }
 
+  
+
+  const onChangeMember = (event) => {
+    const { value, name } = event.target;
+    if(name === "member_id"){
+      setMemberSelected(true);
+    }
+    if(value === ""){
+      setMemberSelected(false);
+    }
+
+    setMembersId(value);
+    setErrors((previousErrors) => {
+      return {
+        ...previousErrors,
+        [name]: undefined
+      };
+    });
+  };
+
+
       //Format date from backend to be DD-MM-YYYY
 
       let yourDate = props.event.date;
       let formatDate = new Date(yourDate).toString().substring(0,15)
 
   return (
-            <div className="card col-12" style={{height:"100%"}}>
+            <div className="card col-12" style={{height:"100%", backgroundColor: "#e3e3e3"}}>
                 <div className="card-body">
                     <div className="col-12 card-title align-self-center mb-0">
                         <h5>{props.event.name} </h5>
+                        {props.loggedInUser.role === 'ADMIN' &&
+                        <p className="m-0">ID: {props.event.id}</p>}
                         <p className="m-0">Course: {courseName}</p>
                         <p className="m-0">Date : {formatDate}</p>
                         <p className="m-0">Entries : {props.event.currentEntrants} / {props.event.maxEntrants}</p>
@@ -737,21 +860,20 @@ const [newTeeTime, setNewTeeTime] = useState({
 
                         {!entered &&
                 <div className="float-right btn-group btn-group-m">
-                            <button  
-                                className="btn btn-success tooltips" 
-                                onClick={enterEvent} 
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="enter">
-                                Enter
-                            </button>
+                            <ButtonWithProgress
+                              onClick={enterEvent}
+                              disabled={
+                              pendingApiCall  ? true : false
+                              }
+                              pendingApiCall={pendingApiCall}
+                              text="Enter"/>
                     </div>}
 
                     {entered && props.event.currentEntrants === props.event.maxEntrants &&
                 <div className="float-right btn-group btn-group-m">
                             <button  
                                 className="btn btn-success tooltips m-2" 
-                                onClick={function(){ alert('Event is full')}} 
+                                onClick={function(){ setEntryError('Sorry this event is full')}} 
                                 data-placement="top" 
                                 data-toggle="tooltip" 
                                 data-original-title="full">
@@ -761,17 +883,79 @@ const [newTeeTime, setNewTeeTime] = useState({
 
                     {entered && props.event.currentEntrants !== props.event.maxEntrants &&
                 <div className="float-right btn-group btn-group-m">
-                            <button  
-                                className="btn btn-success tooltips m-2" 
-                                onClick={removeEntrant} 
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="remove">
-                                Remove
-                            </button>
+                            <ButtonWithProgress
+                              onClick={removeEntrant}
+                              disabled={
+                              pendingApiCall  ? true : false
+                              }
+                              pendingApiCall={pendingApiCall}
+                              text="Remove"/>
                     </div>}
+                      {entryError &&
+                    <div className='error' style={{color: "red", fontSize: "20px"}}>
+                        {entryError}
+                    </div>}
+                        <div>
+                    {props.loggedInUser.role === 'ADMIN' && 
+                    <div>
+                    <button className="btn float-left btn-success tooltips m-2" style={{width:"46%"}} onClick={HandleOpenEnterUser}>Manage Entrants</button>
+                    </div>}
+                    {(props.loggedInUser.role === 'SCORER' || props.loggedInUser.role === 'ADMIN') &&
+                    <div>
+                    <button className="btn float-left btn-success tooltips m-2" onClick={handleOpenAdminScore} style={{width:"40%"}}>Enter Score</button>
+                    </div>}
+                    </div>
+                    
+
+                    {/* Admin modal to enter a user to an event */}
+
+              <>
+                  <Modal show={adminEnterUser} onHide={handleCloseEnterUser}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Chose a member to add or remove from {props.event.name} on {formatDate}</Modal.Title>
+                    </Modal.Header>
+                    {pendingApiCall && 
+                    <Modal.Body>
+                    <Spinner></Spinner>
+                    </Modal.Body>
+                    }
+                    {!pendingApiCall &&
+                    <Modal.Body>
+                    
+                      
+                      {pendingApiCall && <Spinner></Spinner>}
+                      {!pendingApiCall && members &&
+                      <div className="col-12 mb-3">
+                      <label>Member</label>
+                        <select  name="member_id" id="member_id" className={`form-control ${memberSelected ? "is-valid" : "is-invalid"} `}  label="Member" placeholder="select" onChange={onChangeMember} required>
+                          <option selected disabled value="">Please select</option>
+                          {members.map((member) => (
+                            <option key={member.id}> {member.id} {member.firstName} {member.surname} </option>
+                          ))}
+                        </select>
+                        <div id="member_idFeedback" className="invalid-feedback">
+                          Please select a member. 
+                        </div>
+                      </div>}
+                    </Modal.Body>}
+                    <Modal.Footer>
+                      <ButtonWithProgress  
+                        onClick={adminAddMember} 
+                        disabled={pendingApiCall ? true : false}
+                        pendingApiCall={pendingApiCall}
+                        text="Add member"/>
+
+                      <ButtonWithProgress  
+                        onClick={adminRemoveEntrant} 
+                        disabled={pendingApiCall ? true : false}
+                        pendingApiCall={pendingApiCall}
+                        text="Remove member"/>
+                    </Modal.Footer>
+                  </Modal>
+              </>
+
                         {/*Show entrants modal*/}
-                <>
+              <>
                         
                    
                   <Modal show={showModalEntrants} onHide={handleCloseEntrants}>
@@ -780,11 +964,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                     </Modal.Header>
                     {pendingApiCall && 
                     <Modal.Body>
-                    <div className="d-flex">
-                      <div className="spinner-border text-black-50 m-auto">
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
+                    <Spinner></Spinner>
                     </Modal.Body>
                     }
                     {!pendingApiCall &&
@@ -827,6 +1007,8 @@ const [newTeeTime, setNewTeeTime] = useState({
                     </Modal.Footer>
                   </Modal>
               </>
+
+              <>
                         {/*Show leaderboard modal*/}
                         <>
                         {/* modal for stableford event type */}
@@ -841,11 +1023,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                     </Modal.Header>
                     {pendingApiCall && 
                     <Modal.Body>
-                    <div className="d-flex">
-                      <div className="spinner-border text-black-50 m-auto">
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
+                    <Spinner></Spinner>
                     </Modal.Body>
                     }
                     {!pendingApiCall &&
@@ -890,11 +1068,7 @@ const [newTeeTime, setNewTeeTime] = useState({
                     </Modal.Header>
                     {pendingApiCall && 
                     <Modal.Body>
-                    <div className="d-flex">
-                      <div className="spinner-border text-black-50 m-auto">
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
+                    <Spinner></Spinner>
                     </Modal.Body>
                     }
                     {!pendingApiCall &&
@@ -925,200 +1099,241 @@ const [newTeeTime, setNewTeeTime] = useState({
                       </Button>
                     </Modal.Footer>
                   </Modal>}
-
+              </>          
                   
               </>
-                        {/*Show Tee time modal*/}
-                        <>
-                          <Modal 
-                            show={showTeeTime} 
-                            onHide={handleCloseTeeTime} 
-                            dialogClassName="modal-content-full modal-dialog-full"
-                            size="xl"
-                            centered
-                          >
-                            <Modal.Header closeButton>
-                              <Modal.Title>Tee times for {props.event.name} on {formatDate}</Modal.Title>
-                            </Modal.Header>
-                            {pendingApiCall &&
-                            <Modal.Body>
-                            <div className="d-flex">
-                              <div className="spinner-border text-black-50 m-auto">
-                                <span className="sr-only">Loading...</span>
-                              </div>
-                            </div>
-                            </Modal.Body>
-                            }
-                            {!pendingApiCall &&
-                            <Modal.Body>
-                            
-                            
-                            <Table striped bordered hover responsive>
-                              <thead>
-                                <tr>
-                                  <th >Tee time</th>
-                                  <th >Player 1</th>
-                                  <th>Player 2</th>
-                                  <th>Player 3</th>
-                                  {teeTimes[0] !== undefined && teeTimes[0].noOfSlots === 4 &&
-                                  <th>Player 4</th>}
-                                  {props.loggedInUser.role === 'ADMIN' &&
-                                  <th id='admin'>Admin</th>}
-                                </tr>
-                              </thead>
-                              
-                              {teeTimes.map((teetime => 
-                                <tbody key={teetime.id}>
-                                    <tr>
-                                    <td>{teetime.teeTime}</td>
-                                    {teetime.entrants.map((entrant) => 
-                                      <td>{entrant.member['firstName']} {entrant.member['surname']} ({entrant.member['handicap']})</td>
-                                    )}
-                                    {props.loggedInUser.role === 'ADMIN' &&
-                                    <td headers='admin'>
-                                        <button className="btn btn-danger m-2" onClick={() => deleteTeeSheet(teetime.id)}>delete</button>
-                                        <button className="btn btn-warning m-2" onClick={() => handleShowEditTeeTime(teetime.id)}>Update</button>
-                                    </td>}
-                                    </tr>
-                                </tbody>
-                              ))}   
-                            </Table>
-                            </Modal.Body>}
-                            <Modal.Footer>
-                              {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'EVENTADMIN' || props.loggedInUser.role === 'SUPERUSER') &&
-                              <Button variant="success" disabled={pendingApiCall} onClick={handleShowAddTeeTime}>Add New Tee Time</Button>}
-                              <Button variant="secondary" onClick={handleCloseTeeTime}>
-                                Close
-                              </Button>
-                            </Modal.Footer>
-                          </Modal>
-                        </>
+              {/*Show Tee time modal*/}
+              <>
+                <Modal 
+                  show={showTeeTime} 
+                  onHide={handleCloseTeeTime} 
+                  dialogClassName="modal-content-full modal-dialog-full"
+                  size="xl"
+                  centered
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title>Tee times for {props.event.name} on {formatDate}</Modal.Title>
+                  </Modal.Header>
+                  {pendingApiCall &&
+                  <Modal.Body>
+                  <Spinner></Spinner>
+                  </Modal.Body>
+                  }
+                  {!pendingApiCall &&
+                  <Modal.Body>
+                  
+                  
+                  <Table striped bordered hover responsive>
+                    <thead>
+                      <tr>
+                        <th >Tee time</th>
+                        <th >Player 1</th>
+                        <th>Player 2</th>
+                        <th>Player 3</th>
+                        {teeTimes[0] !== undefined && teeTimes[0].noOfSlots === 4 &&
+                        <th>Player 4</th>}
+                        {props.loggedInUser.role === 'ADMIN' &&
+                        <th id='admin'>Admin</th>}
+                      </tr>
+                    </thead>
+                    
+                    {teeTimes.map((teetime => 
+                      <tbody key={teetime.id}>
+                          <tr>
+                          <td>{teetime.teeTime}</td>
+                          {teetime.entrants.map((entrant) => 
+                            <td>{entrant.member['firstName']} {entrant.member['surname']} ({entrant.member['handicap']})</td>
+                          )}
+                          {props.loggedInUser.role === 'ADMIN' &&
+                          <td headers='admin'>
+                              <button className="btn btn-danger m-2" onClick={() => deleteTeeSheet(teetime.id)}>delete</button>
+                              <button className="btn btn-warning m-2" onClick={() => handleShowEditTeeTime(teetime.id)}>Update</button>
+                          </td>}
+                          </tr>
+                      </tbody>
+                    ))}   
+                  </Table>
+                  </Modal.Body>}
+                  <Modal.Footer>
+                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'EVENTADMIN' || props.loggedInUser.role === 'SUPERUSER') &&
+                    <Button variant="success" disabled={pendingApiCall} onClick={handleShowAddTeeTime}>Add New Tee Time</Button>}
+                    <Button variant="secondary" onClick={handleCloseTeeTime}>
+                      Close
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+              </>
 
-                        {/*Show Edit tee time modal*/}
-                    <>
-                        
-                        <Modal show={showEditTeeTime} onHide={handleCloseEditTeeTime} dialogClassName="modal-content-full modal-dialog-full" >
-                          <Modal.Header closeButton>
-                            <Modal.Title>Edit Tee times for {props.event.name} on {formatDate}</Modal.Title>
-                          </Modal.Header>
-                          {pendingApiCall && 
-                          <Modal.Body>
-                          <div className="d-flex">
-                            <div className="spinner-border text-black-50 m-auto">
-                              <span className="sr-only">Loading...</span>
-                            </div>
-                          </div>
-                          </Modal.Body>
-                          }
-                          {!pendingApiCall &&
-                          <Modal.Body>
-                          <Table striped bordered hover responsive>
-                            <thead>
-                                <tr>
-                                  <th >Tee teetime</th>
-                                  <th >Player 1</th>
-                                  <th >Player 2</th>
-                                  <th >Player 3</th>
-                                  <th >Player 4</th>
-                                </tr>
-                            </thead>
-                                <tbody>
-                                    <tr>
-                                    <th ><Input name="teetime" value={editTeeTime.teetime} onChange={onChangeEdit} /></th>
-                                    <th ><Input name="player1" value={editTeeTime.player1} onChange={onChangeEdit} /></th>
-                                    <th ><Input name="player2" value={editTeeTime.player2} onChange={onChangeEdit} /></th>
-                                    <th ><Input name="player3" value={editTeeTime.player3} onChange={onChangeEdit} /></th>
-                                    <th ><Input name="player4" value={editTeeTime.player4} onChange={onChangeEdit} /></th>
-                                    <th >
-                                        <ButtonWithProgress
-                                            onClick={() => onClickUpdateTee(editTeeTime.id)} 
-                                            className="btn btn-warning m-2"
-                                            disabled={pendingApiCall}
-                                            pendingApiCall={pendingApiCall}
-                                            text="Update"
-                                        />
-                                    </th>
-                                    </tr>
-                                </tbody>
-                            
-                          </Table>
-                          {editConfirm &&
-                          <div className="text-centre text-success">
-                              <span>{editConfirm}</span>
-                          </div>}
-                          {editErrors &&
-                          <div className="text-centre text-danger">
-                              <span>{editErrors}</span>
-                          </div>}
-                          </Modal.Body>}
-                          <Modal.Footer>
-                            <Button variant="secondary" onClick={handleCloseEditTeeTime}>
-                              Close
-                            </Button>
-                          </Modal.Footer>
-                        </Modal>
-                    </>
-
-                        {/* Add tee time modal */}
-                    <>
-                        
-                        <Modal show={showAddTeeTime} onHide={handleCloseAddTeeTime} dialogClassName="modal-content-full modal-dialog-full" >
-                          <Modal.Header closeButton>
-                            <Modal.Title>Add Tee time for {props.event.name} on {formatDate}</Modal.Title>
-                          </Modal.Header>
-                          {pendingApiCall && 
-                          <Modal.Body>
-                          <div className="d-flex">
-                            <div className="spinner-border text-black-50 m-auto">
-                              <span className="sr-only">Loading...</span>
-                            </div>
-                          </div>
-                          </Modal.Body>
-                          }
-                          {!pendingApiCall &&
-                          <Modal.Body>
-                          <Table striped bordered hover responsive>
-                          <thead>
-                            <tr>
-                              <th >Time</th>
-                              <th >Number of slots</th>
-                            </tr>
-                          </thead>
+              {/*Show Edit tee time modal*/}
+              <>
+                  
+                  <Modal show={showEditTeeTime} onHide={handleCloseEditTeeTime} dialogClassName="modal-content-full modal-dialog-full" >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Edit Tee times for {props.event.name} on {formatDate}</Modal.Title>
+                    </Modal.Header>
+                    {pendingApiCall && 
+                    <Modal.Body>
+                    <Spinner></Spinner>
+                    </Modal.Body>
+                    }
+                    {!pendingApiCall &&
+                    <Modal.Body>
+                    <Table striped bordered hover responsive>
+                      <thead>
+                          <tr>
+                            <th >Tee teetime</th>
+                            <th >Player 1</th>
+                            <th >Player 2</th>
+                            <th >Player 3</th>
+                            <th >Player 4</th>
+                          </tr>
+                      </thead>
                           <tbody>
                               <tr>
-                                  <th >
-                                      <Input
-                                        name="addnewTeeTime"
-                                        placeholder="Tee time"
-                                        value={newTeeTime.addnewTeeTime}
-                                        onChange={onChange} 
-                                      />
-                                  </th>
-                                  <th >
-                                      <Input
-                                        name="noOfSlots"
-                                        value={newTeeTime.noOfSlots}
-                                        onChange={onChange} 
-                                      />
-                                  </th>
+                              <th ><Input name="teetime" value={editTeeTime.teetime} onChange={onChangeEdit} /></th>
+                              <th ><Input name="player1" value={editTeeTime.player1} onChange={onChangeEdit} /></th>
+                              <th ><Input name="player2" value={editTeeTime.player2} onChange={onChangeEdit} /></th>
+                              <th ><Input name="player3" value={editTeeTime.player3} onChange={onChangeEdit} /></th>
+                              <th ><Input name="player4" value={editTeeTime.player4} onChange={onChangeEdit} /></th>
+                              <th >
+                                  <ButtonWithProgress
+                                      onClick={() => onClickUpdateTee(editTeeTime.id)} 
+                                      className="btn btn-warning m-2"
+                                      disabled={pendingApiCall}
+                                      pendingApiCall={pendingApiCall}
+                                      text="Update"
+                                  />
+                              </th>
                               </tr>
                           </tbody>
-                          </Table>
-                          </Modal.Body>}
-                          <Modal.Footer>
-                            <Button variant="success" disabled={pendingApiCall} onClick={addTeeTime}>Add</Button>
-                            <Button variant="secondary" onClick={handleCloseAddTeeTime}>
-                              Close
-                            </Button>
-                          </Modal.Footer>
-                        </Modal>
-                    </>
-                    
-                    {/*Show Score entry modal*/}
-                    <>
+                      
+                    </Table>
+                    {editConfirm &&
+                    <div className="text-centre text-success">
+                        <span>{editConfirm}</span>
+                    </div>}
+                    {editErrors &&
+                    <div className="text-centre text-danger">
+                        <span>{editErrors}</span>
+                    </div>}
+                    </Modal.Body>}
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleCloseEditTeeTime}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+              </>
+
+              {/* Add tee time modal */}
+              <>
+                  
+                  <Modal show={showAddTeeTime} onHide={handleCloseAddTeeTime} dialogClassName="modal-content-full modal-dialog-full" >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Add Tee time for {props.event.name} on {formatDate}</Modal.Title>
+                    </Modal.Header>
+                    {pendingApiCall && 
+                    <Modal.Body>
+                    <Spinner></Spinner>
+                    </Modal.Body>
+                    }
+                    {!pendingApiCall &&
+                    <Modal.Body>
+                    <Table striped bordered hover responsive>
+                    <thead>
+                      <tr>
+                        <th >Time</th>
+                        <th >Number of slots</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th >
+                                <Input
+                                  name="addnewTeeTime"
+                                  placeholder="Tee time"
+                                  value={newTeeTime.addnewTeeTime}
+                                  onChange={onChange} 
+                                />
+                            </th>
+                            <th >
+                                <Input
+                                  name="noOfSlots"
+                                  value={newTeeTime.noOfSlots}
+                                  onChange={onChange} 
+                                />
+                            </th>
+                        </tr>
+                    </tbody>
+                    </Table>
+                    </Modal.Body>}
+                    <Modal.Footer>
+                      <Button variant="success" disabled={pendingApiCall} onClick={addTeeTime}>Add</Button>
+                      <Button variant="secondary" onClick={handleCloseAddTeeTime}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+              </>
+          
+              {/*Show Score entry modal*/}
+              <>
+                    <Modal 
+                      show={showScore} 
+                      onHide={handleCloseScoreEntry} 
+                      dialogClassName="modal-content-full modal-dialog-full"
+                      size="m"
+                      centered
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title id='scoreEntryModal'>
+                          <Container>
+                          Score Entry for {props.event.name} for player {props.loggedInUser.username}
+                          </Container>
+                        </Modal.Title>
+                      </Modal.Header>
+                      {pendingApiCall && 
+                      <Modal.Body>
+                      <Spinner></Spinner>
+                      </Modal.Body>
+                      }
+                      {!pendingApiCall &&
+                      <Modal.Body>
+                        <Container>
+                          <Row style={{margin:"auto", width:"50%"}}>
+                            <Col xs={12}>
+                              <div id='score-entry'>
+                                <h2 >Hole {holeIndex+1}</h2>
+                                <input name={`h${holeIndex+1}Score`} value={scoreCardObj[`h${holeIndex+1}Score`]}  onChange={onChangeScoreCard} type="number" min={"0"} max={"15"} style={{width:"8rem", height:"8rem",padding:"12px 20px", display:"inline-block", border:"1px solid #ccc", borderRadius: "4px", fontSize: "64px", textAlign:"center"}}></input>
+                                  <p style={{color:"red", fontSize:"13px", width:"140%"}}>Please enter gross scores</p>
+                                  {/* <p>Current Score : {currentEntrant.score}</p> */}
+                              </div>
+                            </Col>
+                          </Row>
+                          <Row style={{margin:"auto", width:"50%"}}>
+                            <Col xs={6}>
+                              {holeIndex+1 !== 1 &&
+                              <button onClick={toPrevHole} style={{fontSize: "64px"}}>{'<'}</button>}
+                            </Col>
+                            <Col xs={6}>
+                              {holeIndex+1 !== 18 &&
+                              <button onClick={function(){ toNextHole(); updateScoreCard()}} style={{fontSize: "64px"}}>{'>'}</button>}
+                            </Col>
+                          </Row>
+                        </Container>
+                      
+                      </Modal.Body>}
+                      <Modal.Footer>
+                      {holeIndex+1 === 18 &&
+                        <Button variant='primary' onClick={completeScoreCard}>Submit</Button>}
+                      </Modal.Footer>
+                    </Modal>
+              </>
+                              {/* Show admin score entry modal */}
+                        <>
                           <Modal 
-                            show={showScore} 
-                            onHide={handleCloseScoreEntry} 
+                            show={showAdminScore} 
+                            onHide={handleCloseAdminScoreEntry} 
                             dialogClassName="modal-content-full modal-dialog-full"
                             size="m"
                             centered
@@ -1126,19 +1341,34 @@ const [newTeeTime, setNewTeeTime] = useState({
                             <Modal.Header closeButton>
                               <Modal.Title id='scoreEntryModal'>
                                 <Container>
-                                Score Entry for {props.event.name} for player {props.loggedInUser.username}
+                                Score Entry - Please choose a player to enter score for
                                </Container>
                               </Modal.Title>
                             </Modal.Header>
                             {pendingApiCall && 
                             <Modal.Body>
-                            <div className="d-flex">
-                              <div className="spinner-border text-black-50 m-auto">
-                                <span className="sr-only">Loading...</span>
-                              </div>
-                            </div>
+                            <Spinner></Spinner>
                             </Modal.Body>
                             }
+                            {!pendingApiCall &&
+                            <Modal.Body>
+                            
+                              
+                              {pendingApiCall && <Spinner></Spinner>}
+                              {!pendingApiCall && members &&
+                              <div className="col-12 mb-3">
+                              <label>Member</label>
+                                <select  name="member_id" id="member_id" className={`form-control ${memberSelected ? "is-valid" : "is-invalid"} `}  label="Member" placeholder="select" onChange={onChangeMember} required>
+                                  <option selected disabled value="">Please select</option>
+                                  {members.map((member) => (
+                                    <option key={member.id}> {member.id} {member.firstName} {member.surname} </option>
+                                  ))}
+                                </select>
+                                <div id="member_idFeedback" className="invalid-feedback">
+                                  Please select a member. 
+                                </div>
+                              </div>}
+                            </Modal.Body>}
                             {!pendingApiCall &&
                             <Modal.Body>
                               <Container>
