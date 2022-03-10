@@ -19,6 +19,7 @@ import Terms from '../pages/Terms';
 import HolesPage from '../pages/HolesPage';
 import MultipleSignUp from '../components/multiHolePage';
 import SocietySignupPage from "../pages/SocietySignupPage";
+import FedExCup from '../pages/SYFTCup';
 
 
 
@@ -50,6 +51,7 @@ function App() {
           <Route  path="/member/:username" exact component={UserPage} />
           <Route path="/course/:coursename" extact component={CourseInfoPage} />
           <Route path="/event/:eventname" extact component={EventInfoPage} />
+          <Route path="/syftCup" extact component={FedExCup} />
           
         </Switch>
       </div>

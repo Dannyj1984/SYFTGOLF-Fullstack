@@ -4,6 +4,7 @@ import Input from '../components/Input';
 import { connect } from 'react-redux';
 import * as authActions from '../redux/authActions';
 import * as apiCalls from '../api/apiCalls';
+import Spinner from '../components/Spinner';
 
 export const EventSignupPage = (props) => {
     //state = Json object to add fields to
@@ -40,7 +41,8 @@ export const EventSignupPage = (props) => {
     setPendingApiCall(true)
     apiCalls.getCourses(id)
     .then((response) => {
-      setCoursesList(response.data)
+      console.log(response.data.content)
+      setCoursesList(response.data.content)
       setPendingApiCall(false)
     })
     .catch(errors)
@@ -109,7 +111,15 @@ export const EventSignupPage = (props) => {
       };
 
         return (
+          
           <div className="container">
+          {pendingApiCall &&
+            <div>
+                <Spinner></Spinner>
+                <h3 className="text-danger text-center">Loading </h3>
+            </div>}
+            {!pendingApiCall &&
+            <div>
             <h1 className="text-center">Register Event</h1>
             <div>
             <p className="invalid-feedback">Hello</p>
@@ -228,6 +238,7 @@ export const EventSignupPage = (props) => {
                 />
                   <hr></hr>
               </div>
+              </div>}
           </div>
           );
         }
