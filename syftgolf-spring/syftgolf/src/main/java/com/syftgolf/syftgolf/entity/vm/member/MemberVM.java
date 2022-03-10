@@ -39,6 +39,8 @@ public class MemberVM {
 
     private Society society;
 
+    private int fedExPoints;
+
 
     public MemberVM(Member member) {
         this.setId(member.getId());
@@ -56,5 +58,6 @@ public class MemberVM {
         this.setImage(member.getImage());
         this.setWins(member.getWins());
         this.setSociety(member.getSociety());
+        this.setFedExPoints(member.getFedExPoints());
     }
 }

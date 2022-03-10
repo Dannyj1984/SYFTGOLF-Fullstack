@@ -33,7 +33,7 @@ const CourseListItem = (props) => {
 let pending = props.pendingApiCall;
       
   return (
-            <div className="card col-12">
+            <div className="card col-12" style={{boxShadow: "15px 10px 5px lightgray"}}>
                 <div className="card-body">
                     <div className="col-4">
                         <CourseImageWithDefault

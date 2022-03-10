@@ -51,4 +51,13 @@ public class TestUtil {
         return e;
     }
 
+    public static Tournament createValidTournament() {
+        Tournament t = new Tournament();
+        t.setName("Test tournament");
+        t.setStartDate(LocalDate.of(2022, Month.SEPTEMBER, 30));
+        t.setEndDate(LocalDate.of(2022, Month.OCTOBER, 2));
+        t.setType("Stableford");
+        return t;
+    }
+
 }

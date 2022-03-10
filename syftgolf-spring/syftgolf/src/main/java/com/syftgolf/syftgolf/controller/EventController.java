@@ -1,5 +1,6 @@
 package com.syftgolf.syftgolf.controller;
 
+import com.syftgolf.syftgolf.entity.Entrants;
 import com.syftgolf.syftgolf.entity.Event;
 import com.syftgolf.syftgolf.entity.Member;
 import com.syftgolf.syftgolf.entity.vm.event.EventUpdateVM;
@@ -135,6 +136,11 @@ public class EventController {
     @PutMapping("/management/complete/{eventId:[0-9]+}")
     GenericResponse completeEvent(@PathVariable long eventId){
         return eventService.complete(eventId);
+    }
+
+    @GetMapping("/event/test/{eventId:[0-9]+}")
+    List<Entrants> eventTest(@PathVariable long eventId) {
+        return eventService.updateFedExScores(eventId);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

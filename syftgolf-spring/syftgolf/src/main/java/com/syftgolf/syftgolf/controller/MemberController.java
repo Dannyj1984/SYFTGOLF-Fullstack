@@ -43,6 +43,7 @@ public class MemberController {
      * Export details to CSV
      * Get a page of members
      * Get a single member
+     * Get a list of members by fedex cup position
      * Change member password
      * reset all member wins
      * reset all soc hcp reductions.
@@ -131,6 +132,11 @@ public class MemberController {
     public MemberVM getMember( @PathVariable String username) {
         Member member = memberService.getMember(username);
         return new MemberVM(member);
+    }
+
+    @GetMapping("/members/fedex/{societyId:[0-9]+}")
+    public List<MemberVM> getMembersByFedEx(@PathVariable long societyId) {
+        return memberService.getMembersByFedEx(societyId);
     }
 
     

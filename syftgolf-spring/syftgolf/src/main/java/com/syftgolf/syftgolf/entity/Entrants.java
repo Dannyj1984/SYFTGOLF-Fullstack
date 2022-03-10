@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -48,6 +49,30 @@ public class Entrants {
 
     @ManyToMany
     private List<TeeSheet> teeSheets;
+
+    /*Comparator for sorting score ascending for medal*/
+    public static Comparator<Entrants> entrantScoreMedal = new Comparator<Entrants>() {
+
+        public int compare(Entrants s1, Entrants s2) {
+
+            int score1 = (int) Math.round(s1.getScore());
+            int score2 = (int) Math.round(s2.getScore());
+
+            /*For ascending order*/
+            return score1-score2;
+        }};
+
+    /*Comparator for sorting score descending for stableford*/
+    public static Comparator<Entrants> entrantScoreStableford = new Comparator<Entrants>() {
+
+        public int compare(Entrants s1, Entrants s2) {
+
+            int score1 = (int) Math.round(s1.getScore());
+            int score2 = (int) Math.round(s2.getScore());
+
+            /*For ascending order*/
+            return score2-score1;
+        }};
 
     @Override
     public String toString() {

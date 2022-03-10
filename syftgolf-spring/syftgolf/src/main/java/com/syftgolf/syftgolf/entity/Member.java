@@ -87,6 +87,13 @@ public class Member implements UserDetails, Serializable {
 
     @NotNull
     @Column(
+            name = "fedExPoints",
+            columnDefinition = "INTEGER"
+    )
+    private int fedExPoints = 0;
+
+    @NotNull
+    @Column(
             name = "wins",
             columnDefinition = "INTEGER"
     )

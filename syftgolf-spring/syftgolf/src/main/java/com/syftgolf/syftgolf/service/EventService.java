@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -162,6 +163,8 @@ public class EventService {
             winningMargin = sortedEntrants.get(1).getScore() - sortedEntrants.get(0).getScore();
             getSortedEntrantMember(e, winningMargin, sortedEntrants);
         }
+
+
         return response;
     }
 
@@ -188,5 +191,21 @@ public class EventService {
             throw new NotFoundException(eventName + " not found");
         }
         return inDB;
+    }
+
+    public List<Entrants> updateFedExScores(long eventId) {
+        Event e = eventRepo.getEventById(eventId);
+        List<Entrants> entrants = e.getEntrants();
+        int fedExPoints = entrants.size();
+        if(!e.getQualifier()) {
+            entrants.sort(Entrants.entrantScoreMedal);
+            for(Entrants ent: entrants) {
+                Member m = ent.getMember();
+                m.setFedExPoints(m.getFedExPoints() + fedExPoints);
+                memberRepo.save(m);
+                fedExPoints--;
+            }
+        }
+        return entrants;
     }
 }

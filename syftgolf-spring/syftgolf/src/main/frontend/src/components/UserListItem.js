@@ -241,8 +241,8 @@ const UserListItem = (props) => {
 
 
    return (
-            <div className="card col-12" style={{height:"100%", backgroundColor: "#e3e3e3"}}>
-                <div className="card-body">
+            <div className="card col-12" style={{height:"100%", boxShadow: "15px 10px 5px lightgray"}}>
+                <div className="card-body member-info">
                     <div className="col-4">
                     <ProfileImageWithDefault
                         className="rounded-circle"
@@ -252,7 +252,7 @@ const UserListItem = (props) => {
                         image={props.user.image}
                     />
                     </div>
-                    <div className="col-12 card-title align-self-center mb-0">
+                    <div className="col-12 card-title align-self-center mb-0 ">
                         <h5>{props.user.firstName} {props.user.surname}</h5>
                         {props.loggedInUser.role === 'ADMIN' &&
                         <p className="m-0">ID : {props.user.id}</p>}
@@ -264,15 +264,13 @@ const UserListItem = (props) => {
                         {(props.loggedInUser.role === 'ADMIN' && <button className="btn btn-outline-success" onClick={addWin}>+</button> )} 
                         {(props.loggedInUser.role === 'ADMIN' && <button className="btn btn-outline-danger" onClick={takeWin}>-</button> )}
                     </div>
-                </div>
-                <div>
                     <ul className="list-group list-group-flush">
                         <li className="list-group-item"><i className="fa fa-envelope float-right"/>Email : {props.user.email}</li>
                         <li className="list-group-item"><i className="fa fa-phone float-right"/>Mobile : {props.user.mobile}</li>
                     </ul>
                 </div>
                 <div className="card-body">
-                    <div className="float-left btn-group btn-group-sm">
+                    <div className="float-left btn-group btn-group-sm ">
                     <Link
                         /*Link to profile page*/
                         to={`/member/${props.user.username}`}>
@@ -315,6 +313,83 @@ const UserListItem = (props) => {
                     </div>
                 </div>
 
+                {props.loggedInUser.id !== props.user.id &&
+                  <div className="card-body">
+                  <div className='content-inner'>
+                      {/*Change member to admin*/}
+                      <div className="float-left btn-group btn-group-m">
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
+                                
+                              <button  
+                                  className="btn btn-primary tooltips m-2"  
+                                  onClick={submitAdmin}
+                                  data-placement="top" 
+                                  data-toggle="tooltip" 
+                                  data-original-title="admin">
+                                  Make ADMIN
+                              </button>
+                              
+                          }
+                      </div>
+                      {/*Change member to handicap admin*/}
+                      <div className="float-left btn-group btn-group-m">
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
+                              <button  
+                                  className="btn btn-primary tooltips m-2"  
+                                  onClick={submitScorer}
+                                  data-placement="top" 
+                                  data-toggle="tooltip" 
+                                  data-original-title="hcpAdmin">
+                                  Make SCORER
+                              </button>
+                              
+                          }
+                      </div>
+                      {/*Change member to event admin*/}
+                      <div className="float-left btn-group btn-group-m m-2">
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
+                              <button  
+                                  className="btn btn-primary tooltips"  
+                                  onClick={submitEventAdmin}
+                                  data-placement="top" 
+                                  data-toggle="tooltip" 
+                                  data-original-title="eventAdmin">
+                                  Make EVENTADMIN
+                              </button>
+                              
+                          }
+                      </div>
+                      {/*Change member to user*/}
+                      <div className="float-left btn-group btn-group-m m-2">
+                      {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
+                              <button  
+                                  className="btn btn-primary tooltips"  
+                                  onClick={submitUser}
+                                  data-placement="top" 
+                                  data-toggle="tooltip" 
+                                  data-original-title="eventAdmin">
+                                  Make USER
+                              </button>
+                              
+                          }
+                      </div>
+
+                      {/*Edit handicap, only for handicap admin*/}
+                      <div className="float-right btn-group btn-group-m">
+                      {(props.loggedInUser.role === 'SUPERUSER')  &&
+                              <button  
+                                  className="btn btn-primary tooltips"  
+                                  onClick={handleShow}
+                                  data-placement="top" 
+                                  data-toggle="tooltip" y
+                                  data-original-title="Delete">
+                                  <i className="fa fa-edit"/>
+                              </button>
+                          }
+                      </div>
+                      </div>
+                </div>}
+
                 {/*Modal for changing handicap*/}
                 <Modal show={showModal} onHide={handleClose}>
                     <Modal.Header closeButton>
@@ -355,80 +430,7 @@ const UserListItem = (props) => {
                         
                     </Modal.Footer>
                 </Modal>
-                            {props.loggedInUser.id !== props.user.id &&
-                <div className="card-body">
-                    {/*Change member to admin*/}
-                    <div className="float-left btn-group btn-group-m">
-                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
-                              
-                            <button  
-                                className="btn btn-primary tooltips m-2"  
-                                onClick={submitAdmin}
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="admin">
-                                Make ADMIN
-                            </button>
                             
-                        }
-                    </div>
-                    {/*Change member to handicap admin*/}
-                    <div className="float-left btn-group btn-group-m">
-                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
-                            <button  
-                                className="btn btn-primary tooltips m-2"  
-                                onClick={submitScorer}
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="hcpAdmin">
-                                Make SCORER
-                            </button>
-                            
-                        }
-                    </div>
-                    {/*Change member to event admin*/}
-                    <div className="float-left btn-group btn-group-m m-2">
-                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
-                            <button  
-                                className="btn btn-primary tooltips"  
-                                onClick={submitEventAdmin}
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="eventAdmin">
-                                Make EVENTADMIN
-                            </button>
-                            
-                        }
-                    </div>
-                    {/*Change member to user*/}
-                    <div className="float-left btn-group btn-group-m m-2">
-                    {(props.loggedInUser.role === 'ADMIN' || props.loggedInUser.role === 'SUPERUSER')  &&
-                            <button  
-                                className="btn btn-primary tooltips"  
-                                onClick={submitUser}
-                                data-placement="top" 
-                                data-toggle="tooltip" 
-                                data-original-title="eventAdmin">
-                                Make USER
-                            </button>
-                            
-                        }
-                    </div>
-
-                    {/*Edit handicap, only for handicap admin*/}
-                    <div className="float-right btn-group btn-group-m">
-                    {(props.loggedInUser.role === 'SUPERUSER')  &&
-                            <button  
-                                className="btn btn-primary tooltips"  
-                                onClick={handleShow}
-                                data-placement="top" 
-                                data-toggle="tooltip" y
-                                data-original-title="Delete">
-                                <i className="fa fa-edit"/>
-                            </button>
-                        }
-                    </div>
-                </div>}
             </div>
         
     
