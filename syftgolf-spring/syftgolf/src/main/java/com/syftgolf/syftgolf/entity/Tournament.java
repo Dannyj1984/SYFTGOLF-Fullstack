@@ -25,7 +25,7 @@ public class Tournament {
     @NotNull
     private LocalDate endDate;
 
-    private int noOfEvents;
+    private int noOfEvents = 0;
 
     @NotNull
     private String type;
@@ -36,11 +36,10 @@ public class Tournament {
 
     public Tournament(){}
 
-    public Tournament(String name, LocalDate start, LocalDate end, String type, int noOfEvents, List<Event> events) {
+    public Tournament(String name, LocalDate start, LocalDate end, String type, List<Event> events) {
         this.name = name;
         this.startDate = start;
         this.endDate = end;
-        this.noOfEvents = noOfEvents;
         this.events = events;
         this.type = type;
     }

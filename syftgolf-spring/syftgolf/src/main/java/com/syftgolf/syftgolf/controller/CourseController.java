@@ -60,6 +60,11 @@ public class CourseController {
         return courseService.getFilteredCourses(query, page, id);
     }
 
+    @GetMapping("/getCourseList/{societyId:[0-9]+}")
+    List<Course> getCourseList(@PathVariable long societyId) {
+        return courseService.getCourseList(societyId);
+    }
+
     /**
      *
      *
@@ -93,8 +98,8 @@ public class CourseController {
      * @return a message to inform of successful update
      */
 
-    @PutMapping("/management/course/update/{courseId/[0-9]+}")
-    GenericResponse update(@PathVariable long courseId, @Valid @RequestBody Course course) {
+    @PutMapping("/management/courses/{courseId:[0-9]+}")
+    GenericResponse update(@PathVariable long courseId, @Valid @RequestBody CourseVM course) {
         return courseService.update(courseId, course);
     }
 

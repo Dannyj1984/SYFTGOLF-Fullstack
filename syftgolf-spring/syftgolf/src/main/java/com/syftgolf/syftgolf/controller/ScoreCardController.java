@@ -23,7 +23,6 @@ public class ScoreCardController {
 
     /**
      * Get scorecard for an entrant
-     * update an entrants scorecard with their score
      */
 
     @Autowired

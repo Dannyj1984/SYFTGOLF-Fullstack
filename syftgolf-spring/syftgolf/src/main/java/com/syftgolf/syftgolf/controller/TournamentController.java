@@ -6,6 +6,8 @@ import com.syftgolf.syftgolf.error.ApiError;
 import com.syftgolf.syftgolf.service.TournamentService;
 import com.syftgolf.syftgolf.shared.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,6 +27,9 @@ public class TournamentController {
 
     /**
      * save new tournament
+     * get page of upcoming
+     * get page of previous
+     * list all
      * add event to tournament
      * remove event from a tournament
      * update tournament
@@ -37,6 +43,21 @@ public class TournamentController {
     @PostMapping("/management/tournament/create/{societyId:[0-9]+}")
     GenericResponse create(@PathVariable long societyId, @RequestBody @Valid Tournament tournament) {
         return tournamentService.save(societyId, tournament);
+    }
+
+    @GetMapping("/tournament/{societyId:[0-9]+}")
+    public Page<Tournament> getTournaments(@PathVariable long societyId, Pageable page) {
+        return tournamentService.getPageOfTournaments(societyId, page);
+    }
+
+    @GetMapping("/tournament/previous/{societyId:[0-9]+}")
+    public Page<Tournament> getPreviousTournaments(@PathVariable long societyId, Pageable page) {
+        return tournamentService.getPageOfPreviousTournaments(societyId, page);
+    }
+
+    @GetMapping("/tournament/list/{societyId:[0-9]+}")
+    public List<Tournament> listTournaments(@PathVariable long societyId) {
+        return tournamentService.listTournaments(societyId);
     }
 
     @PutMapping("/management/tournament/addEvent/{tournamentId:[0-9]+}/{eventId:[0-9]+}")
@@ -55,7 +76,7 @@ public class TournamentController {
     }
 
     @DeleteMapping("/management/tournament/delete/{tournamentId:[0-9]+}")
-    GenericResponse updateTournament(@PathVariable long tournamentId) {
+    GenericResponse deleteTournament(@PathVariable long tournamentId) {
         return tournamentService.delete(tournamentId);
     }
 

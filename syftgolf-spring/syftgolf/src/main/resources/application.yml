@@ -52,7 +52,7 @@ spring:
     password: admin
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
 syftgolf:
   upload-path: uploads-dev
 

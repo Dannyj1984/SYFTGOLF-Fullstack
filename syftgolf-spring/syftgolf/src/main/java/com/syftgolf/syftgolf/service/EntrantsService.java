@@ -73,25 +73,44 @@ public class EntrantsService {
                 List<Hole> holes = e.getCourse().getHoles();
                 System.out.println(holes);
                 holes.sort(Comparator.comparingInt(Hole::getHoleNumber));
+                memberRepo.save(m);
                 try {
                     sc.setH1Index(holes.get(0).getStrokeIndex());
+                    sc.setH1Par(holes.get(0).getPar());
                     sc.setH2Index(holes.get(1).getStrokeIndex());
+                    sc.setH2Par(holes.get(1).getPar());
                     sc.setH3Index(holes.get(2).getStrokeIndex());
+                    sc.setH3Par(holes.get(2).getPar());
                     sc.setH4Index(holes.get(3).getStrokeIndex());
+                    sc.setH4Par(holes.get(3).getPar());
                     sc.setH5Index(holes.get(4).getStrokeIndex());
+                    sc.setH5Par(holes.get(4).getPar());
                     sc.setH6Index(holes.get(5).getStrokeIndex());
+                    sc.setH6Par(holes.get(5).getPar());
                     sc.setH7Index(holes.get(6).getStrokeIndex());
+                    sc.setH7Par(holes.get(6).getPar());
                     sc.setH8Index(holes.get(7).getStrokeIndex());
+                    sc.setH8Par(holes.get(7).getPar());
                     sc.setH9Index(holes.get(8).getStrokeIndex());
+                    sc.setH9Par(holes.get(8).getPar());
                     sc.setH10Index(holes.get(9).getStrokeIndex());
+                    sc.setH10Par(holes.get(9).getPar());
                     sc.setH11Index(holes.get(10).getStrokeIndex());
+                    sc.setH11Par(holes.get(10).getPar());
                     sc.setH12Index(holes.get(11).getStrokeIndex());
+                    sc.setH12Par(holes.get(11).getPar());
                     sc.setH13Index(holes.get(12).getStrokeIndex());
+                    sc.setH13Par(holes.get(12).getPar());
                     sc.setH14Index(holes.get(13).getStrokeIndex());
+                    sc.setH14Par(holes.get(13).getPar());
                     sc.setH15Index(holes.get(14).getStrokeIndex());
+                    sc.setH15Par(holes.get(14).getPar());
                     sc.setH16Index(holes.get(15).getStrokeIndex());
+                    sc.setH16Par(holes.get(15).getPar());
                     sc.setH17Index(holes.get(16).getStrokeIndex());
+                    sc.setH17Par(holes.get(16).getPar());
                     sc.setH18Index(holes.get(17).getStrokeIndex());
+                    sc.setH18Par(holes.get(17).getPar());
                 } catch (Error error) {
                     GenericResponse errorResponse = new GenericResponse("Entrant not saved. Please ensure all holes exist for this course");
                     gr = errorResponse;
@@ -100,8 +119,7 @@ public class EntrantsService {
                 en.setScoreCard(sc);
                 scoreCardRepo.save(sc);
                 entrantsRepo.save(en);
-                GenericResponse completeResponse = new GenericResponse("Entered");
-                gr = completeResponse;
+                gr = new GenericResponse("Entered");
             }
 
         return gr;
@@ -142,22 +160,30 @@ public class EntrantsService {
         GenericResponse gr = new GenericResponse("This member is not in this event");
         Event e = eventRepo.getById(eventId);
         Member m = memberRepo.getById(memberId);
+        ScoreCard sc = new ScoreCard();
         List<Entrants> entrants = e.getEntrants();
         boolean entered = false;
         //Check if member is already entered in this event
         for(Entrants entrants1 : entrants) {
-            System.out.println(entrants1.getMember().getUsername());
-            System.out.println(m.getUsername());
             if (entrants1.getMember().getUsername().equals(m.getUsername())) {
+                sc = entrants1.getScoreCard();
                 entered = true;
                 gr = new GenericResponse("Member not entered");
                 break;
             }
         }
         if(entered) {
-            e.setCurrentEntrants(e.getCurrentEntrants() - 1);
-            eventRepo.save(e);
             entrantsRepo.deleteByMemberAndEvent(m, e);
+            scoreCardRepo.delete(sc);
+            e.setCurrentEntrants(e.getCurrentEntrants() - 1);
+            for(Entrants entrants1 : entrants) {
+                if (entrants1.getMember().getUsername().equals(m.getUsername())) {
+                    int index = entrants.indexOf(entrants1);
+                    entrants.remove(index);
+                }
+            }
+            eventRepo.save(e);
+
             gr = new GenericResponse("Member Removed");
         }
         return gr;

@@ -33,6 +33,7 @@ public class EventController {
     /**
      * Save new event
      * Page of events
+     * get list of future events for adding to tournament
      * Get an event
      * Get Entrants to an event
      * Get course details
@@ -63,6 +64,16 @@ public class EventController {
     @GetMapping("/upcomingEvents/{id:[0-9]+}")
     Page<EventVM> getEvents(Pageable page, @PathVariable long id) {
         return eventService.getEvents(page, id).map(EventVM::new);
+    }
+
+    @GetMapping("/Events/list/{societyId:[0-9]+}")
+    List<Event> listOfEvents(@PathVariable long societyId){
+        return eventService.getEventsList(societyId);
+    }
+
+    @GetMapping("/previousEvents/list/{societyId:[0-9]+}")
+    List<Event> listOfPreviousEvents(@PathVariable long societyId){
+        return eventService.getPreviousEventsList(societyId);
     }
 
     //Get a single event
@@ -100,6 +111,7 @@ public class EventController {
 
         //Store values from course for the current event in a map
         return res.map(e -> Map.of("id", e.getId(),
+                "courseId", e.getCourse().getId(),
                 "course", e.getCourse().getName(),
                 "coursePar", e.getCourse().getPar(),
                 "courseRating", e.getCourse().getCourseRating(),

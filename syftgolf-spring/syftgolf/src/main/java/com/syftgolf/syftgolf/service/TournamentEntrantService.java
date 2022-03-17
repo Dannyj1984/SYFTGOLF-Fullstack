@@ -57,12 +57,12 @@ public class TournamentEntrantService {
         }
 
         /**
-         * @param event the event name
+         * @param tournamentId the event name
          */
-        public List<TournamentEntrant> getEntrants(String event) {
+        public List<TournamentEntrant> getEntrants(long tournamentId) {
             List<TournamentEntrant> sortedEntrants = new ArrayList<>();
             //Get current tournament
-            Tournament me = tournamentRepo.findMultiEventByName(event);
+            Tournament me = tournamentRepo.findTournamentById(tournamentId);
             if(me.getType().equals("Stableford")) {
                 //Get all entrants to this tournament
                 List<TournamentEntrant> multiEntrants = me.getTournamentEntrants();

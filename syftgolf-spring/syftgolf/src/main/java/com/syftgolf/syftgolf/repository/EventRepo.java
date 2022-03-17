@@ -29,5 +29,11 @@ public interface EventRepo extends JpaRepository<Event, Long> {
     @Query(value = "select * from Event where event.date < current_date AND event.society_id=:id", nativeQuery = true)
     Page<Event> findAllByDateBefore(Pageable pageable, long id);
 
+    @Query(value = "select * from Event where event.date >= current_date AND event.society_id=:id", nativeQuery = true)
+    List<Event> findAllByDate(long id);
+
+    @Query(value = "select * from Event where event.date < current_date AND event.society_id=:id", nativeQuery = true)
+    List<Event> findAllByDateBefore(long id);
+
     Page<Event> findAllEventBySocietyIdAndDateIsBefore(Pageable pageable, long id, LocalDate today);
 }

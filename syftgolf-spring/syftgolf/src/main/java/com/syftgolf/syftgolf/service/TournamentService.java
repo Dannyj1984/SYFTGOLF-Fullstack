@@ -5,6 +5,8 @@ import com.syftgolf.syftgolf.entity.*;
 import com.syftgolf.syftgolf.entity.vm.TournamentVM;
 import com.syftgolf.syftgolf.repository.*;
 import com.syftgolf.syftgolf.shared.GenericResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -143,7 +145,19 @@ public class TournamentService {
     public Tournament complete(long tournamentId) {
         Tournament t = tournamentRepo.findTournamentById(tournamentId);
         t.setStatus("Complete");
-        tournamentEntrantService.getEntrants(t.getName());
+        tournamentEntrantService.getEntrants(t.getId());
         return t;
+    }
+
+    public Page<Tournament> getPageOfTournaments(long societyId, Pageable page) {
+        return tournamentRepo.findAllByDate(societyId, page);
+    }
+
+    public Page<Tournament> getPageOfPreviousTournaments(long societyId, Pageable page) {
+        return tournamentRepo.findAllByDateBefore(page, societyId);
+    }
+
+    public List<Tournament> listTournaments(long societyId) {
+        return tournamentRepo.findAllBySocietyIdOrderByNameAsc(societyId);
     }
 }

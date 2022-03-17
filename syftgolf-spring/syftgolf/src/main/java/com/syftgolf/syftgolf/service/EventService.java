@@ -135,6 +135,14 @@ public class EventService {
         Event e = eventRepo.getById(eventId);
         double winningMargin = 0.0;
         GenericResponse response = null;
+        List<Member> members = new ArrayList<>();
+        List<Entrants> entrants = e.getEntrants();
+        for(Entrants ent : entrants) {
+            members.add(ent.getMember());
+        }
+        for(Member mem : members) {
+            mem.setEventsPlayed(mem.getEventsPlayed() + 1);
+        }
         if(e.getType().equals("Stableford")) {
             System.out.println("Event is Stableford");
             List<Entrants> en = e.getEntrants();
@@ -207,5 +215,13 @@ public class EventService {
             }
         }
         return entrants;
+    }
+
+    public List<Event> getEventsList(long societyId) {
+        return eventRepo.findAllByDate(societyId);
+    }
+
+    public List<Event> getPreviousEventsList(long societyId) {
+        return eventRepo.findAllByDateBefore(societyId);
     }
 }

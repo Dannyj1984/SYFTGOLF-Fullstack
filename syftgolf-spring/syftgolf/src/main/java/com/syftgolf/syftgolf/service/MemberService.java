@@ -4,6 +4,7 @@ package com.syftgolf.syftgolf.service;
 import com.syftgolf.syftgolf.entity.Member;
 import com.syftgolf.syftgolf.entity.Society;
 import com.syftgolf.syftgolf.entity.vm.member.MemberPasswordUpdateVM;
+import com.syftgolf.syftgolf.entity.vm.member.MemberUpdateHandicapVM;
 import com.syftgolf.syftgolf.entity.vm.member.MemberUpdateVM;
 import com.syftgolf.syftgolf.entity.vm.member.MemberVM;
 import com.syftgolf.syftgolf.repository.MemberRepo;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class MemberService {
@@ -151,7 +153,7 @@ public class MemberService {
      */
     public GenericResponse deleteMember(long memberId) {
         //Get the user from the database
-        Member member = memberRepo.getOne(memberId);
+        Member member = memberRepo.findMemberById(memberId);
 
         //Get the society this user belongs to
         Society s = societyRepo.getOne(member.getSociety().getId());
@@ -234,5 +236,13 @@ public class MemberService {
             memberVM.add(new MemberVM(m));
         }
         return memberVM;
+    }
+
+    public GenericResponse updateHandicap(long memberId, MemberUpdateHandicapVM member) {
+        Member m = memberRepo.findMemberById(memberId);
+        m.setHandicap(member.getHandicap());
+        m.setSocHcpRed(member.getSocHcpRed());
+        memberRepo.save(m);
+        return new GenericResponse("Handicap updated to " + m.getHandicap() + " for " + m.getFirstName() + " " + m.getSurname());
     }
 }

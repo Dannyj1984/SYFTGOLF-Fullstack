@@ -41,6 +41,8 @@ public class MemberVM {
 
     private int fedExPoints;
 
+    private int eventsPlayed;
+
 
     public MemberVM(Member member) {
         this.setId(member.getId());
@@ -59,5 +61,6 @@ public class MemberVM {
         this.setWins(member.getWins());
         this.setSociety(member.getSociety());
         this.setFedExPoints(member.getFedExPoints());
+        this.setEventsPlayed(member.getEventsPlayed());
     }
 }

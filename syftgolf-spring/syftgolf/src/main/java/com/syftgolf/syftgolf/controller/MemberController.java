@@ -3,6 +3,7 @@ package com.syftgolf.syftgolf.controller;
 
 import com.syftgolf.syftgolf.entity.Member;
 import com.syftgolf.syftgolf.entity.vm.member.MemberPasswordUpdateVM;
+import com.syftgolf.syftgolf.entity.vm.member.MemberUpdateHandicapVM;
 import com.syftgolf.syftgolf.entity.vm.member.MemberUpdateVM;
 import com.syftgolf.syftgolf.entity.vm.member.MemberVM;
 import com.syftgolf.syftgolf.error.ApiError;
@@ -47,6 +48,7 @@ public class MemberController {
      * Change member password
      * reset all member wins
      * reset all soc hcp reductions.
+     * update a members handicap (ADMIN)
      * Get filtered users
      */
 
@@ -140,7 +142,7 @@ public class MemberController {
     }
 
     
-    @PreAuthorize("#id == principal.id")
+    @PreAuthorize("#id == principal.id || hasRole('ADMIN')")
     @PutMapping("/member/passwordChange/{id:[0-9]+}")
     GenericResponse changePassword(@PathVariable long id, @Valid @RequestBody MemberPasswordUpdateVM memberPasswordUpdate) {
         Member member = memberRepo.findMemberById(id);
@@ -202,6 +204,14 @@ public class MemberController {
         Member userUpdated = memberService.updateUser(id);
         return new MemberVM(userUpdated);
     }
+
+    //Admin update a members handicap
+    @PutMapping("/management/members/handicap/{memberId:[0-9]+}")
+    GenericResponse updateHandicap(@PathVariable long memberId, @RequestBody @Valid MemberUpdateHandicapVM member) {
+        System.out.println(member.getHandicap());
+        return memberService.updateHandicap(memberId, member);
+    }
+
 
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

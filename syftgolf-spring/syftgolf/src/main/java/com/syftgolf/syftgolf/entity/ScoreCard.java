@@ -20,6 +20,7 @@ public class ScoreCard {
 
     private int h1Index, h2Index, h3Index, h4Index, h5Index, h6Index, h7Index, h8Index, h9Index, h10Index, h11Index, h12Index, h13Index, h14Index, h15Index, h16Index, h17Index, h18Index;
 
+    private int h1Par, h2Par, h3Par, h4Par, h5Par, h6Par, h7Par, h8Par, h9Par, h10Par, h11Par, h12Par, h13Par, h14Par, h15Par, h16Par, h17Par, h18Par;
     private int h1Score = 0;
     private int h2Score = 0;
     private int h3Score = 0;

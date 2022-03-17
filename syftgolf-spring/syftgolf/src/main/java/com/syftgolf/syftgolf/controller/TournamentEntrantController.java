@@ -53,12 +53,12 @@ public class TournamentEntrantController {
 
     /**
      *
-     * @param event the event id
+     * @param tournamentId the event id
      * @return a list of entrants in this event
      */
-    @GetMapping("/tournament/entrants/{event:[a-zA-Z]+}")
-    List<TournamentEntrant> getEntrants(@PathVariable String event) {
-        return tournamentEntrantService.getEntrants(event);
+    @GetMapping("/tournament/entrants/{tournamentId:[0-9]+}")
+    List<TournamentEntrant> getEntrants(@PathVariable long tournamentId) {
+        return tournamentEntrantService.getEntrants(tournamentId);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN') || #memberId == principal.id")

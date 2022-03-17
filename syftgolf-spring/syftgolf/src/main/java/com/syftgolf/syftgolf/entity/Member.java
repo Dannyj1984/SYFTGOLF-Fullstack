@@ -85,6 +85,8 @@ public class Member implements UserDetails, Serializable {
 
     private String image;
 
+    private int eventsPlayed = 0;
+
     @NotNull
     @Column(
             name = "fedExPoints",

@@ -3,6 +3,7 @@ package com.syftgolf.syftgolf.service;
 import com.syftgolf.syftgolf.entity.Course;
 import com.syftgolf.syftgolf.entity.Event;
 import com.syftgolf.syftgolf.entity.Society;
+import com.syftgolf.syftgolf.entity.vm.course.CourseVM;
 import com.syftgolf.syftgolf.error.NotFoundException;
 import com.syftgolf.syftgolf.repository.CourseRepo;
 import com.syftgolf.syftgolf.repository.SocietyRepo;
@@ -10,6 +11,8 @@ import com.syftgolf.syftgolf.shared.GenericResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CourseService {
@@ -53,13 +56,12 @@ public class CourseService {
      * @param course body of the course to update
      * @return a message to inform of successful update
      */
-    public GenericResponse update(long courseId, Course course) {
+    public GenericResponse update(long courseId, CourseVM course) {
         Course c = courseRepo.getById(courseId);
         c.setCourseRating(course.getCourseRating());
         c.setName(course.getName());
         c.setPar(course.getPar());
-        c.setPar(course.getPar());
-        c.setSlopeRating(course.getPar());
+        c.setSlopeRating(course.getSlopeRating());
         courseRepo.save(c);
 
         return new GenericResponse("Course updated");
@@ -77,4 +79,7 @@ public class CourseService {
         return inDB;
     }
 
+    public List<Course> getCourseList(long societyId) {
+        return courseRepo.findAllBySocietyId(societyId);
+    }
 }

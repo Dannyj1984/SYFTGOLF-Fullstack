@@ -16,7 +16,7 @@ public class TournamentEntrant {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "multiEvent_id", referencedColumnName = "id")
+    @JoinColumn(name = "tournament_id", referencedColumnName = "id")
     private Tournament tournament;
 
     @Column(name = "totalScore")
