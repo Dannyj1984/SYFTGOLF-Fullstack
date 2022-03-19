@@ -55,7 +55,7 @@ public class TeeSheetController {
     @GetMapping("/teeSheets/{eventId:[0-9]+}")
     public List<TeeSheet> get(@PathVariable long eventId) {
         Event e = eventRepo.getEventById(eventId);
-        return teeSheetRepo.findAllByEvent(e);
+        return teeSheetRepo.findAllByEventOrderByTeeTime(e);
     }
 
     @PutMapping("/teeSheet/addMember/{teeSheetId:[0-9]+}/{eventId:[0-9]+}/{memberId:[0-9]+}")

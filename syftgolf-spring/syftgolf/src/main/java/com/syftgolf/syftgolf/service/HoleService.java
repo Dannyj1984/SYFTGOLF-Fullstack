@@ -8,6 +8,7 @@ import com.syftgolf.syftgolf.repository.HoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -37,15 +38,6 @@ public class HoleService {
             holeRepo.save(hole);
             courseRepo.save(c);
         }
-//        hole.setCourse(c);
-//        List<Hole> holes = c.getHoles();
-//        holes.add(hole);
-//        c.setHoles(holes);
-//        hole.setHoleIdentifier(String.valueOf(id) + hole.getHoleNumber() + hole.getStrokeIndex());
-//        holeRepo.save(hole);
-//        courseRepo.save(c);
-//        Course co = courseRepo.findCourseById(id);
-//        System.out.println(co.getHoles());
     }
 
     public void update(long holeId, HoleVM holeVM) {
@@ -61,7 +53,7 @@ public class HoleService {
 
     public List<Hole> findByCourse(long courseId) {
         Course c = courseRepo.findCourseById(courseId);
-        System.out.println(c.getHoles());
-        return c.getHoles();
+        List<Hole> holes = holeRepo.findAllByCourseOrderByHoleNumberAsc(c);
+        return holes;
     }
 }

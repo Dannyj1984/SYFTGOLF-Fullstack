@@ -2,9 +2,11 @@ package com.syftgolf.syftgolf.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.tika.metadata.Database;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 
 @Entity
 @Data
@@ -28,6 +30,7 @@ public class Hole {
             unique = true
     )
     private String holeIdentifier;
+
 
 
     @ManyToOne

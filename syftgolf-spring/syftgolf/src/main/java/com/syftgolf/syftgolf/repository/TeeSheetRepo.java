@@ -9,4 +9,6 @@ import java.util.List;
 public interface TeeSheetRepo extends JpaRepository<TeeSheet, Long> {
 
     List<TeeSheet> findAllByEvent(Event e);
+
+    List<TeeSheet> findAllByEventOrderByTeeTime(Event e);
 }
