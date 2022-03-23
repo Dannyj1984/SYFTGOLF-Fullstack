@@ -38,6 +38,9 @@ public class Entrants {
     @Column(name = "current_hole")
     private Integer currentHole = 0;
 
+    @Column(name = "coursehcp")
+    private int coursehcp = 0;
+
     public Entrants() {}
 
     public Entrants(Member member, Event event, double score, int currentHole) {

@@ -3,18 +3,16 @@ package com.syftgolf.syftgolf.service;
 import com.syftgolf.syftgolf.entity.*;
 import com.syftgolf.syftgolf.entity.vm.event.EventUpdateVM;
 import com.syftgolf.syftgolf.error.NotFoundException;
-import com.syftgolf.syftgolf.repository.CourseRepo;
-import com.syftgolf.syftgolf.repository.EventRepo;
-import com.syftgolf.syftgolf.repository.MemberRepo;
-import com.syftgolf.syftgolf.repository.SocietyRepo;
+import com.syftgolf.syftgolf.repository.*;
 import com.syftgolf.syftgolf.shared.GenericResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,8 +37,11 @@ public class EventService {
 
     MemberRepo memberRepo;
 
-    public EventService(EventRepo eventRepo, SocietyRepo societyRepo, CourseRepo courseRepo, MemberRepo memberRepo) {
+    EntrantsRepo entrantsRepo;
+
+    public EventService(EventRepo eventRepo, EntrantsRepo entrantsRepo, SocietyRepo societyRepo, CourseRepo courseRepo, MemberRepo memberRepo) {
         this.eventRepo = eventRepo;
+        this.entrantsRepo = entrantsRepo;
         this.societyRepo = societyRepo;
         this.courseRepo = courseRepo;
         this.memberRepo = memberRepo;
@@ -140,11 +141,8 @@ public class EventService {
         for(Entrants ent : entrants) {
             members.add(ent.getMember());
         }
-        for(Member mem : members) {
-            mem.setEventsPlayed(mem.getEventsPlayed() + 1);
-        }
+
         if(e.getType().equals("Stableford")) {
-            System.out.println("Event is Stableford");
             List<Entrants> en = e.getEntrants();
             //Sort list of entrants from highest score to lowest
             List<Entrants> sortedEntrants = en.stream().sorted(Comparator.comparing(Entrants::getScore).reversed()).collect(Collectors.toList());
@@ -170,6 +168,32 @@ public class EventService {
             response =  new GenericResponse("Event completed, winner is " + sortedEntrants.get(0).getMember().getFirstName() + " " + sortedEntrants.get(0).getMember().getSurname());
             winningMargin = sortedEntrants.get(1).getScore() - sortedEntrants.get(0).getScore();
             getSortedEntrantMember(e, winningMargin, sortedEntrants);
+        }
+
+        //Add 1 to the number of events played for this member if the event is between april and october
+        if(withinRange(e.getDate())) {
+            for (Member mem : members) {
+                mem.setEventsPlayed(mem.getEventsPlayed() + 1);
+            }
+            updateFedExScores(e.getId());
+        }
+
+        //Save the members courseHcp at the time of the event to be used in the future to show the handicap at the time of this event
+        if(e.getNinetyFivePercent()) {
+            for (Entrants entrants1 : entrants) {
+                double handicap = entrants1.getMember().getHandicap() - entrants1.getMember().getSocHcpRed();
+                double slopeAdjusted = handicap * (e.getCourse().getSlopeRating() / 113);
+                entrants1.setCoursehcp((int) Math.round(slopeAdjusted * 0.95) );
+                entrantsRepo.save(entrants1);
+            }
+        }
+        if(!e.getNinetyFivePercent()) {
+            for (Entrants entrants1 : entrants) {
+                double handicap = entrants1.getMember().getHandicap() - entrants1.getMember().getSocHcpRed();
+                double slopeAdjusted = handicap * (e.getCourse().getSlopeRating() / 113);
+                entrants1.setCoursehcp((int) Math.round(slopeAdjusted));
+                entrantsRepo.save(entrants1);
+            }
         }
 
 
@@ -205,7 +229,6 @@ public class EventService {
         Event e = eventRepo.getEventById(eventId);
         List<Entrants> entrants = e.getEntrants();
         int fedExPoints = entrants.size();
-        if(!e.getQualifier()) {
             entrants.sort(Entrants.entrantScoreMedal);
             for(Entrants ent: entrants) {
                 Member m = ent.getMember();
@@ -213,7 +236,6 @@ public class EventService {
                 memberRepo.save(m);
                 fedExPoints--;
             }
-        }
         return entrants;
     }
 
@@ -223,5 +245,11 @@ public class EventService {
 
     public List<Event> getPreviousEventsList(long societyId) {
         return eventRepo.findAllByDateBefore(societyId);
+    }
+
+    public boolean withinRange(LocalDate date) {
+        LocalDate start = LocalDate.of(2022, Month.APRIL, 1);
+        LocalDate end = LocalDate.of(2022, Month.OCTOBER, 31);
+        return date.isAfter(start) && date.isBefore(end);
     }
 }
