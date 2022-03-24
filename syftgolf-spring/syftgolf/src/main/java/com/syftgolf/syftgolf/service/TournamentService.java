@@ -149,6 +149,7 @@ public class TournamentService {
         return t;
     }
 
+    //Upcoming tournaments
     public Page<Tournament> getPageOfTournaments(long societyId, Pageable page) {
         return tournamentRepo.findAllByDate(societyId, page);
     }

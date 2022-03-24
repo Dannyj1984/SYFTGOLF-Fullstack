@@ -1,12 +1,17 @@
 package com.syftgolf.syftgolf.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
+@Table(name = "tournament_entrant")
 @IdClass(TournamentMemberId.class)
 @Data
+@EqualsAndHashCode(exclude = { "member"})
 public class TournamentEntrant {
 
     @Id
@@ -25,9 +30,9 @@ public class TournamentEntrant {
     public TournamentEntrant() {
     }
 
-    public TournamentEntrant(Member member, Tournament multievent, double totalScore) {
+    public TournamentEntrant(Member member, Tournament tournament, double totalScore) {
         this.member = member;
-        this.tournament = multievent;
+        this.tournament = tournament;
         this.totalScore = totalScore;
     }
 

@@ -88,7 +88,7 @@ public class EventService {
         return new GenericResponse("Event saved");
     }
 
-    //Get a page of events
+    //Get a page of upcoming events
     public Page<Event> getEvents(Pageable pageable, long id) {
         return eventRepo.findAllByDate(pageable, id);
     }

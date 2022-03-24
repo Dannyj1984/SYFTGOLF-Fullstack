@@ -2,7 +2,9 @@ package com.syftgolf.syftgolf.controller;
 
 import com.syftgolf.syftgolf.entity.Tournament;
 import com.syftgolf.syftgolf.entity.vm.TournamentVM;
+import com.syftgolf.syftgolf.entity.vm.event.EventVM;
 import com.syftgolf.syftgolf.error.ApiError;
+import com.syftgolf.syftgolf.repository.TournamentRepo;
 import com.syftgolf.syftgolf.service.TournamentService;
 import com.syftgolf.syftgolf.shared.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,13 +48,13 @@ public class TournamentController {
     }
 
     @GetMapping("/tournament/{societyId:[0-9]+}")
-    public Page<Tournament> getTournaments(@PathVariable long societyId, Pageable page) {
-        return tournamentService.getPageOfTournaments(societyId, page);
+    public Page<TournamentVM> getTournaments(@PathVariable long societyId, Pageable page) {
+        return tournamentService.getPageOfTournaments(societyId, page).map(TournamentVM::new);
     }
 
     @GetMapping("/tournament/previous/{societyId:[0-9]+}")
-    public Page<Tournament> getPreviousTournaments(@PathVariable long societyId, Pageable page) {
-        return tournamentService.getPageOfPreviousTournaments(societyId, page);
+    public Page<TournamentVM> getPreviousTournaments(@PathVariable long societyId, Pageable page) {
+        return tournamentService.getPageOfPreviousTournaments(societyId, page).map(TournamentVM::new);
     }
 
     @GetMapping("/tournament/list/{societyId:[0-9]+}")
