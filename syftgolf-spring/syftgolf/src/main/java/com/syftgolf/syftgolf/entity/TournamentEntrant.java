@@ -25,15 +25,17 @@ public class TournamentEntrant {
     private Tournament tournament;
 
     @Column(name = "totalScore")
-    private double totalScore;
+    private double totalScore = 0;
+
+    @Column(name = "eventsPlayer")
+    private int eventsPlayed = 0;
 
     public TournamentEntrant() {
     }
 
-    public TournamentEntrant(Member member, Tournament tournament, double totalScore) {
+    public TournamentEntrant(Member member, Tournament tournament) {
         this.member = member;
         this.tournament = tournament;
-        this.totalScore = totalScore;
     }
 
     @Override

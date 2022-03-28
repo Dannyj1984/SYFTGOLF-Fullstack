@@ -163,6 +163,7 @@ public class EntrantsService {
         ScoreCard sc = new ScoreCard();
         List<Entrants> entrants = e.getEntrants();
         boolean entered = false;
+        int index = 0;
         //Check if member is already entered in this event
         for(Entrants entrants1 : entrants) {
             if (entrants1.getMember().getUsername().equals(m.getUsername())) {
@@ -178,10 +179,11 @@ public class EntrantsService {
             e.setCurrentEntrants(e.getCurrentEntrants() - 1);
             for(Entrants entrants1 : entrants) {
                 if (entrants1.getMember().getUsername().equals(m.getUsername())) {
-                    int index = entrants.indexOf(entrants1);
-                    entrants.remove(index);
+                    index = entrants.indexOf(entrants1);
                 }
             }
+            entrants.remove(index);
+            e.setEntrants(entrants);
             eventRepo.save(e);
 
             gr = new GenericResponse("Member Removed");

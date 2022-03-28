@@ -36,11 +36,10 @@ public class Tournament {
 
     public Tournament(){}
 
-    public Tournament(String name, LocalDate start, LocalDate end, String type, List<Event> events) {
+    public Tournament(String name, LocalDate start, LocalDate end, String type) {
         this.name = name;
         this.startDate = start;
         this.endDate = end;
-        this.events = events;
         this.type = type;
     }
 

@@ -39,12 +39,18 @@ public class EventService {
 
     EntrantsRepo entrantsRepo;
 
-    public EventService(EventRepo eventRepo, EntrantsRepo entrantsRepo, SocietyRepo societyRepo, CourseRepo courseRepo, MemberRepo memberRepo) {
+    TournamentRepo tournamentRepo;
+
+    TournamentEntrantRepo tournamentEntrantRepo;
+
+    public EventService(EventRepo eventRepo, TournamentRepo tournamentRepo, TournamentEntrantRepo tournamentEntrantRepo, EntrantsRepo entrantsRepo, SocietyRepo societyRepo, CourseRepo courseRepo, MemberRepo memberRepo) {
         this.eventRepo = eventRepo;
         this.entrantsRepo = entrantsRepo;
         this.societyRepo = societyRepo;
         this.courseRepo = courseRepo;
         this.memberRepo = memberRepo;
+        this.tournamentRepo = tournamentRepo;
+        this.tournamentEntrantRepo = tournamentEntrantRepo;
     }
 
     /**
@@ -138,6 +144,11 @@ public class EventService {
         GenericResponse response = null;
         List<Member> members = new ArrayList<>();
         List<Entrants> entrants = e.getEntrants();
+        Tournament t = new Tournament();
+        try {
+            t = e.getTournament();
+        } catch (Error error) {
+        }
         for(Entrants ent : entrants) {
             members.add(ent.getMember());
         }
@@ -195,6 +206,24 @@ public class EventService {
                 entrantsRepo.save(entrants1);
             }
         }
+            if (t == null) {
+            } else {
+                List<Tournament> tournaments = tournamentRepo.findAll();
+                for (Tournament tournament : tournaments) {
+                    if (t.equals(tournament)) {
+                        List<TournamentEntrant> tEntrants = tournamentEntrantRepo.findAllByTournamentOrderByTotalScoreAsc(t);
+
+                        for (TournamentEntrant te : tEntrants) {
+                            for (Entrants en : entrants) {
+                                if (te.getMember().getUsername().equals(en.getMember().getUsername())) {
+                                    te.setEventsPlayed(te.getEventsPlayed() +1);
+                                    tournamentEntrantRepo.save(te);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
 
         return response;

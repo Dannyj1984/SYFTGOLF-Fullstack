@@ -84,7 +84,7 @@ public class TournamentController {
 
 
     @PutMapping("/management/tournament/complete/{tournamentId:[0-9]+}")
-    Tournament completeTournament(@PathVariable long tournamentId) {
+    TournamentVM completeTournament(@PathVariable long tournamentId) {
         return tournamentService.complete(tournamentId);
     }
 

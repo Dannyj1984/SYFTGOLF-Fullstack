@@ -138,15 +138,15 @@ public class TournamentService {
         }
 
     /**
-     *
      * @param tournamentId id of tournament to complete
      * @return the completed tournament
      */
-    public Tournament complete(long tournamentId) {
+    public TournamentVM complete(long tournamentId) {
         Tournament t = tournamentRepo.findTournamentById(tournamentId);
+        TournamentVM tvm = new TournamentVM(t);
         t.setStatus("Complete");
         tournamentEntrantService.getEntrants(t.getId());
-        return t;
+        return tvm;
     }
 
     //Upcoming tournaments

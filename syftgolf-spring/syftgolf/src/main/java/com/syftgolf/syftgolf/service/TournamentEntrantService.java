@@ -43,11 +43,11 @@ public class TournamentEntrantService {
          * @param eventId name of the event
          * @param memberId id of the member to enter
          */
-        public GenericResponse save(long memberId, long eventId) {
+        public GenericResponse save(long eventId, long memberId) {
             GenericResponse gr = new GenericResponse("This member is already entered in this event");
             Tournament t = tournamentRepo.findTournamentById(eventId);
             Member m = memberRepo.findMemberById(memberId);
-            TournamentEntrant en = new TournamentEntrant(m, t, 0);
+            TournamentEntrant en = new TournamentEntrant(m, t);
 
             //Update the current entrants entered in a tournament by 1
             t.setNoOfEntrants(t.getNoOfEntrants() + 1);
