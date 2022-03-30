@@ -143,8 +143,8 @@ public class TournamentService {
      */
     public TournamentVM complete(long tournamentId) {
         Tournament t = tournamentRepo.findTournamentById(tournamentId);
-        TournamentVM tvm = new TournamentVM(t);
         t.setStatus("Complete");
+        TournamentVM tvm = new TournamentVM(t);
         tournamentEntrantService.getEntrants(t.getId());
         return tvm;
     }
@@ -160,5 +160,14 @@ public class TournamentService {
 
     public List<Tournament> listTournaments(long societyId) {
         return tournamentRepo.findAllBySocietyIdOrderByNameAsc(societyId);
+    }
+
+    /**
+     *
+     * @param tournamentName of the member
+     * @return the member
+     */
+    public Tournament getTournament( String tournamentName) {
+        return tournamentRepo.findTournamentByName(tournamentName);
     }
 }

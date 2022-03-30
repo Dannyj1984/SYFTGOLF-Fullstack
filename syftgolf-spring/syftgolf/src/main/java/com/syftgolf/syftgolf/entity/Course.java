@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Entity
@@ -27,12 +28,21 @@ public class Course {
     @NotNull
     private double courseRating;
 
+    @NotNull
+    @Pattern(regexp = "^(([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([AZa-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z])))) [0-9][A-Za-z]{2}))$", message = "{syftgolf.constraints.postcode.Pattern.message}")
+    private String postcode;
+
+    @NotNull
+    private String country;
+
     public Course() {}
 
-    public Course(String name, int par, double slopeRating, double courseRating) {
+    public Course(String name, int par, double slopeRating, String postcode, String country, double courseRating) {
         this.name = name;
         this.par = par;
         this.slopeRating = slopeRating;
+        this.postcode = postcode;
+        this.country = country;
         this.courseRating = courseRating;
     }
 

@@ -44,7 +44,7 @@ public class EntrantsRepoTest {
 
     @Test
     public void getEntrantList_ifAnEventHasEntrants_returnEntrantsList() {
-        testEntityManager.persist(new Course("Glen", 72, 69.2, 121));
+        testEntityManager.persist(new Course("Glen", 72, 69.2, "SK15 3DT", "GB", 121));
         testEntityManager.persist(new Event("Glen", LocalDate.of(2022, Month.OCTOBER, 1) , 156, "Stableford", "Some info", 20.00, true,true, courseRepo.findCourseByName("Glen")));
         testEntityManager.persist(TestUtil.createValidMember());
         Entrants en = new Entrants(memberRepo.findMemberByUsername("test-user"), eventRepo.findEventByName("Glen"), 0, 0);
@@ -59,7 +59,7 @@ public class EntrantsRepoTest {
 
     @Test
     public void getMemberDetails_ifEventHasEntrants_returnMemberDetailsForASpecificMember() {
-        testEntityManager.persist(new Course("Glen", 72, 69.2, 121));
+        testEntityManager.persist(new Course("Glen", 72, 69.2, "SK15 3DT", "GB", 121));
         testEntityManager.persist(new Event("Glen", LocalDate.of(2022, Month.OCTOBER, 1) , 156, "Stableford", "Some info", 20.00, true,true, courseRepo.findCourseByName("Glen")));
         testEntityManager.persist(TestUtil.createValidMember());
         Entrants en = new Entrants(memberRepo.findMemberByUsername("test-user"), eventRepo.findEventByName("Glen"), 0, 0);
@@ -76,7 +76,7 @@ public class EntrantsRepoTest {
 
     @Test
     public void deleteEntrant_whenMemberExistsInEntrants_RemoveEntrant() {
-        testEntityManager.persist(new Course("Glen", 72, 69.2, 121));
+        testEntityManager.persist(new Course("Glen", 72, 69.2, "SK15 3DT", "GB", 121));
         testEntityManager.persist(new Event("Glen", LocalDate.of(2022, Month.OCTOBER, 1) , 156, "Stableford", "Some info", 20.00, true, true, courseRepo.findCourseByName("Glen")));
         testEntityManager.persist(TestUtil.createValidMember());
         Entrants en = new Entrants(memberRepo.findMemberByUsername("test-user"), eventRepo.findEventByName("Glen"), 0, 0);

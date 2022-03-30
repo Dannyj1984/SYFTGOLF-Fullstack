@@ -43,7 +43,7 @@ public class TestUtil {
     }
 
     public static Course createValidCourse() {
-        return new Course("Glen", 72, 69.2, 121);
+        return new Course("Glen", 72, 69.2, "SK15 3DT", "GB", 121);
     }
 
     public static Event createValidStablefordEvent() {

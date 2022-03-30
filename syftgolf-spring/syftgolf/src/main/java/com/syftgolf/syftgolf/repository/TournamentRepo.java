@@ -24,4 +24,6 @@ public interface TournamentRepo extends JpaRepository<Tournament, Long> {
     Page<Tournament> findAllByDateBefore(Pageable pageable, long societyId);
 
     List<Tournament> findAllBySocietyIdOrderByNameAsc(long societyId);
+
+    Tournament findTournamentByName(String tournamentName);
 }

@@ -61,6 +61,7 @@ public class CourseService {
         c.setCourseRating(course.getCourseRating());
         c.setName(course.getName());
         c.setPar(course.getPar());
+        c.setPostcode(course.getPostcode());
         c.setSlopeRating(course.getSlopeRating());
         courseRepo.save(c);
 

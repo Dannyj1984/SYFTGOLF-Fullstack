@@ -1,8 +1,10 @@
 package com.syftgolf.syftgolf.controller;
 
+import com.syftgolf.syftgolf.entity.Member;
 import com.syftgolf.syftgolf.entity.Tournament;
 import com.syftgolf.syftgolf.entity.vm.TournamentVM;
 import com.syftgolf.syftgolf.entity.vm.event.EventVM;
+import com.syftgolf.syftgolf.entity.vm.member.MemberVM;
 import com.syftgolf.syftgolf.error.ApiError;
 import com.syftgolf.syftgolf.repository.TournamentRepo;
 import com.syftgolf.syftgolf.service.TournamentService;
@@ -47,9 +49,15 @@ public class TournamentController {
         return tournamentService.save(societyId, tournament);
     }
 
-    @GetMapping("/tournament/{societyId:[0-9]+}")
+    @GetMapping("/tournaments/{societyId:[0-9]+}")
     public Page<TournamentVM> getTournaments(@PathVariable long societyId, Pageable page) {
         return tournamentService.getPageOfTournaments(societyId, page).map(TournamentVM::new);
+    }
+
+    @GetMapping("/tournament/{tournamentName}")
+    public TournamentVM getTournament(@PathVariable String tournamentName) {
+        Tournament tournament = tournamentService.getTournament(tournamentName);
+        return new TournamentVM(tournament);
     }
 
     @GetMapping("/tournament/previous/{societyId:[0-9]+}")
