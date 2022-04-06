@@ -40,6 +40,10 @@ public class Event {
     private Boolean ninetyFivePercent;
 
     @NotNull
+    @Column(name = "major")
+    private Boolean major;
+
+    @NotNull
     private String type;
 
     private String info;

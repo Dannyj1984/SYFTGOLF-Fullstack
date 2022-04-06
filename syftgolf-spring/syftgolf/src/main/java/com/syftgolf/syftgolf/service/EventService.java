@@ -260,10 +260,17 @@ public class EventService {
         int fedExPoints = entrants.size();
             entrants.sort(Entrants.entrantScoreMedal);
             for(Entrants ent: entrants) {
-                Member m = ent.getMember();
-                m.setFedExPoints(m.getFedExPoints() + fedExPoints);
-                memberRepo.save(m);
-                fedExPoints--;
+                if(e.getMajor()) {
+                    Member m = ent.getMember();
+                    m.setFedExPoints(m.getFedExPoints() + (fedExPoints * 2));
+                    memberRepo.save(m);
+                    fedExPoints--;
+                } else {
+                    Member m = ent.getMember();
+                    m.setFedExPoints(m.getFedExPoints() + fedExPoints);
+                    memberRepo.save(m);
+                    fedExPoints--;
+                }
             }
         return entrants;
     }

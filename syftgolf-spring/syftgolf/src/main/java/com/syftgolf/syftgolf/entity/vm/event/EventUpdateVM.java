@@ -14,6 +14,7 @@ public class EventUpdateVM {
     private LocalDate date;
     private Boolean qualifier;
     private Boolean ninetyFivePercent;
+    private Boolean major;
     private String type;
     private int maxEntrants;
     private String info;

@@ -25,6 +25,7 @@ public class EventVM {
     private String info;
     private Boolean qualifier;
     private Boolean ninetyFivePercent;
+    private Boolean major;
     private String winner;
     private String status;
     private List<TeeSheet> teesheet;
@@ -45,5 +46,6 @@ public class EventVM {
         this.setTeesheet(event.getTeeSheets());
         this.setEntrants(event.getEntrants());
         this.setNinetyFivePercent(event.getNinetyFivePercent());
+        this.setMajor(event.getMajor());
     }
 }
