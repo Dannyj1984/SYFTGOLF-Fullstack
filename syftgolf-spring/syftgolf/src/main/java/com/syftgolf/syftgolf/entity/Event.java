@@ -48,7 +48,7 @@ public class Event {
 
     private String info;
 
-    private String status = "open";
+    private String status = "Open";
 
     //For testing
 

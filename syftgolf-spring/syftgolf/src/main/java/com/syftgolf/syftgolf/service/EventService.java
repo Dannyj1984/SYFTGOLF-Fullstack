@@ -79,19 +79,28 @@ public class EventService {
      * @param event the event body to be saved
      * @return a message to say the event is saved
      */
-    public GenericResponse save(long societyId, long courseId, Event event) {
+    public GenericResponse save(long societyId, long courseId, Event event) throws NotFoundException {
+        GenericResponse gr = new GenericResponse("This course does not have all it's holes setup. Please do this before creating an event here.");
         Course course = courseRepo.findById(courseId);
-        List<Event> ev = course.getEvents();
-        ev.add(event);
-        event.setCourse(course);
-        societyRepo.findById(societyId)
-                .ifPresent(society -> {
-                    List<Event> eve = society.getEvents();
-                    eve.add(event);
-                    event.setSociety(society);
-                    eventRepo.save(event);
-                });
-        return new GenericResponse("Event saved");
+        int holes = course.getHoles().size();
+        System.out.println(holes);
+        if(holes == 18) {
+            List<Event> ev = course.getEvents();
+            ev.add(event);
+            event.setCourse(course);
+            societyRepo.findById(societyId)
+                    .ifPresent(society -> {
+                        List<Event> eve = society.getEvents();
+                        eve.add(event);
+                        event.setSociety(society);
+                        eventRepo.save(event);
+                    });
+            gr = new GenericResponse("Event saved");
+        } else {
+            throw new NotFoundException("This course does not have a complete set of holes. Please set the holes for this course before using it in an event");
+        }
+        System.out.println(gr);
+        return gr;
     }
 
     //Get a page of upcoming events
@@ -121,6 +130,7 @@ public class EventService {
                     event.setType(eventVM.getType());
                     event.setCost(eventVM.getCost());
                     event.setNinetyFivePercent(eventVM.getNinetyFivePercent());
+                    event.setMajor(eventVM.getMajor());
                     event.setMaxEntrants(eventVM.getMaxEntrants());
                     event.setWinner(eventVM.getWinner());
 //                    Course c = courseRepo.findByName(eventVM.getName());
@@ -139,20 +149,37 @@ public class EventService {
      * @return a message
      */
     public GenericResponse complete(long eventId) {
+        //Get event details
         Event e = eventRepo.getById(eventId);
+
         double winningMargin = 0.0;
         GenericResponse response = null;
         List<Member> members = new ArrayList<>();
+
+        //create a list of entrants from those in the event
         List<Entrants> entrants = e.getEntrants();
+
+        //Set the tournament if event is part of a tournament
         Tournament t = new Tournament();
         try {
             t = e.getTournament();
         } catch (Error error) {
         }
+
+        //Add members in the event to the member list
         for(Entrants ent : entrants) {
             members.add(ent.getMember());
         }
 
+        /*
+        * If stableford event type - get the list of entrants for the event,
+        * Sort the entrants by their score, highest score first.
+        * Increment the wins for the member in first place by 1
+        * set the event status to complete
+        * set the winner of the event
+        * Set the winning margin
+        * Apply any society hcp reductions
+        */
         if(e.getType().equals("Stableford")) {
             List<Entrants> en = e.getEntrants();
             //Sort list of entrants from highest score to lowest
@@ -164,8 +191,18 @@ public class EventService {
             eventRepo.save(e);
             response = new GenericResponse("Event completed, winner is " + sortedEntrants.get(0).getMember().getFirstName() + " " + sortedEntrants.get(0).getMember().getSurname() + " with a score of " + sortedEntrants.get(0).getScore());
             winningMargin = sortedEntrants.get(0).getScore() - sortedEntrants.get(1).getScore();
-            getSortedEntrantMember(e, winningMargin, sortedEntrants);
+            setSocietyReductions(e, winningMargin, sortedEntrants);
         }
+
+        /*
+         * If medal event type - get the list of entrants for the event,
+         * Sort the entrants by their score, lowest score first.
+         * Increment the wins for the member in first place by 1
+         * set the event status to complete
+         * set the winner of the event
+         * Set the winning margin
+         * Apply any society hcp reductions
+         */
         if(e.getType().equals("Medal")) {
             System.out.println("Event is medal");
             List<Entrants> en = e.getEntrants();
@@ -178,11 +215,11 @@ public class EventService {
             eventRepo.save(e);
             response =  new GenericResponse("Event completed, winner is " + sortedEntrants.get(0).getMember().getFirstName() + " " + sortedEntrants.get(0).getMember().getSurname());
             winningMargin = sortedEntrants.get(1).getScore() - sortedEntrants.get(0).getScore();
-            getSortedEntrantMember(e, winningMargin, sortedEntrants);
+            setSocietyReductions(e, winningMargin, sortedEntrants);
         }
 
-        //Add 1 to the number of events played for this member if the event is between april and october
-        if(withinRange(e.getDate())) {
+        //Add 1 to the number of events played for this member if the event is between april 1st and october 14th
+        if(withinSYFTCUP(e.getDate())) {
             for (Member mem : members) {
                 mem.setEventsPlayed(mem.getEventsPlayed() + 1);
             }
@@ -194,7 +231,7 @@ public class EventService {
             for (Entrants entrants1 : entrants) {
                 double handicap = entrants1.getMember().getHandicap() - entrants1.getMember().getSocHcpRed();
                 double slopeAdjusted = handicap * (e.getCourse().getSlopeRating() / 113);
-                entrants1.setCoursehcp((int) Math.round(slopeAdjusted * 0.95) );
+                entrants1.setCoursehcp((int) Math.round(slopeAdjusted * 0.95) - entrants1.getMember().getSocHcpRed() );
                 entrantsRepo.save(entrants1);
             }
         }
@@ -202,7 +239,7 @@ public class EventService {
             for (Entrants entrants1 : entrants) {
                 double handicap = entrants1.getMember().getHandicap() - entrants1.getMember().getSocHcpRed();
                 double slopeAdjusted = handicap * (e.getCourse().getSlopeRating() / 113);
-                entrants1.setCoursehcp((int) Math.round(slopeAdjusted));
+                entrants1.setCoursehcp((int) Math.round(slopeAdjusted) - entrants1.getMember().getSocHcpRed());
                 entrantsRepo.save(entrants1);
             }
         }
@@ -229,9 +266,13 @@ public class EventService {
         return response;
     }
 
-    private void getSortedEntrantMember(Event e, double winningMargin, List<Entrants> sortedEntrants) {
+    /*
+    Get the member in first place
+    If the event has 6 or more entrants, set the winners society reduction, depending on the winning margin.
+     */
+    private void setSocietyReductions(Event e, double winningMargin, List<Entrants> sortedEntrants) {
         Member m = sortedEntrants.get(0).getMember();
-        if(e.getCurrentEntrants() >= 6) {
+        if(sortedEntrants.size() >= 6) {
             if (winningMargin < 6.0) {
                 m.setSocHcpRed(m.getSocHcpRed() + 1);
                 memberRepo.save(m);
@@ -258,9 +299,10 @@ public class EventService {
         Event e = eventRepo.getEventById(eventId);
         List<Entrants> entrants = e.getEntrants();
         int fedExPoints = entrants.size();
+        if(e.getType().equals("Medal")) {
             entrants.sort(Entrants.entrantScoreMedal);
-            for(Entrants ent: entrants) {
-                if(e.getMajor()) {
+            for (Entrants ent : entrants) {
+                if (e.getMajor()) {
                     Member m = ent.getMember();
                     m.setFedExPoints(m.getFedExPoints() + (fedExPoints * 2));
                     memberRepo.save(m);
@@ -272,6 +314,23 @@ public class EventService {
                     fedExPoints--;
                 }
             }
+        }
+        if(e.getType().equals("Stableford")) {
+            entrants.sort(Entrants.entrantScoreStableford);
+            for (Entrants ent : entrants) {
+                if (e.getMajor()) {
+                    Member m = ent.getMember();
+                    m.setFedExPoints(m.getFedExPoints() + (fedExPoints * 2));
+                    memberRepo.save(m);
+                    fedExPoints--;
+                } else {
+                    Member m = ent.getMember();
+                    m.setFedExPoints(m.getFedExPoints() + fedExPoints);
+                    memberRepo.save(m);
+                    fedExPoints--;
+                }
+            }
+        }
         return entrants;
     }
 
@@ -283,9 +342,9 @@ public class EventService {
         return eventRepo.findAllByDateBefore(societyId);
     }
 
-    public boolean withinRange(LocalDate date) {
+    public boolean withinSYFTCUP(LocalDate date) {
         LocalDate start = LocalDate.of(2022, Month.APRIL, 1);
-        LocalDate end = LocalDate.of(2022, Month.OCTOBER, 31);
+        LocalDate end = LocalDate.of(2022, Month.OCTOBER, 14);
         return date.isAfter(start) && date.isBefore(end);
     }
 }

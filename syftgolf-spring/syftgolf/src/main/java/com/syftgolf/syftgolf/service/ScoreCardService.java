@@ -54,13 +54,14 @@ public class ScoreCardService {
     public void update(long eventId, long memberId, int currentHole, ScoreCardVM scorecard) {
         Event e = eventRepo.findEventById(eventId);
         Member m = memberRepo.findMemberById(memberId);
-        double courseHandicapDouble = m.getHandicap()/113*e.getCourse().getSlopeRating();
+        double courseHandicapDouble = m.getHandicap()/113*e.getCourse().getSlopeRating(); //4.1 / 113 * 130 = 4.7168
         int courseHcp = 0;
+        courseHcp = (int) Math.round(courseHandicapDouble); //5
         if(e.getNinetyFivePercent()) {
-            courseHandicapDouble = courseHandicapDouble * 0.95;
+            courseHandicapDouble = (courseHcp * 0.95); //4.75
         }
+
         courseHcp = (int) Math.round(courseHandicapDouble) - m.getSocHcpRed();
-        System.out.println(courseHcp);
         int stableFordTotal = 0;
         int medalTotal = 0;
         int nettTotal = 0;

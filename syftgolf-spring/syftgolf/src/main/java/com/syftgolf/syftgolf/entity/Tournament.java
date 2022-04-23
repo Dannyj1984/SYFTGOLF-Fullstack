@@ -16,18 +16,18 @@ public class Tournament {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @NotNull(message = "{syftgolf.constraints.tournamentName.NotNull.message}")
     private String name;
 
-    @NotNull
+    @NotNull(message = "{syftgolf.constraints.date.NotNull.message}")
     private LocalDate startDate;
 
-    @NotNull
+    @NotNull(message = "{syftgolf.constraints.date.NotNull.message}")
     private LocalDate endDate;
 
     private int noOfEvents = 0;
 
-    @NotNull
+    @NotNull(message = "{syftgolf.constraints.type.NotNull.message}")
     private String type;
 
     private int noOfEntrants = 0;

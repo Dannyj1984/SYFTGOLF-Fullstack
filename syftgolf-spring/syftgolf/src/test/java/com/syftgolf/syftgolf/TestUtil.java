@@ -1,6 +1,7 @@
 package com.syftgolf.syftgolf;
 
 import com.syftgolf.syftgolf.entity.*;
+import com.syftgolf.syftgolf.repository.SocietyRepo;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
