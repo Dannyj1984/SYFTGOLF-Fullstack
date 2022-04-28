@@ -6,6 +6,7 @@ import com.syftgolf.syftgolf.entity.Matchplay;
 import com.syftgolf.syftgolf.entity.RoundRobin;
 import com.syftgolf.syftgolf.entity.vm.event.EventVM;
 import com.syftgolf.syftgolf.entity.vm.matchplay.MatchPlayVM;
+import com.syftgolf.syftgolf.entity.vm.matchplay.RoundRobinVM;
 import com.syftgolf.syftgolf.repository.EventRepo;
 import com.syftgolf.syftgolf.repository.MatchPlayRepo;
 import com.syftgolf.syftgolf.service.EventService;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -87,6 +89,16 @@ public class MatchPlayController {
 
     @PutMapping("/matchplay/round/{matchplayId}")
     void getMatch(@PathVariable long matchplayId){ matchPlayService.createRoundRobin(matchplayId);}
+
+
+    @PutMapping("/matchplay/scores/{roundRobinId:[0-9]+}/{matchPlayId:[0-9]+}/{p1Score}/{p2Score}")
+    void updateScores(@PathVariable long roundRobinId, @PathVariable long matchPlayId, @PathVariable int p1Score, @PathVariable int p2Score) {
+        System.out.println(roundRobinId);
+        System.out.println(matchPlayId);
+        System.out.println(p1Score);
+        System.out.println(p2Score);
+        roundRobinService.updateScores(roundRobinId, matchPlayId, p1Score, p2Score);
+    }
 
 
 }

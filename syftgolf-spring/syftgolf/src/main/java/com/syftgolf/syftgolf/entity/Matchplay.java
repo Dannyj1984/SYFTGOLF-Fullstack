@@ -35,7 +35,7 @@ public class Matchplay {
     }
 
     /**
-     * Link a list of entrants to an event
+     * Link a list of entrants to an matchplay
      */
     @JsonIgnore
     @OneToMany(mappedBy = "matchplay", fetch = FetchType.LAZY)

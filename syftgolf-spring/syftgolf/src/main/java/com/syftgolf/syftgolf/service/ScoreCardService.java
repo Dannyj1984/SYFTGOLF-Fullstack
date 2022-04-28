@@ -51,7 +51,7 @@ public class ScoreCardService {
      * @param scorecard scorecard object to update with
      */
     //TODO make this more efficient
-    public void update(long eventId, long memberId, int currentHole, ScoreCardVM scorecard) {
+    public ScoreCard update(long eventId, long memberId, int currentHole, ScoreCardVM scorecard) {
         Event e = eventRepo.findEventById(eventId);
         Member m = memberRepo.findMemberById(memberId);
         double courseHandicapDouble = m.getHandicap()/113*e.getCourse().getSlopeRating(); //4.1 / 113 * 130 = 4.7168
@@ -66,6 +66,7 @@ public class ScoreCardService {
         int medalTotal = 0;
         int nettTotal = 0;
         List<Entrants> en = entrantsRepo.findAllByEvent(e);
+        //Loop over entrants to find the currrent entrant and set scores accordingly
         for(Entrants ent : en) {
             if (ent.getMember().equals(m)) {
                 //Hole 1
@@ -152,39 +153,39 @@ public class ScoreCardService {
                 }
 
 
-                    //Hole 3
-                    if(scorecard.getH3Score() > 0) {
-                    ent.getScoreCard().setH3Score(scorecard.getH3Score());
-                    ent.setCurrentHole(currentHole);
-                    //If the players course handicap is more than or equal to the stroke index for the hole, set nett score to score -1
-                    if ((courseHcp <= 18) && (courseHcp >= e.getCourse().getHoles().get(2).getStrokeIndex())) {
-                        ent.getScoreCard().setH3NettScore(scorecard.getH3Score() - 1);
-                        //Set points for the first hole as per the setPoints helper method.
-                    } else if((courseHcp > 18) && (courseHcp >= (e.getCourse().getHoles().get(2).getStrokeIndex() + 18))) {
-                        ent.getScoreCard().setH3NettScore(scorecard.getH3Score() -2);
-                    } else if((courseHcp > 18) && (courseHcp < (e.getCourse().getHoles().get(2).getStrokeIndex() + 18))) {
-                        ent.getScoreCard().setH3NettScore(scorecard.getH3Score() -1);
-                    } else {
-                        ent.getScoreCard().setH3NettScore(scorecard.getH3Score());
-                    }
-                    ent.getScoreCard().setH3Points(setPoints(ent.getScoreCard().getH3NettScore(), e.getCourse().getHoles().get(2).getPar()));
-
-                    medalTotal += ent.getScoreCard().getH3Score();
-                    stableFordTotal += ent.getScoreCard().getH3Points();
-                    nettTotal += ent.getScoreCard().getH3NettScore();
-                    ent.getScoreCard().setTotalStablefordScore(stableFordTotal);
-                    ent.getScoreCard().setTotalNettScore(nettTotal);
-                    ent.getScoreCard().setTotalMedalScore(medalTotal);
-                    if (e.getType().equals("Stableford")) {
-                        ent.setScore(stableFordTotal);
-                    }
-                    if (e.getType().equals("Medal")) {
-                        ent.setScore(nettTotal);
-                    }
-                    entrantsRepo.save(ent);
-                    scoreCardRepo.save(ent.getScoreCard());
-
+                //Hole 3
+                if(scorecard.getH3Score() > 0) {
+                ent.getScoreCard().setH3Score(scorecard.getH3Score());
+                ent.setCurrentHole(currentHole);
+                //If the players course handicap is more than or equal to the stroke index for the hole, set nett score to score -1
+                if ((courseHcp <= 18) && (courseHcp >= e.getCourse().getHoles().get(2).getStrokeIndex())) {
+                    ent.getScoreCard().setH3NettScore(scorecard.getH3Score() - 1);
+                    //Set points for the first hole as per the setPoints helper method.
+                } else if((courseHcp > 18) && (courseHcp >= (e.getCourse().getHoles().get(2).getStrokeIndex() + 18))) {
+                    ent.getScoreCard().setH3NettScore(scorecard.getH3Score() -2);
+                } else if((courseHcp > 18) && (courseHcp < (e.getCourse().getHoles().get(2).getStrokeIndex() + 18))) {
+                    ent.getScoreCard().setH3NettScore(scorecard.getH3Score() -1);
+                } else {
+                    ent.getScoreCard().setH3NettScore(scorecard.getH3Score());
                 }
+                ent.getScoreCard().setH3Points(setPoints(ent.getScoreCard().getH3NettScore(), e.getCourse().getHoles().get(2).getPar()));
+
+                medalTotal += ent.getScoreCard().getH3Score();
+                stableFordTotal += ent.getScoreCard().getH3Points();
+                nettTotal += ent.getScoreCard().getH3NettScore();
+                ent.getScoreCard().setTotalStablefordScore(stableFordTotal);
+                ent.getScoreCard().setTotalNettScore(nettTotal);
+                ent.getScoreCard().setTotalMedalScore(medalTotal);
+                if (e.getType().equals("Stableford")) {
+                    ent.setScore(stableFordTotal);
+                }
+                if (e.getType().equals("Medal")) {
+                    ent.setScore(nettTotal);
+                }
+                entrantsRepo.save(ent);
+                scoreCardRepo.save(ent.getScoreCard());
+
+            }
 
                 //Hole 4
 
@@ -196,13 +197,14 @@ public class ScoreCardService {
                         ent.getScoreCard().setH4NettScore(scorecard.getH4Score() - 1);
                         //Set points for the first hole as per the setPoints helper method.
                     } else if((courseHcp > 18) && (courseHcp >= (e.getCourse().getHoles().get(3).getStrokeIndex() + 18))) {
-                        ent.getScoreCard().setH3NettScore(scorecard.getH3Score() -2);
+                        ent.getScoreCard().setH4NettScore(scorecard.getH4Score() -2);
                     } else if((courseHcp > 18) && (courseHcp < (e.getCourse().getHoles().get(3).getStrokeIndex() + 18))) {
                         ent.getScoreCard().setH4NettScore(scorecard.getH4Score() -1);
                     } else {
                         ent.getScoreCard().setH4NettScore(scorecard.getH4Score());
                     }
                     ent.getScoreCard().setH4Points(setPoints(ent.getScoreCard().getH4NettScore(), e.getCourse().getHoles().get(3).getPar()));
+
                     medalTotal += ent.getScoreCard().getH4Score();
                     stableFordTotal += ent.getScoreCard().getH4Points();
                     nettTotal += ent.getScoreCard().getH4NettScore();
@@ -696,11 +698,12 @@ public class ScoreCardService {
                     }
                     entrantsRepo.save(ent);
                     scoreCardRepo.save(ent.getScoreCard());
-
                 }
             }
+
         }
 
+        return new ScoreCard();
     }
 
     /**
