@@ -180,12 +180,4 @@ public class Member implements UserDetails, Serializable {
     @ManyToOne
     @JoinColumn(name = "society_id")
     private Society society;
-
-    @Override
-    public String toString() {
-        return "Member{" +
-                "username='" + username + '\'' +
-                "society='" + society + '\'' +
-                '}';
-    }
 }

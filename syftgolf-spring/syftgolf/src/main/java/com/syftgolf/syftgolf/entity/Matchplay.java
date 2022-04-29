@@ -1,10 +1,7 @@
 package com.syftgolf.syftgolf.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,9 +9,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@ToString
 public class Matchplay {
 
     @Id
@@ -44,6 +41,16 @@ public class Matchplay {
     @JsonIgnore
     @OneToMany(mappedBy = "matchplay")
     private List<RoundRobin> roundrobin;
+
+    @JsonIgnore
+    @OneToMany
+    @JoinColumn(name = "player_id")
+    private List<MatchPlayer> semiFinalists;
+
+    @JsonIgnore
+    @OneToMany
+    @JoinColumn(name = "finalist_id")
+    private List<MatchPlayer> finalists;
 
     /**
      * Link an event to a society

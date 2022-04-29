@@ -34,10 +34,23 @@ public class MatchPlayer {
     @Column(name = "grouping")
     int grouping = 0;
 
+    @Column(name = "sf_score")
+    int sfScore = 0;
+
+    @Column(name = "f_score")
+    int fScore = 0;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "players")
     private List<RoundRobin> rounds;
 
+    @ManyToOne
+    @JoinColumn(name = "match_id", insertable = false, updatable = false)
+    private Matchplay match;
+
+    @ManyToOne
+    @JoinColumn(name = "final_id", insertable = false, updatable = false)
+    private Matchplay matches;
 
     public MatchPlayer() {}
 

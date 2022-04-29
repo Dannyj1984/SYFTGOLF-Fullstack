@@ -6,8 +6,10 @@ import com.syftgolf.syftgolf.shared.GenericResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MatchPlayService {
@@ -67,14 +69,14 @@ public class MatchPlayService {
         return new GenericResponse("Matchplay saved");
     }
 
-    public Matchplay update(long matchplayid, Matchplay matchplay) {
-        matchPlayRepo.findById(matchplayid)
+    public Matchplay update(long matchPlayId, Matchplay matchplay) {
+        matchPlayRepo.findById(matchPlayId)
                 .ifPresent(mp -> {
                     mp.setName(matchplay.getName());
                     mp.setYear(matchplay.getYear());
                     matchPlayRepo.save(mp);
                 });
-        return matchPlayRepo.getById(matchplayid);
+        return matchPlayRepo.getById(matchPlayId);
     }
 
     public List<MatchPlayer> get(long matchplayId) {
@@ -110,8 +112,6 @@ public class MatchPlayService {
         List<MatchPlayer> group1 = new ArrayList<>();
         List<MatchPlayer> group2 = new ArrayList<>();
         List<MatchPlayer> group3 = new ArrayList<>();
-
-        System.out.println(players.size());
 
         for(MatchPlayer mp : players) {
             if(mp.getGrouping() == 1) {
@@ -217,4 +217,73 @@ public class MatchPlayService {
         roundRobinRepo.saveAll(rrList);
 
     }
+
+    public Matchplay completeGroups(long matchPlayId) {
+        //Get players and sort into their respective groupings
+        Matchplay mp = matchPlayRepo.findMatchplayById(matchPlayId);
+        List<MatchPlayer> semifinalists = new ArrayList<>();
+        List<MatchPlayer> runnersUp = new ArrayList<>();
+        List<MatchPlayer> players = mp.getMatchPlayer();
+        List<MatchPlayer> group1 = new ArrayList<>();
+        List<MatchPlayer> group2 = new ArrayList<>();
+        List<MatchPlayer> group3 = new ArrayList<>();
+
+        for(MatchPlayer player : players) {
+            if(player.getGrouping() == 1) {
+                group1.add(player);
+            }
+            if(player.getGrouping() == 2) {
+                group2.add(player);
+            }
+            if(player.getGrouping() == 3) {
+                group3.add(player);
+            }
+        }
+
+        //Sort groups by leading points and then on scores if there is a tie.
+        Comparator<MatchPlayer> compareByPoints = Comparator.comparing(MatchPlayer::getPoints).thenComparing(MatchPlayer::getScore);
+        List<MatchPlayer> group1Result = group1.stream().sorted(compareByPoints).collect(Collectors.toList());
+        List<MatchPlayer> group2Result = group2.stream().sorted(compareByPoints).collect(Collectors.toList());
+        List<MatchPlayer> group3Result = group3.stream().sorted(compareByPoints).collect(Collectors.toList());
+
+        //Add group winners to semi finals list
+        semifinalists.add(CollectionUtils.lastElement(group1Result));
+        semifinalists.add(CollectionUtils.lastElement(group2Result));
+        semifinalists.add(CollectionUtils.lastElement(group3Result));
+        //Add second place to runner up list
+        runnersUp.add(group1Result.get(group1Result.size()-2));
+        runnersUp.add(group2Result.get(group2Result.size()-2));
+        runnersUp.add(group3Result.get(group3Result.size()-2));
+        runnersUp.stream().sorted(compareByPoints).collect(Collectors.toList());
+        semifinalists.add(CollectionUtils.lastElement(runnersUp));
+        mp.setSemiFinalists(semifinalists);
+        matchPlayRepo.save(mp);
+        System.out.println(matchPlayRepo.findMatchplayById(matchPlayId).getSemiFinalists());
+
+
+        return matchPlayRepo.findMatchplayById(matchPlayId);
+    }
+
+    public List<MatchPlayer> getSemis(long matchPlayId) {
+        List<MatchPlayer> semis = new ArrayList<>();
+        try {
+            Matchplay mp = matchPlayRepo.findMatchplayById(matchPlayId);
+            semis =  mp.getSemiFinalists();
+        } catch(Error e) {
+            System.out.println(e);
+        }
+        return semis;
+    }
+
+    public List<MatchPlayer> getFinals(long matchPlayId) {
+        List<MatchPlayer> finals = new ArrayList<>();
+        try {
+            Matchplay mp = matchPlayRepo.findMatchplayById(matchPlayId);
+            finals =  mp.getFinalists();
+        } catch(Error e) {
+            System.out.println(e);
+        }
+        return finals;
+    }
+
 }

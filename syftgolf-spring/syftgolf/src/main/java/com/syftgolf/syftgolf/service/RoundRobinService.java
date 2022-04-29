@@ -9,6 +9,7 @@ import com.syftgolf.syftgolf.repository.MatchPlayerRepo;
 import com.syftgolf.syftgolf.repository.RoundRobinRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,7 +58,76 @@ public class RoundRobinService {
         }
         matchPlayerRepo.save(mp2);
         matchPlayerRepo.save(mp1);
+    }
 
+    public void updateSemiScores(long matchPlayId, String playerOne, String playerTwo, int p1Score, int p2Score) {
+        System.out.println(playerTwo);
+        //Get the matchplay
+        Matchplay mp = matchPlayRepo.findMatchplayById(matchPlayId);
 
+        //Get the players from this match and set their scores and points accordingly
+        List<MatchPlayer> players =  mp.getSemiFinalists();
+
+        //Get list of finalists
+        List<MatchPlayer> finalistList = mp.getFinalists();
+
+        for(int i = 0; i < players.size(); i++) {
+            System.out.println(players.get(i).getMember().getUsername());
+            //If the current player is player 1
+            if(players.get(i).getMember().getUsername().equals(playerOne)) {
+                //Set their score as the score for player 1
+                players.get(i).setSfScore(p1Score);
+                matchPlayerRepo.save(players.get(i));
+
+                //If p1 score if highest
+                if(p1Score > p2Score) {
+                    //Add the current player to the finalist list
+                    finalistList.add(players.get(i));
+                    //Save the updated finalist list
+                    mp.setFinalists(finalistList);
+                    matchPlayRepo.save(mp);
+                }
+            }
+
+            //If the current player is player 2
+            if(players.get(i).getMember().getUsername().equals(playerTwo)) {
+                //Set their score as the score for player 2
+                players.get(i).setSfScore(p2Score);
+                matchPlayerRepo.save(players.get(i));
+                if(p2Score > p1Score) {
+                    //Add the current player to the finalist list
+                    finalistList.add(players.get(i));
+                    //Save the updated finalist list
+                    mp.setFinalists(finalistList);
+                    matchPlayRepo.save(mp);
+                }
+            }
+        }
+    }
+
+    public void updateFinalScores(long matchPlayId, String playerOne, String playerTwo, int p1Score, int p2Score) {
+        //Get the matchplay
+        Matchplay mp = matchPlayRepo.findMatchplayById(matchPlayId);
+        //Get the players from this match and set their scores and points accordingly
+        List<MatchPlayer> players = mp.getFinalists();
+        for(MatchPlayer mps : players) {
+
+            if(mps.getMember().getUsername().equals(playerOne)) {
+                mps.setFScore(p1Score);
+                matchPlayerRepo.save(mps);
+                if(p1Score > p2Score) {
+                    mp.setWinner(mps.getMember().getFirstName() + " " + mps.getMember().getSurname());
+                    matchPlayRepo.save(mp);
+                }
+            }
+            if(mps.getMember().getUsername().equals(playerTwo)) {
+                mps.setFScore(p2Score);
+                matchPlayerRepo.save(mps);
+                if(p2Score > p1Score) {
+                    mp.setWinner(mps.getMember().getFirstName() + " " + mps.getMember().getSurname());
+                    matchPlayRepo.save(mp);
+                }
+            }
+        }
     }
 }

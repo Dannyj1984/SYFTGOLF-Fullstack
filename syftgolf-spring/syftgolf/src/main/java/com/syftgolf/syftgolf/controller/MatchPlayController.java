@@ -100,5 +100,30 @@ public class MatchPlayController {
         roundRobinService.updateScores(roundRobinId, matchPlayId, p1Score, p2Score);
     }
 
+    @PutMapping("/matchplay/semiScores/{matchPlayId:[0-9]+}/{playerOne:[a-zA-Z]+}/{playerTwo:[a-zA-Z]+}/{p1Score:[0-9]+}/{p2Score:[0-9]+}")
+    void updateSemiScores(@PathVariable long matchPlayId, @PathVariable String playerOne, @PathVariable String playerTwo, @PathVariable int p1Score, @PathVariable int p2Score) {
+        roundRobinService.updateSemiScores(matchPlayId, playerOne, playerTwo, p1Score, p2Score);
+    }
+
+    @PutMapping("/matchplay/finalScores/{matchPlayId:[0-9]+}/{playerOne:[a-zA-Z]+}/{playerTwo:[a-zA-Z]+}/{p1Score:[0-9]+}/{p2Score:[0-9]+}")
+    void updateFinalScores(@PathVariable long matchPlayId, @PathVariable String playerOne, @PathVariable String playerTwo, @PathVariable int p1Score, @PathVariable int p2Score) {
+        roundRobinService.updateFinalScores(matchPlayId, playerOne, playerTwo, p1Score, p2Score);
+    }
+
+    @PutMapping("/matchplay/complete/groups/{matchPlayId:[0-9]+}")
+    Matchplay completeGroups(@PathVariable long matchPlayId) {
+        return matchPlayService.completeGroups(matchPlayId);
+    }
+
+    @GetMapping("/matchplay/getSemis/{matchPlayId:[0-9]+}")
+     List<MatchPlayer> getSemis(@PathVariable long matchPlayId) {
+        return matchPlayService.getSemis(matchPlayId);
+    }
+
+    @GetMapping("/matchplay/getFinals/{matchPlayId:[0-9]+}")
+    List<MatchPlayer> getFinals(@PathVariable long matchPlayId) {
+        return matchPlayService.getFinals(matchPlayId);
+    }
+
 
 }
