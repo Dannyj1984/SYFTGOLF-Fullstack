@@ -131,23 +131,13 @@ public class EntrantsService {
      * @param memberId the id of the member to update the score of
      */
 
-    public void updateScore(long eventId, long memberId) {
+    public void updateScore(long eventId, long memberId, double score) {
         Event e = eventRepo.findEventById(eventId);
-        List<Entrants> entrants = e.getEntrants();
+        Member m = memberRepo.findMemberById(memberId);
+        Entrants en = entrantsRepo.getEntrantsByMemberAndEvent(m, e);
 
-        for (Entrants en : entrants) {
-            if(e.getType().equals("Medal")) {
-                if (en.getMember().getId() == memberId) {
-                    en.setScore(en.getScoreCard().getTotalNettScore());
-                    entrantsRepo.save(en);
-                }
-            } else if(e.getType().equals("Stableford")){
-                if (en.getMember().getId() == memberId) {
-                    en.setScore(en.getScoreCard().getTotalStablefordScore());
-                    entrantsRepo.save(en);
-                }
-            }
-        }
+        en.setScore(score);
+        entrantsRepo.save(en);
     }
 
     /**

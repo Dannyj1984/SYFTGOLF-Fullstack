@@ -69,9 +69,9 @@ public class EntrantsController {
      * @param memberId the id of the member to update the score of
      * @return string returned to inform of successful update
      */
-    @PutMapping("/updateScore/{eventId:[0-9]+}/{memberId:[0-9]+}")
-    GenericResponse updateScore(@PathVariable long eventId, @PathVariable long memberId) {
-        entrantsService.updateScore(eventId, memberId);
+    @PutMapping("/updateScore/{eventId:[0-9]+}/{memberId:[0-9]+}/{score}")
+    GenericResponse updateScore(@PathVariable long eventId, @PathVariable long memberId, @PathVariable double score) {
+        entrantsService.updateScore(eventId, memberId, score);
         return new GenericResponse("Score updated");
     }
 
