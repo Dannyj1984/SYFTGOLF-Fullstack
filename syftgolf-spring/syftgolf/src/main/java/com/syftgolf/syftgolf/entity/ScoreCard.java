@@ -82,6 +82,8 @@ public class ScoreCard {
 
     private int totalMedalScore = 0;
     private int totalStablefordScore = 0;
+    //Variables for working out order of leaderboard if scores are tied.
+    private int back9Score =0, back6Score = 0, back3Score = 0, lastScore = 0;
     private int totalNettScore = 0;
 
     /**

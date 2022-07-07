@@ -230,7 +230,7 @@ public class MemberService {
 
 
     public List<MemberVM> getMembersByFedEx(long societyId) {
-        List<Member> members = memberRepo.findAllBySocietyIdOrderByFedExPointsDesc(societyId);
+        List<Member> members = memberRepo.findAllBySocietyIdOrderBySyftCupPointsDesc(societyId);
         List<MemberVM> memberVM = new ArrayList<>();
         for(Member m : members) {
             memberVM.add(new MemberVM(m));

@@ -3,5 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/react" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/syftgolf-spring/syftgolf" vcs="Git" />
   </component>
 </project>

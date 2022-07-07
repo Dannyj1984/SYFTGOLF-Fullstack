@@ -27,5 +27,5 @@ public interface MemberRepo extends JpaRepository<Member, Long> {
 
     Page<Member> findByUsernameStartsWithAndSocietyId(String query, Pageable pageable, long id);
 
-    List<Member> findAllBySocietyIdOrderByFedExPointsDesc(long societyId);
+    List<Member> findAllBySocietyIdOrderBySyftCupPointsDesc(long societyId);
 }

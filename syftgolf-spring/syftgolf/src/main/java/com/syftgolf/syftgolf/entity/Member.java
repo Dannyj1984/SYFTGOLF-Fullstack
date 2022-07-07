@@ -87,12 +87,14 @@ public class Member implements UserDetails, Serializable {
 
     private int eventsPlayed = 0;
 
+    private boolean guest = false;
+
     @NotNull
     @Column(
-            name = "fedExPoints",
+            name = "syftCupPoints",
             columnDefinition = "INTEGER"
     )
-    private int fedExPoints = 0;
+    private int syftCupPoints = 0;
 
     @NotNull
     @Column(

@@ -223,7 +223,7 @@ public class EventService {
             for (Member mem : members) {
                 mem.setEventsPlayed(mem.getEventsPlayed() + 1);
             }
-            updateFedExScores(e.getId());
+            updateSyftCupScores(e.getId());
         }
 
         //Save the members courseHcp at the time of the event to be used in the future to show the handicap at the time of this event
@@ -295,39 +295,49 @@ public class EventService {
         return inDB;
     }
 
-    public List<Entrants> updateFedExScores(long eventId) {
+    public List<Entrants> updateSyftCupScores(long eventId) {
         Event e = eventRepo.getEventById(eventId);
         List<Entrants> entrants = e.getEntrants();
-        int fedExPoints = entrants.size();
+        int syftCupPoints = entrants.size();
         if(e.getType().equals("Medal")) {
             entrants.sort(Entrants.entrantScoreMedal);
             for (Entrants ent : entrants) {
-                if (e.getMajor()) {
-                    Member m = ent.getMember();
-                    m.setFedExPoints(m.getFedExPoints() + (fedExPoints * 2));
-                    memberRepo.save(m);
-                    fedExPoints--;
+                if(!ent.getMember().isGuest()) {
+                    if (e.getMajor()) {
+                        Member m = ent.getMember();
+                        m.setSyftCupPoints(m.getSyftCupPoints() + (syftCupPoints * 2));
+                        memberRepo.save(m);
+                        syftCupPoints--;
+                    } else {
+                        Member m = ent.getMember();
+                        m.setSyftCupPoints(m.getSyftCupPoints() + syftCupPoints);
+                        memberRepo.save(m);
+                        syftCupPoints--;
+                    }
                 } else {
-                    Member m = ent.getMember();
-                    m.setFedExPoints(m.getFedExPoints() + fedExPoints);
-                    memberRepo.save(m);
-                    fedExPoints--;
+                    syftCupPoints--;
                 }
             }
         }
         if(e.getType().equals("Stableford")) {
             entrants.sort(Entrants.entrantScoreStableford);
             for (Entrants ent : entrants) {
-                if (e.getMajor()) {
-                    Member m = ent.getMember();
-                    m.setFedExPoints(m.getFedExPoints() + (fedExPoints * 2));
-                    memberRepo.save(m);
-                    fedExPoints--;
+                //If the current entrant is not a guest then update their syftcup points
+                if(!ent.getMember().isGuest()) {
+                    if (e.getMajor()) {
+                        Member m = ent.getMember();
+                        m.setSyftCupPoints(m.getSyftCupPoints() + (syftCupPoints * 2));
+                        memberRepo.save(m);
+                        syftCupPoints--;
+                    } else {
+                        Member m = ent.getMember();
+                        m.setSyftCupPoints(m.getSyftCupPoints() + syftCupPoints);
+                        memberRepo.save(m);
+                        syftCupPoints--;
+                    }
+                    //If the current entrant is a guest, then dont give syftcup points but reduce the syft points value for the next member
                 } else {
-                    Member m = ent.getMember();
-                    m.setFedExPoints(m.getFedExPoints() + fedExPoints);
-                    memberRepo.save(m);
-                    fedExPoints--;
+                    syftCupPoints--;
                 }
             }
         }

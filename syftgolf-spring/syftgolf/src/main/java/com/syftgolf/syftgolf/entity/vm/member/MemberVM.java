@@ -60,7 +60,7 @@ public class MemberVM {
         this.setImage(member.getImage());
         this.setWins(member.getWins());
         this.setSociety(member.getSociety());
-        this.setFedExPoints(member.getFedExPoints());
+        this.setFedExPoints(member.getSyftCupPoints());
         this.setEventsPlayed(member.getEventsPlayed());
     }
 }

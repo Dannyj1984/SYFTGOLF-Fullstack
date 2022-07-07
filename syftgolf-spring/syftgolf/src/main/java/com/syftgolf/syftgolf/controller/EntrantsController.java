@@ -67,12 +67,10 @@ public class EntrantsController {
      *
      * @param eventId the event name
      * @param memberId the id of the member to update the score of
-     * @return string returned to inform of successful update
      */
     @PutMapping("/updateScore/{eventId:[0-9]+}/{memberId:[0-9]+}/{score}")
-    GenericResponse updateScore(@PathVariable long eventId, @PathVariable long memberId, @PathVariable double score) {
+    void updateScore(@PathVariable long eventId, @PathVariable long memberId, @PathVariable double score) {
         entrantsService.updateScore(eventId, memberId, score);
-        return new GenericResponse("Score updated");
     }
 
     /**
@@ -103,7 +101,6 @@ public class EntrantsController {
     @CrossOrigin
     @PutMapping("/event/entrants/scorecard/{eventId:[0-9]+}/{memberId:[0-9]+}/{currentHole:[0-9]+}")
     ScoreCard updateScorecard(@PathVariable long eventId, @PathVariable long memberId, @PathVariable int currentHole, @RequestBody ScoreCardVM scorecard) {
-        System.out.println(currentHole);
         return scoreCardService.update(eventId, memberId, currentHole, scorecard);
     }
 

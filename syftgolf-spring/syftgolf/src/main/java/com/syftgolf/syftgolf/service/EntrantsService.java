@@ -135,8 +135,9 @@ public class EntrantsService {
         Event e = eventRepo.findEventById(eventId);
         Member m = memberRepo.findMemberById(memberId);
         Entrants en = entrantsRepo.getEntrantsByMemberAndEvent(m, e);
-
+        System.out.println(en.getScore());
         en.setScore(score);
+        System.out.println(en.getScore());
         entrantsRepo.save(en);
     }
 

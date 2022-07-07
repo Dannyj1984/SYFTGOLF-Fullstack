@@ -63,6 +63,7 @@ public class EventController {
     //Get a page of upcoming events
     @GetMapping("/upcomingEvents/{id:[0-9]+}")
     Page<EventVM> getEvents(Pageable page, @PathVariable long id) {
+        System.out.println("events");
         return eventService.getEvents(page, id).map(EventVM::new);
     }
 
@@ -152,7 +153,7 @@ public class EventController {
 
     @GetMapping("/event/test/{eventId:[0-9]+}")
     List<Entrants> eventTest(@PathVariable long eventId) {
-        return eventService.updateFedExScores(eventId);
+        return eventService.updateSyftCupScores(eventId);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

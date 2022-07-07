@@ -58,6 +58,12 @@ public class TeeSheetController {
         return teeSheetRepo.findAllByEventOrderByTeeTime(e);
     }
 
+    @GetMapping("/teeSheet/{teeSheetId:[0-9]+}")
+    public TeeSheet getTeeSheet(@PathVariable long teeSheetId) {
+        TeeSheet ts = teeSheetRepo.findById(teeSheetId).get();
+        return ts;
+    }
+
     @PutMapping("/teeSheet/addMember/{teeSheetId:[0-9]+}/{eventId:[0-9]+}/{memberId:[0-9]+}")
     public GenericResponse addEntrant(@PathVariable long teeSheetId, @PathVariable long eventId, @PathVariable long memberId ) {
         return teeSheetService.addEntrant(teeSheetId, eventId, memberId);

@@ -41,6 +41,10 @@ public class Entrants {
     @Column(name = "coursehcp")
     private int coursehcp = 0;
 
+    @NotNull
+    @Column(name = "NR")
+    private boolean NR = false;
+
     public Entrants() {}
 
     public Entrants(Member member, Event event, double score, int currentHole) {
