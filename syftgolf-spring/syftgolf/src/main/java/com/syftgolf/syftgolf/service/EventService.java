@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -299,8 +300,37 @@ public class EventService {
         Event e = eventRepo.getEventById(eventId);
         List<Entrants> entrants = e.getEntrants();
         int syftCupPoints = entrants.size();
+
+        //update syft cup points for medal event
         if(e.getType().equals("Medal")) {
-            entrants.sort(Entrants.entrantScoreMedal);
+            System.out.println("before: " +entrants);
+
+            entrants.sort((a, b) -> a.getScore() < b.getScore() ? -1
+                    : (a.getScore() == b.getScore() ?
+                    (a.getScoreCard().getBack9Score() > b.getScoreCard().getBack9Score() ?
+                            -1
+                            : (a.getScoreCard().getBack9Score() == b.getScoreCard().getBack9Score() ?
+                            (a.getScoreCard().getBack6Score() > b.getScoreCard().getBack6Score() ?
+                                    -1
+                                            -1
+                                    :(a.getScoreCard().getBack6Score() == b.getScoreCard().getBack6Score() ?
+                                    (a.getScoreCard().getBack3Score() > b.getScoreCard().getBack3Score() ?
+                                            -1
+                                                    -1
+                                            : (a.getScoreCard().getBack3Score() == b.getScoreCard().getBack3Score() ?
+                                            (a.getScoreCard().getLastScore() > b.getScoreCard().getLastScore() ?
+                                                    -1
+                                                            -1
+                                                    : 1)
+                                            : 1)
+                                    )
+                                    :1)
+                            )
+                            :1)
+                    )
+                    :1)
+            );
+            System.out.println("after: " +entrants);
             for (Entrants ent : entrants) {
                 if(!ent.getMember().isGuest()) {
                     if (e.getMajor()) {
@@ -319,9 +349,41 @@ public class EventService {
                 }
             }
         }
+
+        //update syft cup points for stableford event
         if(e.getType().equals("Stableford")) {
-            entrants.sort(Entrants.entrantScoreStableford);
+
+            System.out.println("before: " +entrants);
+
+            entrants.sort((a, b) -> a.getScore() > b.getScore() ? -1 //move a up if score is higher
+                    : (a.getScore() == b.getScore() ?
+                    (a.getScoreCard().getBack9Score() > b.getScoreCard().getBack9Score() ? //if scores are the same and a's back9score is greater, move them up
+                            -1
+                            : (a.getScoreCard().getBack9Score() == b.getScoreCard().getBack9Score() ?
+                            (a.getScoreCard().getBack6Score() > b.getScoreCard().getBack6Score() ?//if back9scores are the same and a's back6score is greater, move them up
+                                    -1
+                                    -1
+                                    :(a.getScoreCard().getBack6Score() == b.getScoreCard().getBack6Score() ?
+                                    (a.getScoreCard().getBack3Score() > b.getScoreCard().getBack3Score() ? //if back6scores are the same and a's back3score is greater, move them up
+                                            -1
+                                            -1
+                                            : (a.getScoreCard().getBack3Score() == b.getScoreCard().getBack3Score() ?
+                                            (a.getScoreCard().getLastScore() > b.getScoreCard().getLastScore() ? //if back3scores are the same and a's last is greater, move them up
+                                                    -1
+                                                    -1
+                                                    : 1)
+                                            : 1)
+                                    )
+                                    :1)
+                            )
+                            :1)
+                    )
+                    :1)
+            );
+
+            System.out.println("after: " +entrants);
             for (Entrants ent : entrants) {
+
                 //If the current entrant is not a guest then update their syftcup points
                 if(!ent.getMember().isGuest()) {
                     if (e.getMajor()) {

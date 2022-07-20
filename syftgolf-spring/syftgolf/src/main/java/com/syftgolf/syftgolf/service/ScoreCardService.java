@@ -81,6 +81,7 @@ public class ScoreCardService {
         //Loop over entrants to find the current entrant and set scores accordingly
         for (Entrants ent : en) {
             if (ent.getMember().equals(m)) {
+                ent.setNR(false);
                 //Hole 1
                 if(currentHole >= 1) {
                     if (scorecard.getH1Score() > 0) {
@@ -1009,7 +1010,6 @@ public class ScoreCardService {
 
                     }
                 }
-
             }
         }
 

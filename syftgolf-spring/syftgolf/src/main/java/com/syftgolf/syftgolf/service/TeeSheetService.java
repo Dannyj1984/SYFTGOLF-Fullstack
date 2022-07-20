@@ -63,4 +63,15 @@ public class TeeSheetService {
         }
         return new GenericResponse(response);
     }
+
+    public GenericResponse update(long teeSheetId, long memberId, long prevMemberId) throws Exception{
+        GenericResponse response = new GenericResponse("Tee sheet updated");
+        try {
+            teeSheetRepo.update(teeSheetId, memberId, prevMemberId);
+        } catch (Exception e) {
+            response = new GenericResponse("This entrant is not current signed up to this event. Please register them first.");
+
+        }
+        return response;
+    }
 }

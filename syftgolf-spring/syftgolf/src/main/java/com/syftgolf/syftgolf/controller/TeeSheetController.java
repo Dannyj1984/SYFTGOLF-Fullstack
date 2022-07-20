@@ -30,6 +30,7 @@ public class TeeSheetController {
      * Delete a teesheet
      * Get all teesheets for an event
      * Add member to a teesheet
+     * Update teesheet
      */
 
     @Autowired
@@ -68,6 +69,13 @@ public class TeeSheetController {
     public GenericResponse addEntrant(@PathVariable long teeSheetId, @PathVariable long eventId, @PathVariable long memberId ) {
         return teeSheetService.addEntrant(teeSheetId, eventId, memberId);
     }
+
+    @PutMapping("/management/teeSheet/update/{teeSheetId:[0-9]+}/{memberId:[0-9]+}/{prevMemberId:[0-9]+}")
+        public GenericResponse editTeeSheet(@PathVariable long teeSheetId, @PathVariable long memberId, @PathVariable long prevMemberId) throws Exception {
+            return teeSheetService.update(teeSheetId, memberId, prevMemberId);
+
+        }
+
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     //Tell spring to return 400 (BAD REQUEST)

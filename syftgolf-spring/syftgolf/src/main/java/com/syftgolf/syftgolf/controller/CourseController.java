@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -86,6 +87,7 @@ public class CourseController {
      * @return the saved course
      */
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/management/course/{societyId:[0-9]+}")
     Course save(@RequestBody @Valid Course course, @PathVariable long societyId) {
         return courseService.save(course, societyId);
@@ -109,6 +111,7 @@ public class CourseController {
      * @return a message to inform of successful deletion
      */
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/management/course/delete/{courseId:[0-9]+}")
     GenericResponse delete(@PathVariable long courseId) {
         courseRepo.delete(courseRepo.getById(courseId));

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="Heroku" uuid="42f2d5ed-5d6b-4925-a9b9-2041e137bf50">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://ec2-35-168-65-132.compute-1.amazonaws.com:5432/d45i08ccifd54q</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+      <driver-properties>
+        <property name="sslfactory" value="org.postgresql.ssl.NonValidatingFactory" />
+        <property name="sslmode" value="allow" />
+      </driver-properties>
+    </data-source>
+  </component>
+</project>

@@ -22,5 +22,5 @@ public interface EntrantsRepo extends JpaRepository<Entrants, Long> {
     void deleteByMemberAndEvent(Member m, Event e);
 
         @Query(value = "delete from tee_sheet_entrants where tee_sheet_entrants.entrants_event_id = :eventId and tee_sheet_entrants.entrants_member_id = :memberId", nativeQuery = true)
-    void deleteTeeSheetEntrant(long eventId, long memberId);
+        void deleteTeeSheetEntrant(long eventId, long memberId);
 }

@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -58,33 +59,29 @@ public class Entrants {
     private List<TeeSheet> teeSheets;
 
     /*Comparator for sorting score ascending for medal*/
-    public static Comparator<Entrants> entrantScoreMedal = new Comparator<Entrants>() {
+    public static Comparator<Entrants> entrantScoreMedal = (s1, s2) -> {
 
-        public int compare(Entrants s1, Entrants s2) {
+        double score1 =  s1.getScore();
+        double score2 =  s2.getScore();
 
-            int score1 = (int) Math.round(s1.getScore());
-            int score2 = (int) Math.round(s2.getScore());
-
-            /*For ascending order*/
-            return score1-score2;
-        }};
+        /*For ascending order*/
+        return (int) (score1-score2);
+    };
 
     /*Comparator for sorting score descending for stableford*/
-    public static Comparator<Entrants> entrantScoreStableford = new Comparator<Entrants>() {
+    public static Comparator<Entrants> entrantScoreStableford = (s1, s2) -> {
 
-        public int compare(Entrants s1, Entrants s2) {
+        double score1 =  s1.getScore();
+        double score2 =  s2.getScore();
 
-            int score1 = (int) Math.round(s1.getScore());
-            int score2 = (int) Math.round(s2.getScore());
-
-            /*For ascending order*/
-            return score2-score1;
-        }};
+        /*For descending order*/
+        return (int) (score2-score1);
+    };
 
     @Override
     public String toString() {
         return "Entrants{" +
-                "member=" + member.getFirstName() +
+                "member=" + member.getFirstName() + member.getSurname() +
                 ", event=" + event.getName() +
                 ", score=" + score +
                 '}';
